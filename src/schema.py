@@ -49,6 +49,7 @@ class SourceRecord:
     raw_html_path: str = ""     # proves the text came from the page and was not invented
     content_sha256: str = ""    # lets "replay" detect that a page changed since collection
     robots_allowed: bool = True # written evidence that access rules were respected
+    text_extractor: str = ""    # which cleaner produced collected_text; see parse.main_text
 
     def to_dict(self) -> dict:
         return asdict(self)

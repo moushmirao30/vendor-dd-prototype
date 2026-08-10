@@ -179,8 +179,12 @@ class PageFetcher:
 
     # -- cache --------------------------------------------------------------
 
+    # Bumped whenever a fetch-layer change makes existing cached pages wrong.
+    # v1 -> v2: cached pages fetched before the encoding fix contain mojibake.
+    CACHE_VERSION = "v2"
+
     def _cache_file(self, url: str) -> Path:
-        return self.cache_dir / f"{url_key(url)}.html"
+        return self.cache_dir / f"{self.CACHE_VERSION}_{url_key(url)}.html"
 
     def cached(self, url: str) -> FetchResult | None:
         """Return the cached page for this URL, or None."""
@@ -219,6 +223,21 @@ class PageFetcher:
             )
         except requests.RequestException as exc:
             return FetchResult(url=url, ok=False, error=f"{type(exc).__name__}: {exc}")
+
+        # ---- character encoding -------------------------------------------
+        # When a server sends `Content-Type: text/html` with NO charset, requests
+        # falls back to ISO-8859-1 (an old HTTP/1.1 rule). Almost every modern
+        # page is UTF-8, so that fallback turns a curly quote into mojibake.
+        # GitLab's privacy page arrived as: 'the "U.S. State Privacy Rights"
+        # section' -> 'the âU.S. State Privacy Rightsâ section'.
+        # In a project whose output is verbatim evidence snippets, corrupted
+        # quotation marks are a correctness bug, not a cosmetic one.
+        if not response.encoding or response.encoding.lower() in (
+            "iso-8859-1", "latin-1", "latin1", "ascii"
+        ):
+            detected = response.apparent_encoding
+            if detected:
+                response.encoding = detected
 
         result = FetchResult(
             url=url,

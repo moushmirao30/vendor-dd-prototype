@@ -73,30 +73,63 @@ def page_title(html: str) -> str:
     return _clean(soup.title.get_text()) if soup.title else ""
 
 
-def main_text(html: str) -> str:
-    """
-    The page's readable main content, with navigation, footers and boilerplate
-    stripped. Stored as `collected_text` in the corpus.
+# If trafilatura keeps less than this share of the page's visible text, we do not
+# trust it and fall back to the full text. Chosen from measured GitLab pages on
+# 2026-08-10: privacy 79%, terms 67%, pricing 57%, product 42%, docs 23%,
+# status 17% — and security 7.6%, where trafilatura discarded the entire
+# compliance section including "GitLab maintains a SOC 2 Type 2 report...".
+MIN_KEPT_RATIO = 0.15
+MIN_TEXT_FOR_RATIO_CHECK = 1000
 
-    trafilatura does this well but is not always installed and occasionally
-    returns nothing on unusual markup, so there is a BeautifulSoup fallback.
-    Evidence extraction never uses this text — it works from the raw HTML so it
-    can keep heading structure. This is for the corpus and for human reading.
+
+def visible_text(html: str) -> str:
+    """All visible text on the page, boilerplate included. The safety net."""
+    soup = BeautifulSoup(html, "lxml")
+    for tag in soup.find_all(NOISE_TAGS):
+        tag.decompose()
+    return _clean(soup.get_text(" "))
+
+
+def main_text(html: str) -> tuple[str, str]:
     """
+    The page's readable main content. Returns (text, extractor_used).
+
+    Stored as `collected_text` in the corpus, and read by humans reviewing the
+    corpus. Evidence extraction does NOT use it — `find_evidence` works from the
+    raw HTML so it keeps heading structure. That separation turned out to matter:
+    on GitLab's security page trafilatura threw away 92% of the text, including
+    every certification sentence, while the raw HTML kept them under an
+    <h3>SOC Certification</h3> heading. Had the evidence pipeline been built on
+    this field, the project would have reported "no certifications found" for a
+    vendor that publishes them plainly.
+
+    Guard: a cleaner that keeps almost nothing is not doing its job, so we
+    measure what it kept and fall back to the full visible text when it strips
+    too much. The extractor actually used is recorded in the corpus so a reviewer
+    can see which pages needed the fallback.
+    """
+    fallback = visible_text(html)
+
     try:
         import trafilatura
 
         extracted = trafilatura.extract(html, include_comments=False,
                                         include_tables=True, no_fallback=False)
-        if extracted and extracted.strip():
-            return extracted.strip()
     except Exception:
-        pass  # fall through to the BeautifulSoup path
+        return fallback, "visible-text (trafilatura unavailable)"
 
-    soup = BeautifulSoup(html, "lxml")
-    for tag in soup.find_all(NOISE_TAGS):
-        tag.decompose()
-    return _clean(soup.get_text(" "))
+    if not extracted or not extracted.strip():
+        return fallback, "visible-text (trafilatura returned nothing)"
+
+    extracted = extracted.strip()
+    if (len(fallback) > MIN_TEXT_FOR_RATIO_CHECK
+            and len(extracted) / len(fallback) < MIN_KEPT_RATIO):
+        return fallback, (
+            f"visible-text (trafilatura kept only "
+            f"{len(extracted) / len(fallback):.0%} of the page)"
+        )
+
+    return extracted, "trafilatura"
 
 
 def page_to_blocks(html: str) -> list[Block]:

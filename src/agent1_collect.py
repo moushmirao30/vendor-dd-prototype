@@ -133,7 +133,7 @@ def collect_for_vendor(
     # --- build the corpus rows ---------------------------------------------
     verified = vendor.get("verified", [])
     for stype, result in resolved.items():
-        text = main_text(result.html)
+        text, extractor = main_text(result.html)
         records.append(SourceRecord(
             vendor_name=vendor["name"],
             vendor_slug=vendor["slug"],
@@ -146,13 +146,15 @@ def collect_for_vendor(
             evidence_note=(
                 f"{stype} page for {vendor['name']}; "
                 f"{len(text)} characters of main content; "
-                f"{'served from cache' if result.from_cache else 'fetched live'}"
+                f"{'served from cache' if result.from_cache else 'fetched live'}; "
+                f"text via {extractor}"
             ),
             http_status=result.status,
             fetch_ok=result.ok,
             raw_html_path=result.cache_path,
             content_sha256=result.content_sha256,
             robots_allowed=result.robots_allowed,
+            text_extractor=extractor,
         ))
 
     # Page types we wanted but never resolved. Recorded explicitly so the brief
