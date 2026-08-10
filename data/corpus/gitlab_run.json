@@ -1,0 +1,76 @@
+{
+  "vendor_slug": "gitlab",
+  "ran_on": "2026-08-10T21:46:21",
+  "steps": [
+    {
+      "action": "probe",
+      "source_type": "security",
+      "url": "https://about.gitlab.com/security",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "probe",
+      "source_type": "privacy",
+      "url": "https://about.gitlab.com/privacy",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "probe",
+      "source_type": "pricing",
+      "url": "https://about.gitlab.com/pricing",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "probe",
+      "source_type": "docs",
+      "url": "https://about.gitlab.com/docs",
+      "status": 404,
+      "outcome": "HTTP 404"
+    },
+    {
+      "action": "probe",
+      "source_type": "docs",
+      "url": "https://about.gitlab.com/docs/",
+      "status": 404,
+      "outcome": "HTTP 404"
+    },
+    {
+      "action": "probe",
+      "source_type": "docs",
+      "url": "https://about.gitlab.com/help",
+      "status": 404,
+      "outcome": "HTTP 404"
+    },
+    {
+      "action": "probe",
+      "source_type": "docs",
+      "url": "https://about.gitlab.com/support",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "probe",
+      "source_type": "terms",
+      "url": "https://about.gitlab.com/terms",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "seed-fallback",
+      "source_type": "product",
+      "url": "https://about.gitlab.com/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "seed-fallback",
+      "source_type": "status",
+      "url": "https://status.gitlab.com/",
+      "status": 200,
+      "outcome": "found"
+    }
+  ]
+}

@@ -107,3 +107,16 @@ def test_cache_key_is_versioned_so_bad_cached_pages_are_not_reused(tmp_path):
     fetcher = PageFetcher({**SETTINGS, "cache": {"enabled": True, "reuse_existing": True,
                                                  "dir": "cache"}}, tmp_path)
     assert fetcher._cache_file("https://x.test/a").name.startswith(f"{fetcher.CACHE_VERSION}_")
+
+
+def test_a_very_short_summary_of_a_substantial_page_triggers_the_fallback():
+    """
+    GitLab's status page passed the ratio guard at 17% but gave only 489
+    characters from a 2,858-character page. Technically in tolerance, still too
+    thin to be a fair record. An absolute floor catches what a ratio misses.
+    """
+    from src.parse import MIN_ABSOLUTE_CHARS, MIN_PAGE_CHARS_FOR_ABSOLUTE_CHECK
+    body = "<p>Component operational status line.</p>" * 90
+    text, extractor = main_text(f"<html><body><h1>Status</h1>{body}</body></html>")
+    assert len(visible_text(f"<html><body><h1>Status</h1>{body}</body></html>")) > MIN_PAGE_CHARS_FOR_ABSOLUTE_CHECK
+    assert len(text) >= MIN_ABSOLUTE_CHARS or extractor.startswith("visible-text")

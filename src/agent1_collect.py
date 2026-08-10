@@ -93,42 +93,63 @@ def collect_for_vendor(
     requests_made = 0
 
     def outcome_of(result: FetchResult) -> str:
-        if result.ok:
-            return "found"
         if not result.robots_allowed:
             return result.robots_note or "disallowed by robots.txt"
-        return result.error or f"HTTP {result.status}"
+        if not result.ok:
+            return result.error or f"HTTP {result.status}"
+        # A 200 that lands somewhere else is still a finding a reviewer must see.
+        if result.final_url and result.final_url.rstrip("/") != result.url.rstrip("/"):
+            return f"found - REDIRECTED to {result.final_url}"
+        return "found"
 
     candidates = candidate_urls(vendor, patterns)
 
-    # --- pass 1: try to discover each page type from URL patterns -----------
+    # --- pass 1: the human-curated seed for each page type ------------------
+    # A URL a person opened and checked outranks a URL we guessed.
+    #
+    # WHY THIS ORDER, LEARNED THE HARD WAY (2026-08-10): discovery used to run
+    # first and "first HTTP 200 wins". For GitLab's `docs` that meant probing
+    # /docs, /docs/, /help, then /support - and /support returned 200 while
+    # redirecting to a single Zendesk help ARTICLE. The agent happily preferred
+    # one support article over docs.gitlab.com, the vendor's entire
+    # documentation site, because both answered 200. A 200 means the URL exists,
+    # not that it is the right page. Seeds first also means fewer requests,
+    # which is the politer outcome.
+    for stype, seed_url in vendor["seeds"].items():
+        if len(resolved) >= max_pages or requests_made >= max_requests:
+            break
+        result = fetcher.get(seed_url)
+        requests_made += 0 if result.from_cache else 1
+        steps.append(CollectionStep(action="curated-seed", source_type=stype,
+                                    url=seed_url, status=result.status,
+                                    outcome=outcome_of(result)))
+        if result.ok:
+            resolved[stype] = result
+
+    # --- pass 2: discover page types with no seed, or whose seed failed ------
+    # This is where the agent genuinely earns its name: GitLab publishes no
+    # `terms` seed, and discovery finds about.gitlab.com/terms/ unaided.
     for stype, urls in candidates.items():
         if stype in resolved:
             continue
         for url in urls:
             if len(resolved) >= max_pages or requests_made >= max_requests:
+                # NO SILENT CAPS. Page types are probed in config order, so a
+                # budget spent on earlier failures would otherwise make the last
+                # page types vanish with no trace. Say so instead.
+                steps.append(CollectionStep(
+                    action="budget-stop", source_type=stype, url=url, status=0,
+                    outcome=(f"stopped after {requests_made} requests "
+                             f"(limit {max_requests}) - not attempted"),
+                ))
                 break
             result = fetcher.get(url)
             requests_made += 0 if result.from_cache else 1
-            steps.append(CollectionStep(action="probe", source_type=stype, url=url,
+            steps.append(CollectionStep(action="discovered", source_type=stype, url=url,
                                         status=result.status, outcome=outcome_of(result)))
             if result.ok:
                 resolved[stype] = result
                 break  # first working candidate wins; do not probe the rest
-
-    # --- pass 2: fall back to the curated seed for anything not discovered ---
-    # Seeds are tried even if the request budget is spent: they are the URLs a
-    # human already verified, so they are the most valuable single request left.
-    for stype, seed_url in vendor["seeds"].items():
-        if stype in resolved or len(resolved) >= max_pages:
-            continue
-        result = fetcher.get(seed_url)
-        requests_made += 0 if result.from_cache else 1
-        steps.append(CollectionStep(action="seed-fallback", source_type=stype,
-                                    url=seed_url, status=result.status,
-                                    outcome=outcome_of(result)))
-        if result.ok:
-            resolved[stype] = result
 
     # --- build the corpus rows ---------------------------------------------
     verified = vendor.get("verified", [])

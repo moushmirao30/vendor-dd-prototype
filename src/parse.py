@@ -81,6 +81,13 @@ def page_title(html: str) -> str:
 MIN_KEPT_RATIO = 0.15
 MIN_TEXT_FOR_RATIO_CHECK = 1000
 
+# A second, absolute guard. GitLab's status page passed the ratio test at 17%
+# but produced only 489 characters from a 2,858-character page - technically
+# within tolerance, still too thin to be a fair record of the page. A summary
+# this short from a substantial page is a summary worth distrusting.
+MIN_ABSOLUTE_CHARS = 800
+MIN_PAGE_CHARS_FOR_ABSOLUTE_CHECK = 2000
+
 
 def visible_text(html: str) -> str:
     """All visible text on the page, boilerplate included. The safety net."""
@@ -122,11 +129,19 @@ def main_text(html: str) -> tuple[str, str]:
         return fallback, "visible-text (trafilatura returned nothing)"
 
     extracted = extracted.strip()
+
     if (len(fallback) > MIN_TEXT_FOR_RATIO_CHECK
             and len(extracted) / len(fallback) < MIN_KEPT_RATIO):
         return fallback, (
             f"visible-text (trafilatura kept only "
             f"{len(extracted) / len(fallback):.0%} of the page)"
+        )
+
+    if (len(extracted) < MIN_ABSOLUTE_CHARS
+            and len(fallback) > MIN_PAGE_CHARS_FOR_ABSOLUTE_CHECK):
+        return fallback, (
+            f"visible-text (trafilatura returned only {len(extracted)} chars "
+            f"from a {len(fallback)}-char page)"
         )
 
     return extracted, "trafilatura"

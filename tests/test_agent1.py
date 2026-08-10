@@ -57,33 +57,66 @@ def test_candidates_are_built_from_the_pattern_list():
     assert "https://about.gitlab.com/trust-center" in cands["security"]
 
 
-def test_discovery_is_preferred_over_the_seed_list():
-    fetcher = FakeFetcher(works={"https://about.gitlab.com/security"})
+def test_the_human_curated_seed_beats_a_guessed_url():
+    """
+    THE ZENDESK REGRESSION. Discovery used to run first and take the first HTTP
+    200. For GitLab's `docs` that meant /support answered 200 and redirected to
+    a single Zendesk help article, which the agent then preferred over
+    docs.gitlab.com - the vendor's entire documentation site. A 200 means the
+    URL exists, not that it is the right page.
+    """
+    fetcher = FakeFetcher(works={"https://docs.gitlab.com/",
+                                 "https://about.gitlab.com/support"})
     records, steps = collect_for_vendor(GITLAB, PATTERNS, fetcher)
 
-    security = next(r for r in records if r.source_type == "security")
-    assert security.source_url == "https://about.gitlab.com/security"
-    assert any(s.action == "probe" and s.outcome == "found" for s in steps)
+    docs = next(r for r in records if r.source_type == "docs")
+    assert docs.source_url == "https://docs.gitlab.com/", "the curated seed must win"
+    assert any(s.action == "curated-seed" and s.outcome == "found" for s in steps)
+    assert "https://about.gitlab.com/support" not in fetcher.calls, (
+        "no reason to probe once the curated URL worked"
+    )
+
+
+def test_discovery_fills_gaps_the_seed_list_does_not_cover():
+    """GitLab has no `terms` seed; the agent must find it unaided."""
+    fetcher = FakeFetcher(works={"https://about.gitlab.com/terms"})
+    records, steps = collect_for_vendor(GITLAB, PATTERNS, fetcher, max_requests=40)
+    terms = next(r for r in records if r.source_type == "terms")
+    assert terms.source_url == "https://about.gitlab.com/terms"
+    assert any(s.action == "discovered" and s.outcome == "found" for s in steps)
 
 
 def test_first_working_candidate_wins_and_the_rest_are_not_probed():
-    fetcher = FakeFetcher(works={"https://about.gitlab.com/security"})
-    collect_for_vendor(GITLAB, PATTERNS, fetcher)
-    assert "https://about.gitlab.com/trust-center" not in fetcher.calls, (
+    fetcher = FakeFetcher(works={"https://about.gitlab.com/terms"})
+    collect_for_vendor(GITLAB, PATTERNS, fetcher, max_requests=40)
+    assert "https://about.gitlab.com/terms-of-service" not in fetcher.calls, (
         "probing must stop at the first success - this is a research tool, not a crawler"
     )
 
 
-def test_seed_is_used_when_discovery_finds_nothing():
+def test_a_redirect_is_reported_not_hidden():
+    """A 200 that lands somewhere else is a finding the reviewer must see."""
+    class RedirectingFetcher(FakeFetcher):
+        def get(self, url):
+            r = super().get(url)
+            if r.ok:
+                r.final_url = "https://support.gitlab.com/hc/en-us/articles/116264"
+            return r
+
+    fetcher = RedirectingFetcher(works={"https://docs.gitlab.com/"})
+    _, steps = collect_for_vendor(GITLAB, PATTERNS, fetcher)
+    assert any("REDIRECTED" in s.outcome for s in steps)
+
+
+def test_seeds_reach_hosts_no_url_pattern_could_ever_guess():
     """
     GitLab's docs live on docs.gitlab.com, a different host from about.gitlab.com,
-    so no URL pattern can ever reach them. This is exactly the case the seed
-    fallback exists for - and the reason option (b), pure auto-discovery, was
-    rejected in the design.
+    so no URL pattern can reach them. This is why option (b), pure auto-discovery,
+    was rejected in the design.
     """
     fetcher = FakeFetcher(works={"https://docs.gitlab.com/"})
     records, steps = collect_for_vendor(GITLAB, PATTERNS, fetcher)
-    assert any(s.action == "seed-fallback" and s.outcome == "found" for s in steps)
+    assert any(s.action == "curated-seed" and s.outcome == "found" for s in steps)
     assert any(r.source_url == "https://docs.gitlab.com/" for r in records)
 
 
@@ -144,3 +177,16 @@ def test_a_saved_run_can_be_replayed_without_refetching(tmp_path):
 def test_replay_returns_none_for_a_vendor_never_collected(tmp_path):
     from src.agent1_collect import load_previous_run
     assert load_previous_run(tmp_path, "never-run") is None
+
+
+def test_the_request_budget_announces_itself_instead_of_silently_dropping_pages():
+    """
+    Page types are probed in config order, so a budget spent on earlier failures
+    would make the last ones disappear with no trace. A reviewer reading the
+    audit trail must be able to tell "not found" apart from "never attempted".
+    """
+    fetcher = FakeFetcher(works=set())
+    _, steps = collect_for_vendor(GITLAB, PATTERNS, fetcher, max_requests=8)
+    stops = [s for s in steps if s.action == "budget-stop"]
+    assert stops, "hitting the request limit must be recorded"
+    assert "not attempted" in stops[0].outcome
