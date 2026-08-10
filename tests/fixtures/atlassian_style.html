@@ -1,0 +1,14 @@
+<!-- FIXTURE: the "logos only" shape. Modelled on atlassian.com/trust/security (seen 2026-08-10).
+     The heading exists, but the certifications are IMAGES. The only text is alt-text.
+     EXPECTED: security_trust = Low, with a manual-review flag. If this ever
+     scores High, the extractor is overstating its evidence and must be fixed. -->
+<html><body>
+<h1>Data protection</h1>
+<h2>Our compliance certifications</h2>
+<img src="/aicpa.png" alt="AICPA SOC logo">
+<img src="/iso.png" alt="ISO 27001 logo">
+<img src="/pci.png" alt="PCI DSS Compliant logo">
+<img src="/fedramp.png" alt="FedRAMP logo">
+<h2>Reliability at scale</h2>
+<p>Review Atlassian's Service Level Agreement.</p>
+</body></html>

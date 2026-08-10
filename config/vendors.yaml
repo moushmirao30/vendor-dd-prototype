@@ -1,0 +1,174 @@
+# ---------------------------------------------------------------------------
+# vendors.yaml — the bounded vendor set for this experiment.
+#
+# Category locked: developer productivity tools (one category, per the brief).
+# 7 vendors, deliberately chosen at three difficulty levels so the evaluation
+# summary has real failure modes to report, not just successes.
+#
+# HOW `seeds` IS USED (Agent 1, hybrid design):
+#   1. Agent 1 generates candidate URLs from url_patterns below.
+#   2. It keeps candidates that return HTTP 200.
+#   3. Anything it fails to discover falls back to the `seeds` entry here.
+#   4. Every URL it ends up using is recorded with its http_status in the corpus.
+#
+# `verified` = I opened this URL on the stated date and confirmed it returns
+#              relevant readable content.
+# Everything else is a CANDIDATE and must be confirmed by Agent 1 at run time.
+# Do not present an unverified URL as evidence of anything.
+# ---------------------------------------------------------------------------
+
+category: developer_productivity_tools
+locked_on: "2026-08-10"
+
+# Tried against each vendor domain, in order, before falling back to seeds.
+url_patterns:
+  security: ["/security", "/security/", "/trust", "/trust/security", "/trust-center"]
+  privacy:  ["/privacy", "/privacy/", "/legal/privacy-policy", "/legal/privacy"]
+  pricing:  ["/pricing", "/pricing/", "/plans"]
+  docs:     ["/docs", "/docs/", "/help", "/support"]
+  terms:    ["/terms", "/legal/terms", "/terms-of-service"]
+
+vendors:
+
+  # --- Tier 1: rich, well-structured pages. These prove the pipeline works. ---
+
+  - name: GitLab
+    slug: gitlab
+    difficulty: rich
+    seeds:
+      product:  "https://about.gitlab.com/"
+      pricing:  "https://about.gitlab.com/pricing/"
+      security: "https://about.gitlab.com/security/"     # verified 2026-08-10
+      privacy:  "https://about.gitlab.com/privacy/"
+      docs:     "https://docs.gitlab.com/"
+      status:   "https://status.gitlab.com/"
+    verified: ["security"]
+    observed_2026_08_10: >
+      Security page states certifications in full sentences: "GitLab maintains a
+      SOC 2 Type 2 report..." and "GitLab maintains ISO/IEC 27001:2022
+      certification...". Note the spelling "Type 2", not "Type II" — this is why
+      the term dictionary carries both. No uptime, residency or encryption text
+      on the security page.
+
+  - name: Linear
+    slug: linear
+    difficulty: rich
+    seeds:
+      product:  "https://linear.app/"
+      pricing:  "https://linear.app/pricing"
+      security: "https://linear.app/security"            # verified 2026-08-10
+      privacy:  "https://linear.app/privacy"
+      docs:     "https://linear.app/docs"
+      status:   "https://status.linear.app/"
+    verified: ["security"]
+    observed_2026_08_10: >
+      Cleanest structure of the seven. Heading "SOC 2 compliance" followed by a
+      real sentence; "Multi-region hosting" gives explicit data residency
+      ("European Union or the United States"); "Data encryption" gives TLS 1.2
+      and AES 256-bit. Expect High confidence on security and privacy.
+
+  - name: Sentry
+    slug: sentry
+    difficulty: rich
+    seeds:
+      product:  "https://sentry.io/welcome/"
+      pricing:  "https://sentry.io/pricing/"
+      security: "https://sentry.io/security/"            # verified 2026-08-10
+      privacy:  "https://sentry.io/privacy/"
+      docs:     "https://docs.sentry.io/"
+      status:   "https://status.sentry.io/"              # verified 2026-08-10
+    verified: ["security", "status"]
+    observed_2026_08_10: >
+      Security page lists SOC 2 Type I and II and ISO 27001, and states reports
+      are "available to customers ... upon request" — i.e. the evidence itself is
+      gated, which is a genuine finding worth flagging for manual follow-up.
+      STATUS PAGE IS THE IMPORTANT ONE: it renders real per-component uptime in
+      readable text ("99.99% uptime", "All Systems Operational") plus separate US
+      and EU ingestion components. Proof that status pages are worth collecting.
+
+  # --- Tier 2: awkward shapes. These exercise the "flag, don't guess" path. ---
+
+  - name: Postman
+    slug: postman
+    difficulty: awkward
+    seeds:
+      product:  "https://www.postman.com/product/what-is-postman/"
+      pricing:  "https://www.postman.com/pricing/"
+      security: "https://www.postman.com/trust/security/"  # verified 2026-08-10
+      privacy:  "https://www.postman.com/legal/privacy-policy/"
+      docs:     "https://learning.postman.com/docs/introduction/overview/"
+      status:   "https://status.postman.com/"
+    verified: ["security"]
+    observed_2026_08_10: >
+      Certifications appear as a bare list under "Regulatory compliance and
+      standards" with no explanatory sentence — the block matches but has almost
+      no body text, which should score Medium, not High. Only vendor of the seven
+      that stated an uptime figure on its security page ("a 99.9% SLA on our
+      Enterprise plan") and it also states residency ("AWS servers in the EU and
+      the U.S."). Note "SOC 2 and 3" — another dictionary variant.
+
+  - name: Atlassian
+    slug: atlassian
+    difficulty: awkward
+    seeds:
+      product:  "https://www.atlassian.com/software/jira"
+      pricing:  "https://www.atlassian.com/software/jira/pricing"
+      security: "https://www.atlassian.com/trust/security"  # verified 2026-08-10
+      privacy:  "https://www.atlassian.com/legal/privacy-policy"
+      docs:     "https://support.atlassian.com/"
+      status:   "https://status.atlassian.com/"
+    verified: ["security"]
+    observed_2026_08_10: >
+      THE KEY TEST CASE. Heading "Our compliance certifications" exists, but the
+      certifications themselves are IMAGES — the only text is alt-text such as
+      "AICPA SOC logo". A text-only extractor must return Low confidence with a
+      "logos only, verify manually" flag. If our system ever reports High
+      confidence for Atlassian security, the extractor is lying and must be fixed.
+      SLA is referenced by link only, with no figure.
+
+  # --- Tier 3: genuinely hard. These are where the limitations note comes from. ---
+
+  - name: GitHub
+    slug: github
+    difficulty: hard
+    seeds:
+      product:  "https://github.com/features"
+      pricing:  "https://github.com/pricing"
+      security: "https://github.com/security"            # verified 2026-08-10 (thin)
+      trust:    "https://github.com/trust-center"        # verified 2026-08-10 (thin)
+      privacy:  "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+      docs:     "https://docs.github.com/"
+      status:   "https://www.githubstatus.com/"
+    verified: ["security", "trust"]
+    observed_2026_08_10: >
+      Both the obvious URLs are dead ends for due-diligence purposes.
+      /trust-center contains trust principles and AI commitments but NO
+      certifications, residency, SLA or encryption text. /security contains only
+      a marketing line about the API ("GitHub's API stays secure with ISO, SOC 2,
+      and GDPR") which is NOT a platform-level claim and must not be recorded as
+      one. Correct output: NOT_FOUND + review flag "certifications not published
+      on public pages; request trust portal access". This vendor is the strongest
+      argument in the whole project for why a human must stay in the loop.
+
+  - name: JetBrains
+    slug: jetbrains
+    difficulty: hard
+    seeds:
+      product:  "https://www.jetbrains.com/idea/"
+      pricing:  "https://www.jetbrains.com/idea/buy/"
+      security: "https://www.jetbrains.com/security/"    # CANDIDATE - not yet verified
+      privacy:  "https://www.jetbrains.com/legal/docs/privacy/privacy/"
+      docs:     "https://www.jetbrains.com/help/idea/"
+      status:   "https://status.jetbrains.com/"
+    verified: []
+    observed_2026_08_10: >
+      NOT YET VERIFIED — the verification fetch did not complete on 2026-08-10.
+      All URLs here are candidates. Agent 1 must confirm them at run time and
+      record the http_status. Expected shape: legal-document style pages rather
+      than a marketing trust centre, which will produce long low-signal blocks.
+
+  # --- Held in reserve, only if a vendor above fails outright ---
+alternates:
+  - { name: Docker,    slug: docker,    homepage: "https://www.docker.com/" }
+  - { name: CircleCI,  slug: circleci,  homepage: "https://circleci.com/" }
+  - { name: Vercel,    slug: vercel,    homepage: "https://vercel.com/" }

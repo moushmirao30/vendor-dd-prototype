@@ -1,0 +1,21 @@
+# Vendor Due-Diligence Research Workflow Prototype — dependencies
+#
+# Deliberately small. Everything here is free, pure-Python where possible,
+# and installs on a standard laptop with no GPU, no API key and no account.
+# See docs/assumptions_limitations.md for why heavier options were rejected.
+
+streamlit>=1.36        # the review interface (turns a Python script into a web page)
+pandas>=2.2            # tabular handling + CSV export
+requests>=2.32         # fetching public pages over HTTPS
+beautifulsoup4>=4.12   # turning HTML into a searchable structure
+lxml>=5.2              # faster/more forgiving HTML parser used by BeautifulSoup
+trafilatura>=1.12      # clean main-content text extraction (strips nav/footer/ads)
+PyYAML>=6.0            # reading the config/*.yaml files
+pytest>=8.0            # running the test suite in tests/
+
+# NOT included, on purpose:
+#   openai / anthropic     -> no paid API dependency; extraction is rule-based
+#   sentence-transformers  -> no embedding model download (~90MB+) needed at this scale
+#   faiss / chromadb       -> no vector store; 7 vendors do not need retrieval
+#   selenium / playwright  -> no JavaScript rendering; see limitations note
+#   langgraph / crewai     -> a 3-step linear flow does not need an orchestration framework

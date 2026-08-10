@@ -1,0 +1,184 @@
+# ---------------------------------------------------------------------------
+# field_dictionary.yaml — the heart of the Evidence Extraction Agent.
+#
+# HOW IT WORKS (read this before changing anything):
+#   A page is first cut into blocks (one heading + the paragraphs under it).
+#   For each field below, we lower-case a block's text and ask: does it contain
+#   ANY of these terms? If yes, we keep the WHOLE block as evidence — heading,
+#   snippet and the terms that matched.
+#
+#   This is a plain substring test, not a regular expression. That is deliberate.
+#   A term is a plain phrase anyone can read, and a non-technical reviewer can
+#   add one without touching Python.
+#
+# HOW TO EXTEND IT SAFELY:
+#   - Add the phrase in LOWER CASE. Matching lower-cases the page text.
+#   - Add real observed variants, not guesses. Every term marked "# observed"
+#     was copied from a real vendor page on 2026-08-10.
+#   - Prefer specific phrases. A term like "data" would match every page and
+#     make the field meaningless.
+#   - `negative_terms` suppress a block that is clearly not evidence
+#     (cookie banners, blog headlines arguing about a standard).
+# ---------------------------------------------------------------------------
+
+# ===== CORE FIELDS (these five are scored for vendor confidence) =====
+
+security_trust:
+  label: "Security and trust information"
+  terms:
+    - "soc 2"                          # observed: Linear, Sentry, Postman, GitHub
+    - "soc2"
+    - "soc 2 type ii"                  # observed: Linear, Sentry
+    - "soc 2 type 2"                   # observed: GitLab  <-- different spelling!
+    - "soc 2 and 3"                    # observed: Postman <-- different again
+    - "service organization controls"  # observed: Linear (spelled out, no "SOC")
+    - "aicpa"                          # observed: Atlassian (image alt-text only)
+    - "iso 27001"                      # observed: Sentry, GitHub
+    - "iso/iec 27001"                  # observed: GitLab, Linear
+    - "iso 27017"
+    - "iso 27018"
+    - "fedramp"                        # observed: Atlassian (logo)
+    - "pci dss"                        # observed: Atlassian, Postman
+    - "hipaa"                          # observed: Postman
+    - "csa star"
+    - "cloud security alliance"        # observed: Postman
+    - "trust center"                   # observed: GitHub
+    - "penetration test"
+    - "pen test"
+    - "bug bounty"
+    - "vulnerability disclosure"
+    - "responsible disclosure"
+    - "single sign-on"
+    - "saml"
+    - "scim"
+    - "two-factor"
+    - "multi-factor"
+  negative_terms:
+    - "cookie preferences"
+    - "subscribe to our newsletter"
+
+privacy_data_handling:
+  label: "Privacy and data-handling references"
+  terms:
+    - "privacy policy"
+    - "gdpr"                           # observed: GitHub, Postman
+    - "ccpa"                           # observed: Postman
+    - "data processing addendum"
+    - "data processing agreement"
+    - "subprocessor"
+    - "sub-processor"
+    - "data retention"
+    - "personal data"
+    - "personal information"
+    - "standard contractual clauses"
+    - "data subject"
+    - "right to erasure"
+    - "data deletion"
+    # Residency is recorded separately below but also counts as privacy evidence:
+    - "data residency"
+    - "stored in the european union"   # observed: Linear
+    - "hosted on aws servers in the eu"  # observed: Postman
+  negative_terms:
+    - "cookie preferences"
+
+support_documentation:
+  label: "Support and documentation availability"
+  terms:
+    - "help center"
+    - "support portal"
+    - "knowledge base"
+    - "documentation"
+    - "api reference"
+    - "community forum"
+    - "support plan"
+    - "response time"
+    - "24/7"
+    - "24x7"
+    - "premium support"
+    - "enterprise support"
+    - "contact support"
+    - "submit a ticket"
+
+integrations_api:
+  label: "Integration or API availability"
+  terms:
+    - "rest api"
+    - "graphql"
+    - "webhook"
+    - "public api"
+    - "api reference"
+    - "api documentation"
+    - "integrations"
+    - "marketplace"
+    - "oauth"
+    - "sdk"
+    - "command line interface"
+    - "cli"
+    - "zapier"
+
+pricing_availability:
+  label: "Pricing or plan availability"
+  terms:
+    - "per user"
+    - "per seat"
+    - "per month"
+    - "per year"
+    - "billed annually"
+    - "free plan"
+    - "free tier"
+    - "free forever"
+    - "enterprise plan"
+    - "contact sales"
+    - "start free trial"
+    - "pricing"
+  negative_terms:
+    - "pricing blog"
+
+# ===== SUPPLEMENTARY FIELDS (collected and reported, not scored) =====
+
+data_residency:
+  label: "Data residency / storage location"
+  scored: false
+  terms:
+    - "data residency"
+    - "data region"
+    - "multi-region"                          # observed: Linear
+    - "stored in the european union"          # observed: Linear
+    - "eu region"                             # observed: Sentry status page
+    - "us region"
+    - "data location"
+    - "aws servers in the eu"                 # observed: Postman
+    - "where your data is stored"
+
+encryption:
+  label: "Encryption practices"
+  scored: false
+  terms:
+    - "aes-256"                               # observed: Postman (AES-256-GCM)
+    - "aes 256"                               # observed: Linear, Sentry
+    - "aes-256bit"
+    - "tls 1.2"                               # observed: Linear
+    - "tls 1.3"
+    - "encrypted at rest"                     # observed: Sentry
+    - "encryption in transit"
+    - "encrypts data in-transit"              # observed: Linear
+    - "forces https"                          # observed: Linear
+
+uptime_reliability:
+  label: "Uptime, SLA and reliability"
+  scored: false
+  # NOTE FROM COLLECTION (2026-08-10): of 7 vendor SECURITY pages, only Postman
+  # stated an uptime figure. Uptime lives on STATUS pages, not security pages.
+  # Sentry's status page yields per-component figures in plain text.
+  terms:
+    - "uptime"                                # observed: Sentry status page
+    - "% uptime"
+    - "99.9"                                  # observed: Postman ("99.9% SLA")
+    - "99.99"                                 # observed: Sentry status page
+    - "service level agreement"               # observed: Atlassian (link only)
+    - "sla"
+    - "all systems operational"               # observed: Sentry status page
+    - "incident history"
+    - "disaster recovery"
+    - "business continuity"                   # observed: Sentry
+    - "high availability"                     # observed: Sentry

@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------
+# settings.yaml — every tunable number in the prototype lives here.
+#
+# WHY THIS FILE EXISTS: a reviewer should be able to see and change how the
+# prototype behaves (how politely it fetches, how it scores confidence)
+# without opening a single .py file. Behaviour lives in code; POLICY lives here.
+# ---------------------------------------------------------------------------
+
+fetch:
+  # Identifies us honestly to every server we contact. Never impersonate a browser.
+  user_agent: "FQL-VendorDD-Prototype/0.1 (First Quadrant Labs internship research prototype)"
+  delay_seconds_per_domain: 2.0   # wait 2s between requests to the SAME domain
+  timeout_seconds: 20             # give up on a slow page rather than hanging
+  max_pages_per_vendor: 10        # hard ceiling — this is research, not a crawl
+  respect_robots_txt: true        # checked with urllib.robotparser before every fetch
+  follow_redirects: true
+  max_redirects: 5
+
+cache:
+  # Every page is saved to disk the first time it is fetched. Later runs read
+  # from disk. Consequence: after one collection run the ENTIRE demo replays
+  # offline, and a vendor changing their site cannot break your demo.
+  enabled: true
+  dir: "data/cache/html"
+  reuse_existing: true
+
+extraction:
+  backend: "rules"                # "rules" (default, free) | "llm" (optional, off)
+  snippet_max_chars: 600          # how much of a matched block to keep as evidence
+  min_body_chars_for_high: 40     # below this, a match is heading-only -> Low
+  max_evidence_per_field: 3       # keep briefs readable; don't dump every match
+
+confidence:
+  # See docs/confidence_rules.md for the plain-English version of this.
+  authoritative_source_types: ["security", "privacy", "pricing", "status", "terms"]
+  secondary_source_types:     ["product", "docs", "integrations", "blog"]
+  field_score:  { High: 2, Medium: 1, Low: 0, NOT_FOUND: 0 }
+  core_fields:  ["security_trust", "privacy_data_handling", "support_documentation",
+                 "integrations_api", "pricing_availability"]
+  vendor_thresholds: { High: 8, Medium: 4 }   # out of a maximum of 10
+
+output:
+  briefs_dir: "data/briefs"
+  corpus_dir: "data/corpus"
+  export_formats: ["json", "csv", "markdown"]

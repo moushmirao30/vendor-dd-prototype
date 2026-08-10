@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Cached raw HTML can be large and is regenerable by re-running Agent 1.
+# Keep the folder in git (via .gitkeep) but not its contents.
+data/cache/html/*
+!data/cache/html/.gitkeep
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local secrets (none are required by this project, but never commit one)
+.env
