@@ -4,7 +4,10 @@
 # and installs on a standard laptop with no GPU, no API key and no account.
 # See docs/assumptions_limitations.md for why heavier options were rejected.
 
-streamlit>=1.36        # the review interface (turns a Python script into a web page)
+# Streamlit is pinned to >=1.49 because the app uses the modern `width=` API.
+# `use_container_width=` was deprecated with a removal date of 2025-12-31 and is
+# not used anywhere in this project.
+streamlit>=1.49,<2.0   # the review interface (turns a Python script into a web page)
 pandas>=2.2            # tabular handling + CSV export
 requests>=2.32         # fetching public pages over HTTPS
 beautifulsoup4>=4.12   # turning HTML into a searchable structure

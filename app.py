@@ -14,14 +14,27 @@ Run with:  streamlit run app.py
 import json
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 import yaml
 
 ROOT = Path(__file__).parent
 CONFIG = ROOT / "config"
 
-st.set_page_config(page_title="Vendor Due-Diligence Research Prototype",
-                   page_icon="::", layout="wide")
+st.set_page_config(page_title="Vendor Due-Diligence Research Prototype", layout="wide")
+
+# Row height used to give tables an explicit pixel height.
+# WHY THIS EXISTS: st.dataframe draws its cells into an HTML <canvas>. Inside a
+# st.tabs panel the canvas can mount before the browser has resolved the panel's
+# size, and it then collapses to zero height — the toolbar renders but the rows
+# are invisible. Passing an explicit height stops that. Verified in Chrome on
+# 2026-08-10 against Streamlit 1.61.
+ROW_PX = 36
+
+
+def table_height(n_rows: int) -> int:
+    """Explicit pixel height for a table of n_rows (+1 for the header row)."""
+    return min(ROW_PX * (n_rows + 1) + 4, 520)
 
 
 @st.cache_data
@@ -64,9 +77,9 @@ with st.sidebar:
 
     st.divider()
     st.subheader("Run the workflow")
-    st.button("Agent 1 - Collect sources", use_container_width=True, disabled=True)
-    st.button("Agent 2 - Extract evidence", use_container_width=True, disabled=True)
-    st.button("Agent 3 - Review and brief", use_container_width=True, disabled=True)
+    st.button("Agent 1 - Collect sources", width="stretch", disabled=True)
+    st.button("Agent 2 - Extract evidence", width="stretch", disabled=True)
+    st.button("Agent 3 - Review and brief", width="stretch", disabled=True)
     st.caption("Buttons activate as each agent is built (Days 4-16).")
 
     st.divider()
@@ -82,16 +95,42 @@ tab_sources, tab_steps, tab_evidence, tab_brief, tab_export = st.tabs(
 
 with tab_sources:
     st.subheader(f"Public sources for {vendor['name']}")
+
+    verified = vendor.get("verified", [])
     rows = [
         {
-            "source_type": stype,
-            "url": url,
-            "status": "verified 2026-08-10" if stype in vendor.get("verified", [])
-                      else "candidate - to confirm at run time",
+            "Page type": stype,
+            "URL": url,
+            "Status": "verified 2026-08-10" if stype in verified
+                      else "candidate - confirmed at run time",
         }
         for stype, url in vendor["seeds"].items()
     ]
-    st.dataframe(rows, use_container_width=True, hide_index=True)
+    df = pd.DataFrame(rows)
+
+    c1, c2 = st.columns(2)
+    c1.metric("Public sources listed", len(rows))
+    c2.metric("Manually verified so far", len(verified))
+
+    st.dataframe(
+        df,
+        width="stretch",
+        hide_index=True,
+        height=table_height(len(df)),
+        column_config={
+            # Show the FULL url, not just the host. Four of GitLab's six pages
+            # live on about.gitlab.com — abbreviating to the host made them look
+            # identical, which defeats the point of an auditable source list.
+            "URL": st.column_config.LinkColumn("URL", width="large"),
+            "Status": st.column_config.TextColumn("Status", width="medium"),
+        },
+    )
+    st.caption(
+        "Only 'verified' rows have been opened and read by a human. Everything else "
+        "is a candidate URL that the Source Collection Agent must confirm, recording "
+        "its HTTP status in the corpus."
+    )
+
     if vendor.get("observed_2026_08_10"):
         with st.expander("Collection notes from manual verification"):
             st.write(vendor["observed_2026_08_10"])
@@ -123,8 +162,8 @@ with tab_export:
     c1, c2, c3 = st.columns(3)
     c1.download_button("Download JSON", json.dumps({"status": "not generated yet"}, indent=2),
                        file_name=f"{vendor['slug']}_brief.json", disabled=True,
-                       use_container_width=True)
+                       width="stretch")
     c2.download_button("Download CSV", "", file_name=f"{vendor['slug']}_brief.csv",
-                       disabled=True, use_container_width=True)
+                       disabled=True, width="stretch")
     c3.download_button("Download Markdown", "", file_name=f"{vendor['slug']}_brief.md",
-                       disabled=True, use_container_width=True)
+                       disabled=True, width="stretch")
