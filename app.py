@@ -1,24 +1,25 @@
 """
 app.py — the Streamlit review interface.
 
-STATUS: Day 3 skeleton. The layout, navigation and export buttons are real;
-the data is placeholder until Agents 1-3 are wired in (Days 4-16).
+STATUS: Agent 1 (Source Collection) is live. Agents 2 and 3 are stubs.
 
-WHY BUILD THE SHELL FIRST: this screen is what gets demonstrated and screenshotted.
-Building it on day 3 means every later piece of work has somewhere obvious to
-plug in, and there is never a day where the project has nothing to show.
+WHY THE SHELL WAS BUILT FIRST: this screen is what gets demonstrated and
+screenshotted. Building it early means every later piece of work has somewhere
+obvious to plug in, and there is never a day where the project has nothing to show.
 
 Run with:  streamlit run app.py
 """
 
 import json
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 import yaml
 
-from src.agent1_collect import collect_for_vendor, save_corpus
+from src.agent1_collect import (collect_for_vendor, save_corpus, save_run,
+                                load_previous_run)
 from src.fetch import PageFetcher
 
 ROOT = Path(__file__).parent
@@ -139,13 +140,23 @@ if run_agent1:
             max_requests=settings["fetch"]["max_requests_per_vendor"],
         )
         path = save_corpus(records, ROOT / settings["output"]["corpus_dir"], vendor["slug"])
+        save_run(steps, ROOT / settings["output"]["corpus_dir"], vendor["slug"],
+                 ran_on=datetime.now().isoformat(timespec="seconds"))
     st.session_state["collected"][vendor["slug"]] = {
         "records": [r.to_dict() for r in records],
         "steps": [s.__dict__ for s in steps],
         "corpus_path": str(path.relative_to(ROOT)),
+        "ran_on": datetime.now().isoformat(timespec="seconds"),
+        "from_disk": False,
     }
 
+# REPLAY: if this vendor was collected in an earlier session, load that run from
+# disk. The brief asks the interface to "run or replay the workflow"; without
+# this, refreshing the browser wiped the audit trail and the app looked unused
+# even though the corpus was saved.
 collected = st.session_state["collected"].get(vendor["slug"])
+if collected is None:
+    collected = load_previous_run(ROOT / settings["output"]["corpus_dir"], vendor["slug"])
 
 with tab_sources:
     st.subheader(f"Public sources for {vendor['name']}")
@@ -164,7 +175,8 @@ with tab_sources:
 
     c1, c2 = st.columns(2)
     c1.metric("Public sources listed", len(rows))
-    c2.metric("Manually verified so far", len(verified))
+    c2.metric("Human-verified by hand", len(verified),
+              help="URLs a person opened and read on 2026-08-10. Separate from what Agent 1 confirms automatically at run time.")
 
     st.dataframe(
         df,
@@ -191,11 +203,16 @@ with tab_sources:
 
     if collected:
         st.divider()
-        st.markdown("##### Pages actually collected")
+        origin = ("loaded from a previous run on " + collected.get("ran_on", "unknown")
+                  if collected.get("from_disk") else "collected in this session")
+        st.markdown(f"##### Pages actually collected  \n<small>{origin}</small>",
+                    unsafe_allow_html=True)
         corpus = pd.DataFrame(collected["records"])
         view = corpus[["source_type", "source_url", "page_title", "http_status",
                        "date_collected"]].copy()
         view["characters"] = corpus["collected_text"].str.len()
+        if "text_extractor" in corpus:
+            view["text via"] = corpus["text_extractor"]
         st.dataframe(
             view, width="stretch", hide_index=True, height=table_height(len(view)),
             column_config={"source_url": st.column_config.LinkColumn("URL", width="large")},
@@ -205,7 +222,7 @@ with tab_steps:
     st.subheader("What each agent did")
 
     st.markdown("**Step 1 — Source Collection Agent** · finds and stores public URLs")
-    if not collected:
+    if not collected or not collected.get("steps"):
         st.progress(0.0, text="not run yet — press 'Agent 1' in the sidebar")
     else:
         steps_df = pd.DataFrame(collected["steps"])

@@ -180,3 +180,47 @@ def save_corpus(records: list[SourceRecord], out_dir: Path, slug: str) -> Path:
         encoding="utf-8",
     )
     return path
+
+
+def save_run(steps: list[CollectionStep], out_dir: Path, slug: str, ran_on: str) -> Path:
+    """
+    Write the audit trail alongside the corpus.
+
+    WHY THIS EXISTS: the project brief requires the interface to let a reviewer
+    "run OR REPLAY the workflow" and "see each agent step". Keeping the steps
+    only in Streamlit's session state meant that refreshing the browser erased
+    the entire audit trail, and the app looked as though it had never been run
+    even though the corpus was sitting on disk. Persisting the run makes replay
+    real: a reviewer can open the app tomorrow and see exactly what happened.
+    """
+    import json
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{slug}_run.json"
+    path.write_text(
+        json.dumps({"vendor_slug": slug, "ran_on": ran_on,
+                    "steps": [s.__dict__ for s in steps]},
+                   indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return path
+
+
+def load_previous_run(corpus_dir: Path, slug: str) -> dict | None:
+    """Load a saved corpus + audit trail, so the UI can replay without refetching."""
+    import json
+
+    corpus_path = corpus_dir / f"{slug}.json"
+    if not corpus_path.exists():
+        return None
+
+    run_path = corpus_dir / f"{slug}_run.json"
+    run = json.loads(run_path.read_text(encoding="utf-8")) if run_path.exists() else {}
+
+    return {
+        "records": json.loads(corpus_path.read_text(encoding="utf-8")),
+        "steps": run.get("steps", []),
+        "ran_on": run.get("ran_on", "unknown"),
+        "corpus_path": str(corpus_path.name),
+        "from_disk": True,
+    }

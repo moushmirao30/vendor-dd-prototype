@@ -117,3 +117,30 @@ def test_page_cap_is_respected():
     fetcher = FakeFetcher(works=all_urls)
     records, _ = collect_for_vendor(GITLAB, PATTERNS, fetcher, max_pages=2)
     assert len(records) <= 2
+
+
+def test_a_saved_run_can_be_replayed_without_refetching(tmp_path):
+    """
+    The brief requires the interface to "run OR REPLAY the workflow". Keeping
+    results only in Streamlit session state meant a browser refresh erased the
+    entire audit trail while the corpus sat on disk, so the app looked as though
+    it had never been run.
+    """
+    from src.agent1_collect import save_corpus, save_run, load_previous_run
+
+    fetcher = FakeFetcher(works={"https://about.gitlab.com/security"})
+    records, steps = collect_for_vendor(GITLAB, PATTERNS, fetcher)
+
+    save_corpus(records, tmp_path, "gitlab")
+    save_run(steps, tmp_path, "gitlab", ran_on="2026-08-10T16:00:00")
+
+    replayed = load_previous_run(tmp_path, "gitlab")
+    assert replayed is not None and replayed["from_disk"] is True
+    assert len(replayed["records"]) == len(records)
+    assert len(replayed["steps"]) == len(steps), "the audit trail must survive a refresh"
+    assert replayed["ran_on"] == "2026-08-10T16:00:00"
+
+
+def test_replay_returns_none_for_a_vendor_never_collected(tmp_path):
+    from src.agent1_collect import load_previous_run
+    assert load_previous_run(tmp_path, "never-run") is None
