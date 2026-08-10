@@ -18,6 +18,9 @@ import pandas as pd
 import streamlit as st
 import yaml
 
+from src.agent1_collect import collect_for_vendor, save_corpus
+from src.fetch import PageFetcher
+
 ROOT = Path(__file__).parent
 CONFIG = ROOT / "config"
 
@@ -38,12 +41,17 @@ def table_height(n_rows: int) -> int:
 
 
 @st.cache_data
-def load_vendors() -> dict:
-    return yaml.safe_load((CONFIG / "vendors.yaml").read_text(encoding="utf-8"))
+def load_yaml(name: str) -> dict:
+    return yaml.safe_load((CONFIG / name).read_text(encoding="utf-8"))
 
 
-cfg = load_vendors()
+cfg = load_yaml("vendors.yaml")
+settings = load_yaml("settings.yaml")
 vendors = cfg["vendors"]
+
+# Results of each agent run, keyed by vendor slug, kept for the session so the
+# reviewer can switch vendors and come back without re-fetching.
+st.session_state.setdefault("collected", {})
 
 # ---------------------------------------------------------------------------
 # Persistent disclaimer. The brief requires the output to state plainly that
@@ -77,10 +85,18 @@ with st.sidebar:
 
     st.divider()
     st.subheader("Run the workflow")
-    st.button("Agent 1 - Collect sources", width="stretch", disabled=True)
+
+    run_agent1 = st.button("Agent 1 - Collect sources", width="stretch", type="primary")
+    st.caption(
+        f"Fetches up to {settings['fetch']['max_pages_per_vendor']} public pages "
+        f"for this vendor, {settings['fetch']['delay_seconds_per_domain']}s apart, "
+        "after checking robots.txt. Cached after the first run, so a second run "
+        "is instant and works offline."
+    )
+
     st.button("Agent 2 - Extract evidence", width="stretch", disabled=True)
     st.button("Agent 3 - Review and brief", width="stretch", disabled=True)
-    st.caption("Buttons activate as each agent is built (Days 4-16).")
+    st.caption("Agents 2 and 3 activate as they are built (Days 9-16).")
 
     st.divider()
     st.caption(f"Difficulty tier: **{vendor['difficulty']}**")
@@ -92,6 +108,26 @@ with st.sidebar:
 tab_sources, tab_steps, tab_evidence, tab_brief, tab_export = st.tabs(
     ["1 · Sources", "2 · Agent steps", "3 · Evidence", "4 · Vendor brief", "Export"]
 )
+
+# ---------------------------------------------------------------------------
+# Run Agent 1 when asked. Everything it did is stored so the UI can show the
+# audit trail rather than just the result.
+# ---------------------------------------------------------------------------
+if run_agent1:
+    fetcher = PageFetcher(settings, ROOT)
+    with st.spinner(f"Collecting public sources for {vendor['name']}…"):
+        records, steps = collect_for_vendor(
+            vendor, cfg["url_patterns"], fetcher,
+            max_pages=settings["fetch"]["max_pages_per_vendor"],
+        )
+        path = save_corpus(records, ROOT / settings["output"]["corpus_dir"], vendor["slug"])
+    st.session_state["collected"][vendor["slug"]] = {
+        "records": [r.to_dict() for r in records],
+        "steps": [s.__dict__ for s in steps],
+        "corpus_path": str(path.relative_to(ROOT)),
+    }
+
+collected = st.session_state["collected"].get(vendor["slug"])
 
 with tab_sources:
     st.subheader(f"Public sources for {vendor['name']}")
@@ -135,17 +171,50 @@ with tab_sources:
         with st.expander("Collection notes from manual verification"):
             st.write(vendor["observed_2026_08_10"])
 
+    if collected:
+        st.divider()
+        st.markdown("##### Pages actually collected")
+        corpus = pd.DataFrame(collected["records"])
+        view = corpus[["source_type", "source_url", "page_title", "http_status",
+                       "date_collected"]].copy()
+        view["characters"] = corpus["collected_text"].str.len()
+        st.dataframe(
+            view, width="stretch", hide_index=True, height=table_height(len(view)),
+            column_config={"source_url": st.column_config.LinkColumn("URL", width="large")},
+        )
+
 with tab_steps:
     st.subheader("What each agent did")
-    st.info("Populated once the agents run. Each step will show its inputs, its "
-            "outputs and anything it skipped, so the run can be audited.")
+
+    st.markdown("**Step 1 — Source Collection Agent** · finds and stores public URLs")
+    if not collected:
+        st.progress(0.0, text="not run yet — press 'Agent 1' in the sidebar")
+    else:
+        steps_df = pd.DataFrame(collected["steps"])
+        found = int((steps_df["outcome"] == "found").sum())
+        skipped = int((steps_df["action"] == "skip").sum())
+        st.progress(1.0, text=f"complete — {found} pages collected, {skipped} not found")
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric("URLs tried", len(steps_df[steps_df["action"] != "skip"]))
+        m2.metric("Pages collected", found)
+        m3.metric("Flagged for follow-up", skipped)
+
+        st.caption(
+            "Every URL this agent tried, in order. `probe` = guessed from a URL "
+            "pattern; `seed-fallback` = taken from the curated list because "
+            "discovery failed; `skip` = never resolved, needs a human."
+        )
+        st.dataframe(steps_df, width="stretch", hide_index=True,
+                     height=table_height(len(steps_df)))
+        st.caption(f"Corpus written to `{collected['corpus_path']}`")
+
     for n, (name, role) in enumerate(
-        [("Source Collection Agent", "finds and stores public URLs"),
-         ("Evidence Extraction Agent", "pulls structured fields from those pages"),
-         ("Brief Review Agent", "checks usability, flags gaps, writes the brief")], 1
+        [("Evidence Extraction Agent", "pulls structured fields from those pages"),
+         ("Brief Review Agent", "checks usability, flags gaps, writes the brief")], 2
     ):
         st.markdown(f"**Step {n} — {name}** · {role}")
-        st.progress(0.0, text="not run yet")
+        st.progress(0.0, text="not built yet")
 
 with tab_evidence:
     st.subheader("Extracted evidence")

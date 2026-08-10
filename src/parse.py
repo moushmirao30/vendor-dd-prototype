@@ -67,6 +67,38 @@ def _clean(text: str) -> str:
     return " ".join(text.split())
 
 
+def page_title(html: str) -> str:
+    """The page's <title>, used as `page_title` in the corpus."""
+    soup = BeautifulSoup(html, "lxml")
+    return _clean(soup.title.get_text()) if soup.title else ""
+
+
+def main_text(html: str) -> str:
+    """
+    The page's readable main content, with navigation, footers and boilerplate
+    stripped. Stored as `collected_text` in the corpus.
+
+    trafilatura does this well but is not always installed and occasionally
+    returns nothing on unusual markup, so there is a BeautifulSoup fallback.
+    Evidence extraction never uses this text — it works from the raw HTML so it
+    can keep heading structure. This is for the corpus and for human reading.
+    """
+    try:
+        import trafilatura
+
+        extracted = trafilatura.extract(html, include_comments=False,
+                                        include_tables=True, no_fallback=False)
+        if extracted and extracted.strip():
+            return extracted.strip()
+    except Exception:
+        pass  # fall through to the BeautifulSoup path
+
+    soup = BeautifulSoup(html, "lxml")
+    for tag in soup.find_all(NOISE_TAGS):
+        tag.decompose()
+    return _clean(soup.get_text(" "))
+
+
 def page_to_blocks(html: str) -> list[Block]:
     """
     Split an HTML page into Block objects.
