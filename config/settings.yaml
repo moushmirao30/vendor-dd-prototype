@@ -11,7 +11,8 @@ fetch:
   user_agent: "FQL-VendorDD-Prototype/0.1 (First Quadrant Labs internship research prototype)"
   delay_seconds_per_domain: 2.0   # wait 2s between requests to the SAME domain
   timeout_seconds: 20             # give up on a slow page rather than hanging
-  max_pages_per_vendor: 10        # hard ceiling — this is research, not a crawl
+  max_pages_per_vendor: 10        # how many pages we KEEP per vendor
+  max_requests_per_vendor: 20     # how many requests we MAKE per vendor (stricter cap)
   respect_robots_txt: true        # checked with urllib.robotparser before every fetch
   follow_redirects: true
   max_redirects: 5

@@ -67,3 +67,56 @@ def test_source_urls_are_distinguishable_from_one_another():
     urls = at.dataframe[0].value["URL"].tolist()
     assert len(set(urls)) == len(urls), "every source URL must be unique and full-length"
     assert all(u.count("/") >= 3 for u in urls), "URLs must include their path, not just the host"
+
+
+def test_editing_a_config_file_is_picked_up_and_not_served_from_a_stale_cache(tmp_path):
+    """
+    Regression: app.py cached config by filename only, so an edit to
+    config/settings.yaml was ignored and the app crashed with
+    KeyError: 'max_requests_per_vendor' on a key that was already in the file.
+    The project promises reviewers that policy lives in YAML and is editable,
+    so a stale config cache is a correctness bug, not a performance detail.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("app_under_test", APP)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)   # Streamlit runs bare here; that is fine
+
+    settings = module.load_yaml("settings.yaml")
+    assert "max_requests_per_vendor" in settings["fetch"]
+    assert settings["fetch"]["max_requests_per_vendor"] <= 25, "request budget must stay small"
+
+
+def test_settings_keys_referenced_by_the_app_all_exist():
+    """Cheap guard against a config key being renamed in one place only."""
+    import yaml as _yaml
+    settings = _yaml.safe_load(
+        (Path(APP).parent / "config" / "settings.yaml").read_text(encoding="utf-8"))
+    for key in ("user_agent", "delay_seconds_per_domain", "timeout_seconds",
+                "max_pages_per_vendor", "max_requests_per_vendor", "respect_robots_txt"):
+        assert key in settings["fetch"], f"settings.yaml is missing fetch.{key}"
+    assert "corpus_dir" in settings["output"]
+
+
+def test_app_calls_agent1_with_arguments_it_actually_accepts():
+    """
+    Regression: app.py was updated to pass `max_requests=` in the same edit that
+    added the parameter to collect_for_vendor, but the running Streamlit process
+    still held the old module in sys.modules and raised
+    TypeError: unexpected keyword argument 'max_requests' at click time.
+    A signature contract test catches that class of drift in pytest instead of
+    in front of a reviewer.
+    """
+    import inspect
+    import sys as _sys
+    _sys.path.insert(0, str(Path(APP).parent))
+    from src.agent1_collect import collect_for_vendor
+
+    params = inspect.signature(collect_for_vendor).parameters
+    source = Path(APP).read_text(encoding="utf-8")
+
+    for kwarg in re.findall(r"collect_for_vendor\((.*?)\)", source, re.S):
+        for name in re.findall(r"(\w+)\s*=", kwarg):
+            assert name in params, f"app.py passes {name}= which collect_for_vendor lacks"
+
+    assert "max_requests" in params and "max_pages" in params

@@ -69,9 +69,19 @@ def collect_for_vendor(
     patterns: dict[str, list[str]],
     fetcher: PageFetcher,
     max_pages: int = 10,
+    max_requests: int = 20,
 ) -> tuple[list[SourceRecord], list[CollectionStep]]:
     """
     Collect every public page for one vendor.
+
+    `max_pages`    caps how many pages we KEEP.
+    `max_requests` caps how many requests we MAKE - a separate, stricter limit.
+
+    WHY BOTH: the first live run on 2026-08-10 made 25 requests to collect 2
+    pages, because a vendor where nothing resolves burns the full candidate list.
+    Capping only successes means the politest outcome (everything found on the
+    first try) makes the fewest requests and the rudest outcome makes the most.
+    That is backwards, so requests are capped directly.
 
     Returns (records, steps). `steps` is the human-readable audit trail; it is
     what makes this agent explainable to a non-technical reviewer rather than a
@@ -80,33 +90,43 @@ def collect_for_vendor(
     records: list[SourceRecord] = []
     steps: list[CollectionStep] = []
     resolved: dict[str, FetchResult] = {}
+    requests_made = 0
+
+    def outcome_of(result: FetchResult) -> str:
+        if result.ok:
+            return "found"
+        if not result.robots_allowed:
+            return result.robots_note or "disallowed by robots.txt"
+        return result.error or f"HTTP {result.status}"
 
     candidates = candidate_urls(vendor, patterns)
 
     # --- pass 1: try to discover each page type from URL patterns -----------
     for stype, urls in candidates.items():
+        if stype in resolved:
+            continue
         for url in urls:
-            if len(resolved) >= max_pages:
+            if len(resolved) >= max_pages or requests_made >= max_requests:
                 break
             result = fetcher.get(url)
-            steps.append(CollectionStep(
-                action="probe", source_type=stype, url=url, status=result.status,
-                outcome="found" if result.ok else (result.error or f"HTTP {result.status}"),
-            ))
+            requests_made += 0 if result.from_cache else 1
+            steps.append(CollectionStep(action="probe", source_type=stype, url=url,
+                                        status=result.status, outcome=outcome_of(result)))
             if result.ok:
                 resolved[stype] = result
                 break  # first working candidate wins; do not probe the rest
 
     # --- pass 2: fall back to the curated seed for anything not discovered ---
+    # Seeds are tried even if the request budget is spent: they are the URLs a
+    # human already verified, so they are the most valuable single request left.
     for stype, seed_url in vendor["seeds"].items():
         if stype in resolved or len(resolved) >= max_pages:
             continue
         result = fetcher.get(seed_url)
-        steps.append(CollectionStep(
-            action="seed-fallback", source_type=stype, url=seed_url,
-            status=result.status,
-            outcome="found" if result.ok else (result.error or f"HTTP {result.status}"),
-        ))
+        requests_made += 0 if result.from_cache else 1
+        steps.append(CollectionStep(action="seed-fallback", source_type=stype,
+                                    url=seed_url, status=result.status,
+                                    outcome=outcome_of(result)))
         if result.ok:
             resolved[stype] = result
 

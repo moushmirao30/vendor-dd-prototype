@@ -41,8 +41,24 @@ def table_height(n_rows: int) -> int:
 
 
 @st.cache_data
-def load_yaml(name: str) -> dict:
+def _read_yaml(name: str, mtime: float) -> dict:
+    """Cached YAML read. `mtime` is part of the cache key - see load_yaml."""
     return yaml.safe_load((CONFIG / name).read_text(encoding="utf-8"))
+
+
+def load_yaml(name: str) -> dict:
+    """
+    Read a config file, re-reading it whenever the file changes on disk.
+
+    WHY THE MTIME ARGUMENT: caching purely on the filename means an edit to
+    config/settings.yaml is ignored until the cache is cleared. That broke a run
+    on 2026-08-10 with `KeyError: 'max_requests_per_vendor'` - a key that was
+    already in the file. Worse, this project TELLS the reviewer that policy lives
+    in the YAML files and they can change it; a stale cache would make those
+    edits silently do nothing. Including the modification time in the cache key
+    makes "edit the YAML, rerun the app" work as documented.
+    """
+    return _read_yaml(name, (CONFIG / name).stat().st_mtime)
 
 
 cfg = load_yaml("vendors.yaml")
@@ -88,10 +104,11 @@ with st.sidebar:
 
     run_agent1 = st.button("Agent 1 - Collect sources", width="stretch", type="primary")
     st.caption(
-        f"Fetches up to {settings['fetch']['max_pages_per_vendor']} public pages "
-        f"for this vendor, {settings['fetch']['delay_seconds_per_domain']}s apart, "
-        "after checking robots.txt. Cached after the first run, so a second run "
-        "is instant and works offline."
+        f"Keeps up to {settings['fetch']['max_pages_per_vendor']} public pages, "
+        f"making at most {settings['fetch']['max_requests_per_vendor']} requests, "
+        f"{settings['fetch']['delay_seconds_per_domain']}s apart, after reading "
+        "robots.txt. Cached after the first run, so a second run is instant and "
+        "works offline."
     )
 
     st.button("Agent 2 - Extract evidence", width="stretch", disabled=True)
@@ -119,6 +136,7 @@ if run_agent1:
         records, steps = collect_for_vendor(
             vendor, cfg["url_patterns"], fetcher,
             max_pages=settings["fetch"]["max_pages_per_vendor"],
+            max_requests=settings["fetch"]["max_requests_per_vendor"],
         )
         path = save_corpus(records, ROOT / settings["output"]["corpus_dir"], vendor["slug"])
     st.session_state["collected"][vendor["slug"]] = {

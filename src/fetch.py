@@ -36,9 +36,47 @@ class FetchResult:
     html: str = ""
     from_cache: bool = False
     robots_allowed: bool = True
+    robots_note: str = ""      # WHY robots allowed or refused - never just a boolean
     error: str = ""
     content_sha256: str = ""
     cache_path: str = ""
+
+
+@dataclass
+class RobotsPolicy:
+    """
+    One domain's robots.txt, plus a record of how we obtained it.
+
+    WHY THIS IS NOT JUST A BOOLEAN — a real failure from 2026-08-10:
+    the first live run reported "disallowed by robots.txt" for every
+    about.gitlab.com page. GitLab's robots.txt actually permits all of them; it
+    disallows only /search/ and /api/. The real cause was that Python's
+    `RobotFileParser.read()` fetches robots.txt with urllib's own user agent,
+    GitLab's CDN answered 403, and RobotFileParser treats 401/403 on robots.txt
+    as "disallow everything". Four legitimate sources were dropped with a
+    message that blamed the vendor.
+
+    RFC 9309 (the robots.txt standard) is clearer than Python's stdlib:
+      * 2xx                      -> parse and apply the rules
+      * 4xx other than 429       -> "unavailable"; the crawler MAY access anything
+      * 429 and 5xx              -> "unreachable"; assume complete disallow
+    We follow the RFC, fetch robots.txt with OUR OWN honest user agent, and
+    record which branch was taken so a reviewer can see the reasoning.
+
+    We never add browser-impersonating headers. If a site refuses our honest
+    user agent, that is recorded as a finding for manual review - not something
+    to work around. Bypassing access restrictions is out of scope by the brief.
+    """
+
+    parser: RobotFileParser | None
+    status: int
+    note: str
+    default_allow: bool
+
+    def allows(self, url: str, user_agent: str) -> bool:
+        if self.parser is not None:
+            return self.parser.can_fetch(user_agent, url)
+        return self.default_allow
 
 
 def url_key(url: str) -> str:
@@ -83,33 +121,61 @@ class PageFetcher:
                 time.sleep(remaining)
         self._last_request_at[domain] = time.monotonic()
 
-    def robots_allows(self, url: str) -> bool:
-        """
-        Ask the site's robots.txt whether our User-Agent may read this URL.
+    def _load_robots(self, domain: str) -> RobotsPolicy:
+        """Fetch and interpret one domain's robots.txt, per RFC 9309."""
+        try:
+            response = requests.get(
+                f"{domain}/robots.txt",
+                headers={"User-Agent": self.user_agent},   # our honest UA, not urllib's
+                timeout=self.timeout,
+                allow_redirects=True,
+            )
+        except requests.RequestException as exc:
+            return RobotsPolicy(
+                None, 0,
+                f"robots.txt unreachable ({type(exc).__name__}); "
+                "RFC 9309 says assume complete disallow",
+                default_allow=False,
+            )
 
-        If robots.txt cannot be reached we ALLOW. That is the convention robots
-        parsers follow: an unreachable robots.txt is not a prohibition. This
-        choice is written into docs/assumptions_limitations.md.
-        """
-        if not self.respect_robots:
-            return True
+        code = response.status_code
 
+        if 200 <= code < 300:
+            parser = RobotFileParser()
+            parser.parse(response.text.splitlines())
+            return RobotsPolicy(parser, code, "robots.txt read and applied",
+                                default_allow=True)
+
+        if code == 429 or 500 <= code < 600:
+            return RobotsPolicy(
+                None, code,
+                f"robots.txt unreachable (HTTP {code}); RFC 9309 says assume disallow",
+                default_allow=False,
+            )
+
+        # Any other 4xx, including the 403 that a CDN returns to unknown agents.
+        return RobotsPolicy(
+            None, code,
+            f"no usable robots.txt (HTTP {code}); RFC 9309 treats this as unrestricted",
+            default_allow=True,
+        )
+
+    def robots_policy(self, url: str) -> RobotsPolicy:
+        """Cached per-domain robots policy."""
         parts = urlparse(url)
         domain = f"{parts.scheme}://{parts.netloc}"
-
         if domain not in self._robots:
-            parser = RobotFileParser()
-            parser.set_url(f"{domain}/robots.txt")
-            try:
-                parser.read()
-            except Exception:
-                parser = None          # unreachable -> treat as no restrictions
-            self._robots[domain] = parser
+            self._robots[domain] = self._load_robots(domain)
+        return self._robots[domain]
 
-        parser = self._robots[domain]
-        if parser is None:
-            return True
-        return parser.can_fetch(self.user_agent, url)
+    def robots_allows(self, url: str) -> tuple[bool, str]:
+        """Returns (allowed, human-readable reason). Never a bare boolean."""
+        if not self.respect_robots:
+            return True, "robots.txt checking disabled in settings.yaml"
+        policy = self.robots_policy(url)
+        allowed = policy.allows(url, self.user_agent)
+        verdict = "allowed" if allowed else "DISALLOWED by an explicit rule"
+        return allowed, f"{verdict} - {policy.note}"
 
     # -- cache --------------------------------------------------------------
 
@@ -136,9 +202,10 @@ class PageFetcher:
         if hit is not None:
             return hit
 
-        if not self.robots_allows(url):
+        allowed, reason = self.robots_allows(url)
+        if not allowed:
             return FetchResult(url=url, robots_allowed=False, ok=False,
-                               error="disallowed by robots.txt")
+                               robots_note=reason, error=f"not fetched: {reason}")
 
         self._wait_turn(urlparse(url).netloc)
 
@@ -159,6 +226,7 @@ class PageFetcher:
             status=response.status_code,
             ok=response.ok,
             html=response.text if response.ok else "",
+            robots_note=reason,
             content_sha256=hashlib.sha256(response.text.encode("utf-8")).hexdigest(),
         )
 

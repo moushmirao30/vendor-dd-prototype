@@ -1,0 +1,38 @@
+[
+  {
+    "vendor_name": "GitLab",
+    "source_url": "https://docs.gitlab.com/",
+    "source_type": "docs",
+    "page_title": "GitLab Docs",
+    "collected_text": "Reference architectures\nScale your GitLab installation by using the recommended configurations.\nInstall GitLab Self-Managed\nYou've got options. See them all\nInstall on Linux\nThe Linux package includes services and tools to install GitLab without laborious configuration.\nUse the Linux package\nInstall on Kubernetes\nIf you're using cluster management, we recommend the Helm chart or the Operator for installing cloud-native GitLab.\nInstall with Docker\nGitLab maintains a set of official Docker images based on the Linux package.\nSelf-compile\nIf the Linux package isn't available for your distribution, you can self-compile GitLab.\nInstall from cloud provider\nInstall directly from platforms like AWS, Azure, and GCP.",
+    "date_collected": "2026-08-10",
+    "tags": [
+      "docs"
+    ],
+    "evidence_note": "docs page for GitLab; 715 characters of main content; fetched live",
+    "vendor_slug": "gitlab",
+    "http_status": 200,
+    "fetch_ok": true,
+    "raw_html_path": "C:\\Users\\Moushmi Rao\\GEN-AGENTIC_AI\\Projects\\Research Project_1\\vendor-dd-prototype\\data\\cache\\html\\06c21d798e9c9cf11a109afd67438015.html",
+    "content_sha256": "1c433d6e897c0436106caf2e4c1c5261522678b43814519c89276f7fc258bbcd",
+    "robots_allowed": true
+  },
+  {
+    "vendor_name": "GitLab",
+    "source_url": "https://status.gitlab.com/",
+    "source_type": "status",
+    "page_title": "GitLab System Status",
+    "collected_text": "Website\nOperational\nAPI\nGit Operations\nPackage Registry\nContainer Registry\nGitLab Pages\nCI/CD\nCI/CD - Hosted runners on Linux\nCI/CD - Hosted runners on Windows\nCI/CD - Hosted runners on macOS\nCI/CD - Hosted runners for GitLab community contributions\nCI/CD - Self-managed runners\nSAML SSO - GitLab SaaS\nBackground Processing\nGitLab Customers Portal\nSupport Services\npackages.gitlab.com\nversion.gitlab.com\nforum.gitlab.com\ndocs.gitlab.com\nCanary\nGitLab Duo\nGitLab agent server for Kubernetes",
+    "date_collected": "2026-08-10",
+    "tags": [
+      "status"
+    ],
+    "evidence_note": "status page for GitLab; 489 characters of main content; fetched live",
+    "vendor_slug": "gitlab",
+    "http_status": 200,
+    "fetch_ok": true,
+    "raw_html_path": "C:\\Users\\Moushmi Rao\\GEN-AGENTIC_AI\\Projects\\Research Project_1\\vendor-dd-prototype\\data\\cache\\html\\f3c76ad514e0ae272969478782afb33e.html",
+    "content_sha256": "f5d9cd427ef9ae1f4bf02faddceb3bb0b5c528e28ca79118cffb8f8792278a42",
+    "robots_allowed": true
+  }
+]
