@@ -25,6 +25,9 @@
 
 security_trust:
   label: "Security and trust information"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["security", "terms"]
   terms:
     - "soc 2"                          # observed: Linear, Sentry, Postman, GitHub
     - "soc2"
@@ -59,6 +62,9 @@ security_trust:
 
 privacy_data_handling:
   label: "Privacy and data-handling references"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["privacy", "terms"]
   terms:
     - "privacy policy"
     - "gdpr"                           # observed: GitHub, Postman
@@ -83,6 +89,9 @@ privacy_data_handling:
 
 support_documentation:
   label: "Support and documentation availability"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["docs", "product"]
   terms:
     - "help center"
     - "support portal"
@@ -101,6 +110,9 @@ support_documentation:
 
 integrations_api:
   label: "Integration or API availability"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["docs", "integrations", "product"]
   terms:
     - "rest api"
     - "graphql"
@@ -118,6 +130,9 @@ integrations_api:
 
 pricing_availability:
   label: "Pricing or plan availability"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["pricing"]
   terms:
     - "per user"
     - "per seat"
@@ -138,6 +153,9 @@ pricing_availability:
 
 data_residency:
   label: "Data residency / storage location"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["security", "privacy"]
   scored: false
   terms:
     - "data residency"
@@ -152,6 +170,9 @@ data_residency:
 
 encryption:
   label: "Encryption practices"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["security"]
   scored: false
   terms:
     - "aes-256"                               # observed: Postman (AES-256-GCM)
@@ -166,6 +187,9 @@ encryption:
 
 uptime_reliability:
   label: "Uptime, SLA and reliability"
+  # Where this fact BELONGS. Evidence from one of these page types outranks an
+  # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
+  preferred_source_types: ["status", "security"]
   scored: false
   # NOTE FROM COLLECTION (2026-08-10): of 7 vendor SECURITY pages, only Postman
   # stated an uptime figure. Uptime lives on STATUS pages, not security pages.

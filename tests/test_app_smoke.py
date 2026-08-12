@@ -26,7 +26,12 @@ def test_every_vendor_renders_a_non_empty_source_table(vendor):
     at.selectbox[0].set_value(vendor).run()
 
     assert not at.exception, f"{vendor} raised: {[e.value for e in at.exception]}"
-    assert len(at.dataframe) == 1, "the sources table should be present exactly once"
+    # The seeds table is always first. A SECOND table appears for any vendor
+    # already collected, because the page replays that run from disk — so
+    # asserting "exactly one table" made this test pass or fail depending on
+    # what happened to be in data/corpus/, which is not a property of the code.
+    # Found 2026-08-12: it was failing for GitLab and only GitLab.
+    assert len(at.dataframe) >= 1, "the sources table is missing"
 
     df = at.dataframe[0].value
     assert df.shape[0] >= 5, f"{vendor} shows only {df.shape[0]} sources - expected 5+"

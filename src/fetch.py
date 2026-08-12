@@ -101,6 +101,11 @@ class PageFetcher:
         self.respect_robots: bool = bool(f["respect_robots_txt"])
         self.follow_redirects: bool = bool(f.get("follow_redirects", True))
 
+        # Kept so cache paths can be recorded relative to the repo — see
+        # _portable_path. A corpus full of absolute paths only replays on the
+        # machine that wrote it.
+        self.root: Path = Path(root)
+
         c = settings["cache"]
         self.cache_enabled: bool = bool(c["enabled"])
         self.reuse_existing: bool = bool(c["reuse_existing"])
@@ -186,6 +191,31 @@ class PageFetcher:
     def _cache_file(self, url: str) -> Path:
         return self.cache_dir / f"{self.CACHE_VERSION}_{url_key(url)}.html"
 
+    def _portable_path(self, path: Path) -> str:
+        """
+        The cache path AS RECORDED IN THE CORPUS: relative to the repo root,
+        with forward slashes.
+
+        WHY THIS MATTERS (found 2026-08-12): this used to record the absolute
+        path, so every corpus row read
+        `C:\\Users\\Moushmi Rao\\...\\data\\cache\\html\\v2_abc.html`.
+        The README and this repo's whole offline story promise that after one
+        collection run the workflow replays from the cache — but an absolute
+        path only resolves on the one machine that wrote it. On a marker's
+        laptop, in a fresh clone, or in CI, the cached page is sitting right
+        there and the corpus cannot find it. It also published a personal home
+        directory inside a client-facing deliverable, which is its own problem.
+
+        A repo-relative path makes the corpus portable, which is the difference
+        between "it replays offline" being a claim and being true.
+        """
+        try:
+            return path.resolve().relative_to(self.root.resolve()).as_posix()
+        except ValueError:
+            # Cache directory configured outside the repo. Rare, and the
+            # absolute path is then the only honest answer.
+            return str(path)
+
     def cached(self, url: str) -> FetchResult | None:
         """Return the cached page for this URL, or None."""
         path = self._cache_file(url)
@@ -195,7 +225,7 @@ class PageFetcher:
         return FetchResult(
             url=url, final_url=url, status=200, ok=True, html=html, from_cache=True,
             content_sha256=hashlib.sha256(html.encode("utf-8")).hexdigest(),
-            cache_path=str(path),
+            cache_path=self._portable_path(path),
         )
 
     # -- the one public method ---------------------------------------------
@@ -252,6 +282,6 @@ class PageFetcher:
         if result.ok and self.cache_enabled:
             path = self._cache_file(url)
             path.write_text(result.html, encoding="utf-8")
-            result.cache_path = str(path)
+            result.cache_path = self._portable_path(path)
 
         return result
