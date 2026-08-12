@@ -1,0 +1,457 @@
+{
+  "vendor_slug": "gitlab",
+  "ran_on": "2026-08-12T19:38:01",
+  "fields": [
+    {
+      "name": "security_trust",
+      "label": "Security and trust information",
+      "status": "FOUND",
+      "value": "GitLab maintains a SOC 2 Type 2 report for the Security, Confidentiality and Availability Trust Services Criteria for GitLab.com.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "SOC Certification",
+          "snippet": "GitLab maintains a SOC 2 Type 2 report for the Security, Confidentiality and Availability Trust Services Criteria for GitLab.com. GitLab maintains a SOC 2 Type 2 report for the Security, Confidentiality and Availability Trust Services Criteria for GitLab Dedicated.",
+          "matched_terms": [
+            "soc 2",
+            "soc 2 type 2"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/security/",
+          "source_type": "security",
+          "evidence_of": 10
+        },
+        {
+          "heading": "CSA Trusted Cloud Provider",
+          "snippet": "GitLab is a Cloud Security Alliance (CSA) Trusted Cloud Provider.",
+          "matched_terms": [
+            "cloud security alliance"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/security/",
+          "source_type": "security",
+          "evidence_of": 10
+        },
+        {
+          "heading": "GitLab Trust Center",
+          "snippet": "GitLab Trust Center It's our mission to be the leading example in security, innovation, and transparency.",
+          "matched_terms": [
+            "trust center"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/security/",
+          "source_type": "security",
+          "evidence_of": 10
+        }
+      ]
+    },
+    {
+      "name": "privacy_data_handling",
+      "label": "Privacy and data-handling references",
+      "status": "FOUND",
+      "value": "Our employees, contractors, affiliated organizations, service providers, and sub-processors that process Personal Data may be located in the United States or other countries outside of your home country.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Sharing Personal Data Across National Borders",
+          "snippet": "…States. Our employees, contractors, affiliated organizations, service providers, and sub-processors that process Personal Data may be located in the United States or other countries outside of your home country. If you reside in the European Economic Area, United Kingdom, or Switzerland, GitLab transfers your Personal Data to the United States in reliance on the EU-U.S. Data Privacy Framework (“DPF”), the UK Extension to the DPF, and/or the Swiss-U.S. DPF, as applicable (see the Data Privacy Framework section below for details of GitLab's certification). Where Personal Data is transferred to a…",
+          "matched_terms": [
+            "personal data",
+            "personal information",
+            "standard contractual clauses"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 26
+        },
+        {
+          "heading": "How does GitLab Use My Personal Data and Our Legal Basis for Processing?",
+          "snippet": "GitLab collects and processes each category of Personal Data for the purposes listed in the tables below. When our processing is subject to international laws, including but not limited to the General Data Protection Regulation (\"GDPR\") that governs individuals located in the European Economic Area (\"EEA\"), we have attributed one of the legal bases enumerated under the GDPR to the “Purpose of Processing” activity. To the extent a jurisdiction allows for different legal bases than those enumerated under GDPR, we will apply only those appropriate legal bases to the purposes of processing as requ…",
+          "matched_terms": [
+            "gdpr",
+            "personal data"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 26
+        },
+        {
+          "heading": "With Whom does GitLab Share My Personal Data?",
+          "snippet": "We may share each of the categories of Personal Data we collect with the types of third-parties described below, for the following business purposes: Sharing with Users and the Public: We may share your Personal Data with other users of the Services and with the public if you choose to make your SaaS Profile public. You have control over what information is public; however, your name and username will always be displayed unless your organization has modified user account settings. If you do not want to disclose your real name, please use a pseudonym or other alias in your profile and username.…",
+          "matched_terms": [
+            "privacy policy",
+            "personal data"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 26
+        }
+      ]
+    },
+    {
+      "name": "support_documentation",
+      "label": "Support and documentation availability",
+      "status": "FOUND",
+      "value": "Customer Support information is collected through the Websites, such as the GitLab Community Forum and the GitLab Support Portal .",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Information You Provide Directly",
+          "snippet": "…or the services being provided. Customer Support information is collected through the Websites, such as the GitLab Community Forum and the GitLab Support Portal . For Community Programs , support will be provided through the GitLab Service Desk . Call Recordings: We may record and transcribe GitLab webinars, trainings, and online events. In addition, we may record and transcribe sales calls hosted on various videoconferencing technologies to enable our sales and support teams to share conversational insights, create training and presentations, and improve their internal processes. Other Conten…",
+          "matched_terms": [
+            "support portal",
+            "community forum"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 7
+        },
+        {
+          "heading": "License and Subscription",
+          "snippet": "…resell partners, please check out the GitLab Partner Locator . See Acceptable Use of User Licenses for user licensing documentation.",
+          "matched_terms": [
+            "documentation"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 7
+        },
+        {
+          "heading": "GitLab Trust Center: Welcome to self-service customer assurance",
+          "snippet": "The single, unified trust center provides access to security and privacy collateral, streamlined questionnaire submissions, an interactive knowledge base, and GitLab updates.",
+          "matched_terms": [
+            "knowledge base"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/security/",
+          "source_type": "security",
+          "evidence_of": 7
+        }
+      ]
+    },
+    {
+      "name": "integrations_api",
+      "label": "Integration or API availability",
+      "status": "FOUND",
+      "value": "Third-Party Integrations: The Services allow for integrations with third-party git applications, such as GitPod, or third-party extensions, such as those in the Visual Studio code marketplace.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Information about Your Use of the Services We Collect Automatically",
+          "snippet": "…client, and whether you have received and opened an email, or clicked on any links contained in the email. Third-Party Integrations: The Services allow for integrations with third-party git applications, such as GitPod, or third-party extensions, such as those in the Visual Studio code marketplace. Further, the Services may contain buttons, links, tools and content from third-party services, such as Meta and X. We may collect information about your use of these integrated applications and extensions, and when you see or interact with these integrations some information may be automatically sen…",
+          "matched_terms": [
+            "integrations",
+            "marketplace"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 4
+        },
+        {
+          "heading": "Subscribe to receive status updates in Microsoft Teams",
+          "snippet": "Enter your Microsoft Teams webhook. View Instructions Email address for managing subscription",
+          "matched_terms": [
+            "webhook"
+          ],
+          "match_location": "body",
+          "source_url": "https://status.gitlab.com/",
+          "source_type": "status",
+          "evidence_of": 4
+        },
+        {
+          "heading": "Subscribe to receive status updates by webhook",
+          "snippet": "Each status update will POST a JSON payload to this URL Email address for managing webhook",
+          "matched_terms": [
+            "webhook"
+          ],
+          "match_location": "body",
+          "source_url": "https://status.gitlab.com/",
+          "source_type": "status",
+          "evidence_of": 4
+        }
+      ]
+    },
+    {
+      "name": "pricing_availability",
+      "label": "Pricing or plan availability",
+      "status": "FOUND",
+      "value": "Each project in a Free tier namespace on GitLab.com has 10 GiB of free storage for its Git repository and Large File Storage (LFS).",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Storage",
+          "snippet": "Each project in a Free tier namespace on GitLab.com has 10 GiB of free storage for its Git repository and Large File Storage (LFS). You can purchase additional storage for your personal or group namespace.",
+          "matched_terms": [
+            "free tier"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 15
+        },
+        {
+          "heading": "GitLab Flex Commitment",
+          "snippet": "Organizations that need pricing flexibility can make one annual commitment and adapt their spend across GitLab plans and usage as they grow. Available with any paid plan One annual commitment for seats and GitLab Credits Re-allocate spend as needs change Track spend against your annual balance Add-Ons",
+          "matched_terms": [
+            "pricing"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 15
+        },
+        {
+          "heading": "User Limits",
+          "snippet": "The 5-user limit is applicable only to users of the Free tier of the GitLab.com offering in a top-level group with private visibility. These changes do not apply to users of the Free tier of the GitLab.com offering in a public top-level group, paid tiers, the Free tier of the self-managed offering and community programs , including GitLab for Open Source, GitLab for Education, and GitLab for Startups users. Learn more here .",
+          "matched_terms": [
+            "free tier"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 15
+        }
+      ]
+    },
+    {
+      "name": "data_residency",
+      "label": "Data residency / storage location",
+      "status": "FOUND",
+      "value": "Fully managed by GitLab Data residency in region of your choice Full data and source code isolation Bring your own key encryption Enterprise grade security Regular upgrade cadence",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Includes everything from Ultimate, plus:",
+          "snippet": "Fully managed by GitLab Data residency in region of your choice Full data and source code isolation Bring your own key encryption Enterprise grade security Regular upgrade cadence",
+          "matched_terms": [
+            "data residency"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 1
+        }
+      ]
+    },
+    {
+      "name": "encryption",
+      "label": "Encryption practices",
+      "status": "NOT_FOUND",
+      "value": "",
+      "confidence": "NOT_FOUND",
+      "evidence": []
+    },
+    {
+      "name": "uptime_reliability",
+      "label": "Uptime, SLA and reliability",
+      "status": "FOUND",
+      "value": "For paid plans, the hours in which your support request has SLA is dependent upon the Support Impact of the request itself.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Features and Benefits",
+          "snippet": "…DevSecOps solutions on our competitive comparison pages . For paid plans, the hours in which your support request has SLA is dependent upon the Support Impact of the request itself. Something at Emergency (Severity 1) level would receive support 24/7, whereas other Support Impact levels would receive 24/5. For more information on the hours of support, please see Definitions of GitLab Global Support Hours and Effect on Support Hours if a preferred region for support is chosen . You can learn more about GitLab's success offerings on the services page .",
+          "matched_terms": [
+            "sla"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 4
+        },
+        {
+          "heading": "Everything from Free, plus:",
+          "snippet": "Advanced CI/CD Team Project Management SLA Management Priority Support",
+          "matched_terms": [
+            "sla"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 4
+        },
+        {
+          "heading": "Everything from Free, plus:",
+          "snippet": "Unlimited licensed users 10,000 compute minutes per month Advanced CI/CD Team Project Management SLA Management Priority Support",
+          "matched_terms": [
+            "sla"
+          ],
+          "match_location": "body",
+          "source_url": "https://about.gitlab.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 4
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "product",
+      "detail": "19 blocks from 225,518 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "pricing",
+      "detail": "48 blocks from 588,270 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "security",
+      "detail": "27 blocks from 198,329 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "privacy",
+      "detail": "23 blocks from 225,210 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "docs",
+      "detail": "20 blocks from 27,614 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "status",
+      "detail": "8 blocks from 107,294 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "terms",
+      "detail": "3 blocks from 139,938 characters of HTML"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://about.gitlab.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "security",
+      "detail": "8 block(s) matched on https://about.gitlab.com/security/"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "status",
+      "detail": "1 block(s) matched on https://status.gitlab.com/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://about.gitlab.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "security",
+      "detail": "3 block(s) matched on https://about.gitlab.com/security/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "privacy",
+      "detail": "20 block(s) matched on https://about.gitlab.com/privacy/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "terms",
+      "detail": "2 block(s) matched on https://about.gitlab.com/terms"
+    },
+    {
+      "action": "match",
+      "field_name": "support_documentation",
+      "source_type": "pricing",
+      "detail": "5 block(s) matched on https://about.gitlab.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "support_documentation",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://about.gitlab.com/security/"
+    },
+    {
+      "action": "match",
+      "field_name": "support_documentation",
+      "source_type": "privacy",
+      "detail": "1 block(s) matched on https://about.gitlab.com/privacy/"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://about.gitlab.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "privacy",
+      "detail": "1 block(s) matched on https://about.gitlab.com/privacy/"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "status",
+      "detail": "2 block(s) matched on https://status.gitlab.com/"
+    },
+    {
+      "action": "match",
+      "field_name": "pricing_availability",
+      "source_type": "product",
+      "detail": "2 block(s) matched on https://about.gitlab.com/"
+    },
+    {
+      "action": "match",
+      "field_name": "pricing_availability",
+      "source_type": "pricing",
+      "detail": "14 block(s) matched on https://about.gitlab.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "pricing_availability",
+      "source_type": "terms",
+      "detail": "1 block(s) matched on https://about.gitlab.com/terms"
+    },
+    {
+      "action": "match",
+      "field_name": "data_residency",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://about.gitlab.com/pricing/"
+    },
+    {
+      "action": "no-match",
+      "field_name": "encryption",
+      "source_type": "-",
+      "detail": "no match for any of 9 terms across 7 collected page(s) — reported as NOT_FOUND"
+    },
+    {
+      "action": "match",
+      "field_name": "uptime_reliability",
+      "source_type": "product",
+      "detail": "1 block(s) matched on https://about.gitlab.com/"
+    },
+    {
+      "action": "match",
+      "field_name": "uptime_reliability",
+      "source_type": "pricing",
+      "detail": "3 block(s) matched on https://about.gitlab.com/pricing/"
+    }
+  ]
+}
