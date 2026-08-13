@@ -222,6 +222,8 @@ if run_agent1:
             vendor, cfg["url_patterns"], fetcher,
             max_pages=settings["fetch"]["max_pages_per_vendor"],
             max_requests=settings["fetch"]["max_requests_per_vendor"],
+            min_usable_text_chars=settings["fetch"]["min_usable_text_chars"],
+            min_readable_chars_per_kb=settings["fetch"]["min_readable_chars_per_kb"],
         )
         path = save_corpus(records, ROOT / settings["output"]["corpus_dir"], vendor["slug"])
         save_run(steps, ROOT / settings["output"]["corpus_dir"], vendor["slug"],
@@ -244,6 +246,25 @@ if run_agent1:
     # findings beside today's sources with nothing to say they disagree.
     st.session_state["extracted"].pop(vendor["slug"], None)
 
+    # RERUN, OR THE AGENT 2 BUTTON STAYS DEAD (found 2026-08-12 on Atlassian).
+    #
+    # The sidebar is drawn BEFORE this block runs — it has to be, because the
+    # button's return value is what triggers the block. So `has_corpus` was
+    # evaluated while <slug>.json did not yet exist, and Agent 2 rendered
+    # disabled. Collect a vendor for the first time and the next button in the
+    # workflow is unclickable, with nothing on screen explaining why. It only
+    # woke up if you touched something else first.
+    #
+    # This went unnoticed on GitLab because its corpus was already on disk from
+    # an earlier session, so `has_corpus` was true before Agent 1 ever ran. The
+    # first genuinely new vendor exposed it. A demo path that only works for
+    # data you already have is not a demo path.
+    #
+    # st.rerun() restarts the script top to bottom with the corpus now written,
+    # so the sidebar redraws with Agent 2 enabled and the confirmation banner
+    # showing. session_state carries both across the rerun.
+    st.rerun()
+
 if run_agent2:
     field_dictionary = load_yaml("field_dictionary.yaml")
     corpus_dir = ROOT / settings["output"]["corpus_dir"]
@@ -251,8 +272,15 @@ if run_agent2:
               or load_previous_run(corpus_dir, vendor["slug"]) or {})
     with st.spinner(f"Extracting evidence for {vendor['name']}…"):
         ran_on = datetime.now().isoformat(timespec="seconds")
+        # Hand Agent 2 the page types Agent 1 never managed to collect. Without
+        # this it can only see the pages that DID arrive, so it cannot tell the
+        # difference between "we searched and found nothing" and "we never found
+        # the page to search" - see defect 26 (JetBrains).
+        never_collected = [s["source_type"] for s in source.get("steps", [])
+                           if s.get("action") == "skip"]
         fields, esteps = extract_for_vendor(
-            source.get("records", []), field_dictionary, settings, ROOT)
+            source.get("records", []), field_dictionary, settings, ROOT,
+            never_collected=never_collected)
         save_fields(fields, corpus_dir, vendor["slug"], esteps, ran_on)
     st.session_state["extracted"][vendor["slug"]] = {
         "fields": [f.to_dict() for f in fields],

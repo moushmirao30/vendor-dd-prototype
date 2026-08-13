@@ -381,3 +381,91 @@ def test_gitlab_security_field_quotes_the_soc_2_sentence(settings, field_diction
     assert security.confidence == "High"
     assert "SOC 2 Type 2" in security.value
     assert security.evidence[0]["source_type"] == "security"
+
+
+# ---------------------------------------------------------------------------
+# DEFECT 23 — a page can be collected successfully and contain no readable text.
+#
+# Atlassian's Jira product page: 898 KB of HTML, 52 characters of visible text,
+# ZERO heading blocks, HTTP 200, robots-allowed, cached cleanly. Its pricing
+# page: 138 characters from 1.2 MB. Both are JavaScript-rendered, which this
+# prototype deliberately does not run.
+#
+# Unrecorded, every field sourced from such a page reports NOT_FOUND, and the
+# brief then tells a procurement team that Atlassian does not publish pricing.
+# Atlassian publishes it perfectly well. Those are different findings and only
+# one of them is true — so this is the one bug in this project that would put a
+# false statement about a real company into a client-facing document.
+# ---------------------------------------------------------------------------
+
+def _unreadable_record(source_type: str = "product") -> dict:
+    return {"source_type": source_type, "source_url": "https://x/", "raw_html_path": "",
+            "content_usable": False, "block_count": 0}
+
+
+def test_unusable_page_is_not_counted_as_searched(tmp_path, settings, field_dictionary):
+    html_dir = tmp_path / "data" / "cache" / "html"
+    html_dir.mkdir(parents=True)
+    (html_dir / "real.html").write_text(
+        "<h1>Security</h1><p>We maintain a SOC 2 Type 2 report for our platform "
+        "covering security and availability criteria.</p>", encoding="utf-8")
+
+    records = [
+        {"source_type": "security", "source_url": "https://x/security",
+         "raw_html_path": "data/cache/html/real.html", "content_usable": True,
+         "block_count": 1},
+        _unreadable_record("pricing"),
+    ]
+    fields, steps = extract_for_vendor(records, field_dictionary, settings, tmp_path)
+
+    assert any(s.action == "unusable-page" for s in steps), \
+        "an unreadable page must appear in the audit trail, not vanish"
+    parsed = [s for s in steps if s.action == "parse-page"]
+    assert len(parsed) == 1, "the unreadable page must not be reported as parsed"
+
+    no_match = [s for s in steps if s.action == "no-match"]
+    assert no_match, "some field should have found nothing here"
+    assert "CAUTION" in no_match[0].detail, \
+        "a NOT_FOUND alongside an unreadable page must not read as a clean negative"
+    assert "readable page(s)" in no_match[0].detail
+
+
+def test_not_found_carries_the_caveat_into_the_brief_itself(tmp_path, settings,
+                                                            field_dictionary):
+    """
+    A reviewer reads the brief, not the audit trail. If the corpus was partly
+    unreadable, the field must say so where it will actually be seen.
+    """
+    fields, _ = extract_for_vendor([_unreadable_record()], field_dictionary,
+                                   settings, tmp_path)
+    empty = [f for f in fields if f.status == "NOT_FOUND"]
+    assert empty, "nothing was readable, so every field must be NOT_FOUND"
+    for f in empty:
+        assert f.evidence, f"{f.name} reported a bare NOT_FOUND with no caveat"
+        assert f.evidence[0]["match_location"] == "tool_limitation"
+        assert "JavaScript" in f.evidence[0]["snippet"]
+
+
+def test_a_clean_not_found_stays_clean_when_every_page_was_readable(
+        tmp_path, settings, field_dictionary):
+    """
+    The other half of the property, and the one that stops the caveat becoming
+    noise: when the whole corpus was readable, NOT_FOUND is a real finding about
+    the vendor and must not be hedged.
+    """
+    html_dir = tmp_path / "data" / "cache" / "html"
+    html_dir.mkdir(parents=True)
+    (html_dir / "p.html").write_text(
+        "<h1>About us</h1><p>We build project management software for teams who "
+        "care about shipping work on time.</p>", encoding="utf-8")
+    records = [{"source_type": "product", "source_url": "https://x/",
+                "raw_html_path": "data/cache/html/p.html",
+                "content_usable": True, "block_count": 1}]
+
+    fields, steps = extract_for_vendor(records, field_dictionary, settings, tmp_path)
+    no_match = [s for s in steps if s.action == "no-match"]
+    assert no_match
+    assert all("CAUTION" not in s.detail for s in no_match)
+    for f in fields:
+        if f.status == "NOT_FOUND":
+            assert not f.evidence, f"{f.name} was hedged when it should be a clean negative"

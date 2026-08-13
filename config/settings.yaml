@@ -16,6 +16,26 @@ fetch:
   respect_robots_txt: true        # checked with urllib.robotparser before every fetch
   follow_redirects: true
   max_redirects: 5
+  # Below this many characters of visible text, or with no heading blocks at
+  # all, a page is recorded as collected but NOT USABLE AS EVIDENCE. Set from
+  # measured pages on 2026-08-12: Atlassian's Jira product page produced 52
+  # characters and 0 blocks from 898 KB of HTML (JavaScript-rendered), its
+  # pricing page 138 characters from 1.2 MB. The thinnest page that still
+  # carried real evidence was Atlassian's support page at ~1,000 characters.
+  # Re-derived 12 Aug 2026 from all 48 collected pages across 7 vendors, after
+  # JetBrains' status page (307 chars from 225 KB of HTML) passed at 300.
+  # Measured character counts: unreadable shells cluster at 8-307; the thinnest
+  # page carrying real evidence was Atlassian's support page at 1,065.
+  min_usable_text_chars: 600
+  # Second, independent signal: readable characters per KB of HTML. A page that
+  # ships a megabyte to say 1,500 words is mostly JavaScript we never ran.
+  # Measured: unreadable pages 0.1-1.4 ch/KB; the lowest genuine pages were
+  # Sentry's and Linear's pricing at 2.6. Set at 2.0 with that margin.
+  # BOTH checks are needed and neither is sufficient: Postman's privacy shell is
+  # only 5 KB, so its density is high (27 ch/KB) and only the character floor
+  # catches it, while JetBrains' status page clears any sane floor on density
+  # alone. Two cheap orthogonal tests beat one clever one.
+  min_readable_chars_per_kb: 2.0
 
 cache:
   # Every page is saved to disk the first time it is fetched. Later runs read

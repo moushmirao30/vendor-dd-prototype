@@ -22,7 +22,14 @@ locked_on: "2026-08-10"
 
 # Tried against each vendor domain, in order, before falling back to seeds.
 url_patterns:
-  security: ["/security", "/security/", "/trust", "/trust/security", "/trust-center"]
+  # /privacy-security and /legal/docs/privacy/trust-center were added 12 Aug 2026
+  # after JetBrains returned 404 to all five of the original patterns AND to its
+  # own seed - while publishing "SOC 2 Type II and GDPR compliance" in prose at
+  # /legal/docs/privacy/trust-center/. Six 404s looked like a vendor that
+  # publishes nothing. It was our pattern list that was wrong. Two extra probes
+  # per vendor is a cheap price for not making a false statement about a company.
+  security: ["/security", "/security/", "/trust", "/trust/security", "/trust-center",
+             "/privacy-security", "/legal/docs/privacy/trust-center"]
   privacy:  ["/privacy", "/privacy/", "/legal/privacy-policy", "/legal/privacy"]
   pricing:  ["/pricing", "/pricing/", "/plans"]
   docs:     ["/docs", "/docs/", "/help", "/support"]
@@ -106,6 +113,20 @@ vendors:
       that stated an uptime figure on its security page ("a 99.9% SLA on our
       Enterprise plan") and it also states residency ("AWS servers in the EU and
       the U.S."). Note "SOC 2 and 3" — another dictionary variant.
+    observed_2026_08_12: >
+      PRIVACY POLICY IS NOT READABLE WITHOUT JAVASCRIPT. The seed
+      postman.com/legal/privacy-policy/ returns 302 to
+      privacy.postman.com/policies/, which is a 4.7 KB application shell whose
+      entire readable content is "If you're seeing this message, that means
+      JavaScript has been disabled on your browser, please enable JS to make
+      this app work." The URL is left as-is because it is the canonical one and
+      the redirect is recorded in the trail; there is no server-rendered
+      alternative to point at. Agent 1 marks the page content_usable=False and
+      the privacy field carries a caveat saying its answer came from the
+      security page instead. Verified independently 12 Aug 2026.
+      Also note: NO uptime figure appears anywhere in Postman's corpus. The only
+      "Service Level Agreement" match is a CVSS vulnerability-remediation SLA on
+      the security page, now suppressed by negative_terms.
 
   - name: Atlassian
     slug: atlassian
@@ -113,11 +134,29 @@ vendors:
     seeds:
       product:  "https://www.atlassian.com/software/jira"
       pricing:  "https://www.atlassian.com/software/jira/pricing"
-      security: "https://www.atlassian.com/trust/security"  # verified 2026-08-10
+      # /trust/security 302s to /trust/data-protection, which is real prose
+      # about data handling but names NO certifications. The certifications live
+      # here, as logos — verified 2026-08-12. This is the vendor that makes the
+      # alt-text-only case real, so this is the page we must collect.
+      security: "https://www.atlassian.com/trust/compliance"    # verified 2026-08-12
       privacy:  "https://www.atlassian.com/legal/privacy-policy"
       docs:     "https://support.atlassian.com/"
       status:   "https://status.atlassian.com/"
-    verified: ["security"]
+      # Discovery tried /terms, /legal/terms and /terms-of-service on
+      # 2026-08-12: all three returned 404, so terms was reported NOT COLLECTED.
+      # Atlassian's actual agreement is here, titled "Atlassian Customer
+      # Agreement" — verified 2026-08-12. Three wasted 404s is exactly the cost
+      # the seed list exists to avoid.
+      terms:    "https://www.atlassian.com/legal/cloud-terms-of-service"  # verified 2026-08-12
+    verified: ["security", "terms"]
+    observed_2026_08_12: >
+      MEASURED, NOT ASSUMED: this vendor is where "no JavaScript rendering" stops
+      being free. The Jira PRODUCT page returns 898 KB of HTML and yields 52
+      characters of visible text and ZERO heading blocks; the PRICING page yields
+      138 characters from 1.2 MB. Both are client-rendered. They are recorded as
+      collected but NOT USABLE as evidence, so that a missing field is reported as
+      our limit rather than as Atlassian's silence. The security, privacy, docs
+      and status pages read fine without JavaScript.
     observed_2026_08_10: >
       THE KEY TEST CASE. Heading "Our compliance certifications" exists, but the
       certifications themselves are IMAGES — the only text is alt-text such as
@@ -156,16 +195,36 @@ vendors:
     seeds:
       product:  "https://www.jetbrains.com/idea/"
       pricing:  "https://www.jetbrains.com/idea/buy/"
-      security: "https://www.jetbrains.com/security/"    # CANDIDATE - not yet verified
+      security: "https://www.jetbrains.com/legal/docs/privacy/trust-center/"  # verified 2026-08-12
       privacy:  "https://www.jetbrains.com/legal/docs/privacy/privacy/"
       docs:     "https://www.jetbrains.com/help/idea/"
       status:   "https://status.jetbrains.com/"
-    verified: []
+    verified: ["security"]
     observed_2026_08_10: >
-      NOT YET VERIFIED — the verification fetch did not complete on 2026-08-10.
-      All URLs here are candidates. Agent 1 must confirm them at run time and
-      record the http_status. Expected shape: legal-document style pages rather
-      than a marketing trust centre, which will produce long low-signal blocks.
+      NOT VERIFIED on 2026-08-10 — the verification fetch did not complete. All
+      URLs were candidates.
+    observed_2026_08_12: >
+      THE HARDEST VENDOR, AND THE MOST INSTRUCTIVE. Agent 1 returned 404 for the
+      security page SIX times: the seed jetbrains.com/security/ plus all five
+      url_patterns (/security, /security/, /trust, /trust/security,
+      /trust-center). It was recorded honestly as "NOT COLLECTED - flag for
+      manual follow-up". But JetBrains DOES publish this: a manual search found
+      "Trust and Security at JetBrains" at
+      jetbrains.com/legal/docs/privacy/trust-center/, which states in prose
+      "You can also find details on our SOC 2 Type II and GDPR compliance",
+      plus a separate portal at trust-center.jetbrains.com. Seed corrected and
+      verified 12 Aug 2026.
+      THE LESSON: a 404 proves our URL was wrong, NOT that the vendor is silent.
+      Reporting "JetBrains publishes no security information" would have been a
+      false statement about a company - the same failure as Atlassian and
+      Postman, arriving through a third door (unguessable URL rather than
+      JavaScript).
+      ALSO: pricing (jetbrains.com/idea/buy/) returns 22 readable characters and
+      0 blocks from 54 KB, and docs redirects to a 4 KB shell with 45 characters
+      - both JavaScript-rendered and correctly marked content_usable=False. The
+      status page yields 307 characters from 225 KB and squeaked past the old
+      300-character threshold, which is why that threshold was raised.
+      terms 404s three times and remains uncollected - genuinely unresolved.
 
   # --- Held in reserve, only if a vendor above fails outright ---
 alternates:

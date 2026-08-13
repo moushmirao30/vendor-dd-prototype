@@ -197,7 +197,13 @@ uptime_reliability:
   terms:
     - "uptime"                                # observed: Sentry status page
     - "% uptime"
-    - "99.9"                                  # observed: Postman ("99.9% SLA")
+    # NOT OBSERVED as of the 12 Aug 2026 collection. This term was recorded on
+    # 10 Aug as "observed: Postman (99.9% SLA)", but "99.9" appears nowhere in
+    # Postman's collected corpus - not on its security, pricing or status page.
+    # Either the page changed or the original note was wrong. Kept as a
+    # CANDIDATE term, and labelled honestly, because this file's own rule is
+    # that "# observed" means someone copied it off a real page.
+    - "99.9"                                  # candidate - not seen in any corpus yet
     - "99.99"                                 # observed: Sentry status page
     - "service level agreement"               # observed: Atlassian (link only)
     - "sla"
@@ -206,3 +212,14 @@ uptime_reliability:
     - "disaster recovery"
     - "business continuity"                   # observed: Sentry
     - "high availability"                     # observed: Sentry
+  # "SLA" is the most overloaded acronym on a vendor site. On Postman's security
+  # page it appears in "a deadline based on an internal Service Level Agreement
+  # (SLA) for fixing vulnerabilities" - a vulnerability-remediation target, not
+  # an availability commitment. The string match is correct and the meaning is
+  # wrong, so the block is suppressed. This is the only kind of context a
+  # substring matcher can be taught: name the words that give it away.
+  negative_terms:
+    - "cvss"
+    - "common vulnerability scoring system"
+    - "fixing vulnerabilities"
+    - "vulnerability remediation"

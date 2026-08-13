@@ -51,6 +51,18 @@ class SourceRecord:
     robots_allowed: bool = True # written evidence that access rules were respected
     text_extractor: str = ""    # which cleaner produced collected_text; see parse.main_text
 
+    # --- content usability (added 2026-08-12, defect 23) ---
+    # A page can return HTTP 200, pass robots, cache cleanly, and still contain
+    # no readable text at all. Atlassian's Jira product page is 898 KB of HTML
+    # that yields 52 characters and ZERO heading blocks, because the content is
+    # rendered by JavaScript we deliberately do not run. Without these two
+    # fields, every field sourced from that page becomes NOT_FOUND, and a
+    # NOT_FOUND caused by our fetcher is indistinguishable from a vendor that
+    # genuinely does not publish something. For a due-diligence tool that is the
+    # worst available bug: it makes a false statement about a company.
+    block_count: int = 0        # heading blocks the extractor will actually see
+    content_usable: bool = True # False -> collected, but unusable as evidence
+
     def to_dict(self) -> dict:
         return asdict(self)
 

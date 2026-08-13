@@ -30,7 +30,7 @@ from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 from .fetch import PageFetcher, FetchResult
-from .parse import main_text, page_title
+from .parse import main_text, page_title, page_to_blocks, visible_text
 from .schema import SourceRecord, today
 
 
@@ -70,6 +70,8 @@ def collect_for_vendor(
     fetcher: PageFetcher,
     max_pages: int = 10,
     max_requests: int = 20,
+    min_usable_text_chars: int = 600,
+    min_readable_chars_per_kb: float = 2.0,
 ) -> tuple[list[SourceRecord], list[CollectionStep]]:
     """
     Collect every public page for one vendor.
@@ -155,6 +157,43 @@ def collect_for_vendor(
     verified = vendor.get("verified", [])
     for stype, result in resolved.items():
         text, extractor = main_text(result.html)
+
+        # IS THIS PAGE ACTUALLY READABLE? (defect 23, found 2026-08-12)
+        #
+        # An HTTP 200 says a server answered. It does not say the answer contains
+        # words. Atlassian's Jira product page returned 898 KB of HTML and
+        # produced 52 characters of visible text and ZERO heading blocks, because
+        # the page is rendered by JavaScript, which this prototype deliberately
+        # does not run. Its pricing page: 138 characters from 1.2 MB.
+        #
+        # Left unrecorded, every field sourced from such a page reports
+        # NOT_FOUND, and the brief then tells a procurement team that Atlassian
+        # does not publish pricing information. Atlassian publishes it perfectly
+        # well; we cannot read it. Those are completely different findings and
+        # only one of them is true.
+        #
+        # So we measure it here, at collection, and carry the answer forward.
+        blocks = page_to_blocks(result.html)
+        readable_chars = len(visible_text(result.html))
+        density = readable_chars / max(len(result.html) / 1024, 0.001)
+        usable = (bool(blocks)
+                  and readable_chars >= min_usable_text_chars
+                  and density >= min_readable_chars_per_kb)
+
+        if not usable:
+            steps.append(CollectionStep(
+                action="unusable-page", source_type=stype,
+                url=result.final_url or result.url, status=result.status,
+                outcome=(f"collected but NOT USABLE as evidence - "
+                         f"{readable_chars} characters of readable text and "
+                         f"{len(blocks)} heading blocks from "
+                         f"{len(result.html):,} bytes of HTML "
+                         f"({density:.1f} readable chars per KB). Almost certainly "
+                         f"rendered by JavaScript. Any field missing for this "
+                         f"vendor may be OUR limit, not the vendor's silence - "
+                         f"verify this page by hand."),
+            ))
+
         records.append(SourceRecord(
             vendor_name=vendor["name"],
             vendor_slug=vendor["slug"],
@@ -169,6 +208,10 @@ def collect_for_vendor(
                 f"{len(text)} characters of main content; "
                 f"{'served from cache' if result.from_cache else 'fetched live'}; "
                 f"text via {extractor}"
+                + ("" if usable else
+                   f"; NOT USABLE AS EVIDENCE - only {readable_chars} readable "
+                   f"characters and {len(blocks)} heading blocks, almost "
+                   f"certainly JavaScript-rendered")
             ),
             http_status=result.status,
             fetch_ok=result.ok,
@@ -176,6 +219,8 @@ def collect_for_vendor(
             content_sha256=result.content_sha256,
             robots_allowed=result.robots_allowed,
             text_extractor=extractor,
+            block_count=len(blocks),
+            content_usable=usable,
         ))
 
     # Page types we wanted but never resolved. Recorded explicitly so the brief

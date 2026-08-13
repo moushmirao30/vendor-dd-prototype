@@ -88,7 +88,13 @@ MIN_TEXT_FOR_RATIO_CHECK = 1000
 # within tolerance, still too thin to be a fair record of the page. A summary
 # this short from a substantial page is a summary worth distrusting.
 MIN_ABSOLUTE_CHARS = 800
-MIN_PAGE_CHARS_FOR_ABSOLUTE_CHECK = 2000
+# The gate was 2000, which let a second thin page through: Atlassian's status
+# page has 1,578 characters of visible text and trafilatura kept 295 of them —
+# 19%, so the ratio guard passed, and 1,578 < 2,000, so the absolute guard never
+# ran. The heading "All Systems Operational" was thrown away.
+# 1.5x the floor is derivable rather than picked: do not demand 800 characters
+# from a page that does not have meaningfully more than 800 to give.
+MIN_PAGE_CHARS_FOR_ABSOLUTE_CHECK = int(MIN_ABSOLUTE_CHARS * 1.5)
 
 
 def visible_text(html: str) -> str:

@@ -50,7 +50,9 @@ MIN_SENTENCE_CHARS = 30
 class ExtractionStep:
     """One line of Agent 2's audit trail, shown in the UI beside Agent 1's."""
 
-    action: str        # "parse-page" | "match" | "no-match" | "missing-html"
+    action: str        # parse-page | match | no-match | missing-html
+    #                  | unusable-page | unread-home-page
+    #                  | home-page-never-found
     field_name: str
     source_type: str
     detail: str
@@ -215,6 +217,7 @@ def extract_for_vendor(
     field_dictionary: dict,
     settings: dict,
     root: Path,
+    never_collected: list[str] | None = None,
 ) -> tuple[list[ExtractedField], list[ExtractionStep]]:
     """
     Run every field in the dictionary against every collected page.
@@ -227,6 +230,17 @@ def extract_for_vendor(
     nothing, and how many pages were searched before saying so. A NOT_FOUND with
     no evidence of effort behind it is not a finding, it is a shrug.
     """
+    # PAGE TYPES THAT WERE NEVER COLLECTED AT ALL (defect 26, JetBrains,
+    # 12 Aug 2026). Agent 2 only ever received `records`, so a page type that
+    # produced no record was invisible to it. JetBrains' security page 404'd six
+    # times - the seed plus all five url_patterns - and Agent 1 recorded that
+    # faithfully in its trail. Agent 2 could not see the trail, so
+    # security_trust came back NOT_FOUND with a caveat about the wrong pages
+    # (pricing and docs), never mentioning that no security page was ever found.
+    # JetBrains publishes "SOC 2 Type II and GDPR compliance" in plain prose. A
+    # 404 proves OUR URL was wrong, not that a vendor is silent.
+    never_collected = never_collected or []
+
     extraction = settings["extraction"]
     authoritative = settings["confidence"]["authoritative_source_types"]
     max_evidence = extraction["max_evidence_per_field"]
@@ -237,7 +251,27 @@ def extract_for_vendor(
 
     # --- pass 1: parse each page once ---------------------------------------
     pages: list[tuple[dict, list[Block]]] = []
+    unusable: list[str] = []
     for record in records:
+        # A PAGE THAT CARRIES NO WORDS IS NOT EVIDENCE OF ANYTHING (defect 23).
+        #
+        # Agent 1 marks pages it collected successfully but could not read -
+        # JavaScript-rendered pages that return megabytes of HTML and no text.
+        # Agent 2 must not treat those as searched, because "we looked and found
+        # nothing" and "there was nothing to look at" are different findings and
+        # only the first one is about the vendor.
+        if record.get("content_usable") is False:
+            unusable.append(record.get("source_type", "?"))
+            steps.append(ExtractionStep(
+                action="unusable-page", field_name="-",
+                source_type=record.get("source_type", "?"),
+                detail=(f"skipped - Agent 1 recorded only "
+                        f"{record.get('block_count', 0)} heading blocks on this "
+                        f"page; it was collected but is not readable. NOT this "
+                        f"page's fields' fault if they come back NOT_FOUND."),
+            ))
+            continue
+
         html_path = resolve_html_path(record.get("raw_html_path", ""), root)
         if html_path is None:
             steps.append(ExtractionStep(
@@ -285,20 +319,107 @@ def extract_for_vendor(
         confidence = score_field_confidence(hits, authoritative, min_body_high)
 
         if not hits:
+            caveat = ""
+            if unusable:
+                # NEVER report a clean negative when part of the corpus could not
+                # be read. The reviewer has to know which kind of NOT_FOUND this
+                # is — and if pages were unreadable, calling it "not published"
+                # would be a statement about the vendor that our own evidence
+                # does not support.
+                caveat = (f" — CAUTION: {len(unusable)} further page(s) "
+                          f"({', '.join(unusable)}) were collected but not "
+                          f"readable, so this NOT_FOUND may be our limit rather "
+                          f"than the vendor's silence")
             steps.append(ExtractionStep(
                 action="no-match", field_name=name, source_type="-",
                 detail=(f"no match for any of {len(spec['terms'])} terms across "
-                        f"{len(pages)} collected page(s) — reported as NOT_FOUND"),
+                        f"{len(pages)} readable page(s) — reported as NOT_FOUND"
+                        + caveat),
             ))
 
         kept = hits[:max_evidence]
+
+        # CAVEATS GO IN THE EVIDENCE LIST, BECAUSE A REVIEWER READS THE BRIEF AND
+        # NOT THE AUDIT TRAIL.
+        #
+        # Two different lies are possible when part of a corpus is unreadable, and
+        # defect 23 only fixed the first one:
+        #
+        #   1. A NOT_FOUND that is really "we could not read the page".
+        #   2. A FOUND whose evidence came from somewhere ELSE while the page the
+        #      fact belongs on was unreadable. Postman, 12 Aug 2026: the privacy
+        #      field reported FOUND / High, quoting Postman's SECURITY page, while
+        #      Postman's actual privacy policy had been collected and its entire
+        #      readable content was "If you're seeing this message, that means
+        #      JavaScript has been disabled on your browser". A confident answer
+        #      whose primary source was never read is more dangerous than a blank
+        #      one, because nothing about it invites checking.
+        home = spec.get("preferred_source_types", [])
+        unread_home = [s for s in unusable if s in home]
+        absent_home = [s for s in never_collected if s in home]
+        caveats: list[dict] = []
+
+        if not kept and absent_home:
+            caveats.append({
+                "heading": ("No " + ", ".join(absent_home) + " page was ever "
+                            "located - this is not evidence the vendor is silent"),
+                "snippet": (f"Agent 1 never found a {', '.join(absent_home)} page "
+                            f"for this vendor: every candidate URL returned an "
+                            f"error, so nothing was searched. A 404 proves our URL "
+                            f"guess was wrong, not that the vendor publishes "
+                            f"nothing. Find the real page by hand and add it to "
+                            f"config/vendors.yaml before recording this as absent."),
+                "matched_terms": [], "match_location": "tool_limitation",
+                "source_url": "", "source_type": "-", "evidence_of": 0,
+            })
+            steps.append(ExtractionStep(
+                action="home-page-never-found", field_name=name,
+                source_type=", ".join(absent_home),
+                detail=("no page of this type was collected at all - NOT_FOUND "
+                        "here says nothing about the vendor"),
+            ))
+        elif not kept and unusable:
+            caveats.append({
+                "heading": "NOT_FOUND may be our limit, not the vendor's silence",
+                "snippet": (f"{len(unusable)} page(s) for this vendor "
+                            f"({', '.join(unusable)}) were collected but contained "
+                            f"no readable text — almost certainly "
+                            f"JavaScript-rendered. Verify this field by hand before "
+                            f"recording it as not published."),
+                "matched_terms": [], "match_location": "tool_limitation",
+                "source_url": "", "source_type": "-", "evidence_of": 0,
+            })
+        elif kept and unread_home:
+            caveats.append({
+                "heading": "The page this fact belongs on could not be read",
+                "snippet": (f"The {', '.join(unread_home)} page was collected but "
+                            f"contained no readable text, so this answer comes from "
+                            f"the "
+                            f"{', '.join(sorted({e.source_type for e in kept}))} "
+                            f"page instead. Treat the confidence above as being "
+                            f"about the quote, not about the vendor's actual "
+                            f"{', '.join(unread_home)} document, which nobody has "
+                            f"read."),
+                "matched_terms": [], "match_location": "tool_limitation",
+                "source_url": "", "source_type": "-", "evidence_of": 0,
+            })
+            steps.append(ExtractionStep(
+                action="unread-home-page", field_name=name,
+                source_type=", ".join(unread_home),
+                detail=(f"{name} reported {status_from_confidence(confidence)} from "
+                        f"{', '.join(sorted({e.source_type for e in kept}))}, but its "
+                        f"own page type ({', '.join(unread_home)}) was unreadable — "
+                        f"caveat attached to the field"),
+            ))
+
         fields.append(ExtractedField(
             name=name,
             label=spec["label"],
             status=status_from_confidence(confidence),
             value=best_sentence(kept[0].snippet, kept[0].matched_terms) if kept else "",
             confidence=confidence,
-            evidence=[e.__dict__ | {"evidence_of": len(hits)} for e in kept],
+            evidence=([e.__dict__ | {"evidence_of": len(hits)} for e in kept]
+                      + caveats),
         ))
 
     return fields, steps
