@@ -45,8 +45,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.agent2_extract import resolve_html_path                    # noqa: E402
-from src.parse import (longest_sentence_length, split_sentences,     # noqa: E402
-                       term_in, visible_text)
+from src.parse import term_in, visible_text                          # noqa: E402
+# THE PREDICATES LIVE IN src/review_rules.py AND ARE IMPORTED, NOT COPIED.
+# This tool decides whether a corpus may be committed; Agent 3 decides what the
+# reviewer is told. If they computed "coverage" or "weak evidence" separately
+# they would drift, and that is defect 15 (code disagreeing with its own
+# documentation) and defect 36 (two docstrings disagreeing about one rule)
+# wearing a third hat. One definition, two callers.
+from src.review_rules import (claim_not_in_matched_sentence,        # noqa: E402
+                              gated_evidence, off_home_evidence,
+                              real_evidence, vendor_score)
 
 CORPUS = ROOT / "data" / "corpus"
 
@@ -302,22 +310,13 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
         # taught us. Whether the block coheres is a judgement, not a rule — so
         # measure it, report it, and let a human decide.
         for e in real_ev:
-            terms = [t.lower() for t in (e.get("matched_terms") or [])]
-            if not terms:
-                continue
-            snippet, head = e.get("snippet", ""), e.get("heading", "")
-            if longest_sentence_length(snippet) < min_body_high:
-                continue
-            pool = split_sentences(snippet) + split_sentences(head) + [head]
-            carrying = max((len(s) for s in pool
-                            if any(term_in(t, s.lower()) for t in terms)), default=0)
-            if carrying < min_body_high:
+            short = claim_not_in_matched_sentence(e, min_body_high)
+            if short is not None:
                 rep.warn("claim-not-in-matched-sentence",
-                         f"{name}: scored on a {longest_sentence_length(snippet)}-char "
-                         f"sentence, but the longest sentence actually containing "
-                         f"{terms} is {carrying} chars. The block matched; the "
-                         f"sentence that earned the label may be about something "
-                         f"else. Verify by hand")
+                         f"{name}: scored on a longer sentence, but the longest sentence "
+                         f"actually containing {e.get('matched_terms')} is {short} chars. "
+                         f"The block matched; the sentence that earned the label may be "
+                         f"about something else. Verify by hand")
 
         # --- a logo is never a claim (the Atlassian guard) ------------------
         if real_ev and real_ev[0].get("match_location") == "alt_text_only" \
@@ -364,13 +363,22 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
                          f"present, verify by hand")
 
         # --- evidence from outside the field's home ------------------------
-        home = field_dictionary.get(name, {}).get("preferred_source_types", [])
-        if real_ev and home and all(e.get("source_type") not in home for e in real_ev):
+        # Shared with Agent 3 via review_rules, so the WARN a committer sees and
+        # the flag a reviewer reads are the same judgement, not two that happen
+        # to agree today.
+        off = off_home_evidence(f, field_dictionary)
+        if off:
+            home = field_dictionary.get(name, {}).get("preferred_source_types", [])
             rep.warn("off-home-evidence",
-                     f"{name}: all evidence came from "
-                     f"{', '.join(sorted({e.get('source_type','?') for e in real_ev}))}, "
-                     f"never from {'/'.join(home)}. The match is real; the finding is "
-                     f"weak. Agent 3 must flag this")
+                     f"{name}: all evidence came from {', '.join(off)}, "
+                     f"never from {'/'.join(home)}. The match is real; the finding is weak")
+
+        # --- the vendor says the proof exists but does not publish it --------
+        gated = gated_evidence(f)
+        if gated:
+            rep.warn("gated-evidence",
+                     f"{name}: evidence is gated behind a request (\"{gated[0]}\"). "
+                     f"The claim cannot be closed from public sources alone")
 
     # --- DEFECT 31: the score counts what was found, never what was unread ----
     #
@@ -388,19 +396,14 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
     # be read alone. Agent 3 must IMPORT this calculation rather than write its
     # own; a build-time tool and a shipped brief that compute coverage
     # differently is defect 15 with new names.
-    caveated = {f["name"] for f in fields
-                if any(e.get("match_location") == "tool_limitation"
-                       for e in f.get("evidence", []))}
-    core_fields = [f for f in fields if f["name"] in core]
-    core_caveated = [f["name"] for f in core_fields if f["name"] in caveated]
-    verified_core = len(core_fields) - len(core_caveated)
-
-    thresholds = settings["confidence"]["vendor_thresholds"]
-    band = ("High" if total >= thresholds["High"]
-            else "Medium" if total >= thresholds["Medium"] else "Low")
+    scored = vendor_score(fields, core, settings["confidence"]["field_score"],
+                          settings["confidence"]["vendor_thresholds"])
+    total, band = scored["score"], scored["band"]
+    cov = scored["coverage"]
+    core_caveated = cov["caveated"]
     rep.info("vendor-score",
              f"{total}/10 core → {band}  "
-             f"(coverage {verified_core}/{len(core_fields)} core fields verified "
+             f"(coverage {cov['verified']}/{cov['core_total']} core fields verified "
              f"without a caveat)")
 
     if core_caveated and band == "High":

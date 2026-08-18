@@ -1,7 +1,9 @@
 # Evaluation Summary
 
 **Vendor Due-Diligence Research Workflow Prototype — First Quadrant Labs**
-Moushmi Rao · draft of 13 August 2026 · **status: Agents 1 and 2 complete, Agent 3 not built**
+Moushmi Rao · corpus collected 13 August 2026 · analysis and revision 18 August 2026
+**Status: all three agents complete. Figures below describe Agents 1 and 2; Agent 3's own output
+is not yet folded in.**
 
 This document answers the four questions the project brief asks of the evaluation summary:
 whether sources were collected correctly, whether the extracted fields are useful, whether the
@@ -23,7 +25,7 @@ it, is invisible — it recruits the reviewer's trust and then spends it. Everyt
 does that is more complicated than "match a phrase and print it" exists to make that second
 failure visible.
 
-Five distinct mechanisms produced it on real pages, all measured:
+Five distinct mechanisms produced it on real pages, all measured against a corpus collected on 13 August 2026:
 
 | Mechanism | Vendor | Measurement | What a naive tool would have reported |
 |---|---|---|---|
@@ -112,10 +114,10 @@ right and is picked up in §5.
   JetBrains' `terms` is reachable only through URL patterns, so it 404'd three times and was never
   reported missing at all. Because Agent 2's caveat is built from those steps, **the safeguard
   written for exactly this case had never executed on any vendor** — the step appears zero times
-  across all seven audit trails. Found on 13 August by noticing an empty list where there should
+  across all seven audit trails. Found on 18 August by noticing an empty list where there should
   have been an entry. **A fix nobody exercised is a fix nobody verified.**
 - **Vendor pages change between runs.** Linear's `docs` page moved from 24,444 bytes and 15
-  readable characters to 540,090 bytes and 1,034 readable characters between 12 and 13 August. The
+  readable characters to 540,090 bytes and 1,034 readable characters between 12 and 13 August (the corpus is dated 13 August and was deliberately frozen there — see the limitations). The
   local cache, not the live web, is the record of what was actually collected and evaluated.
 
 ---
@@ -432,7 +434,7 @@ defect that did not exist.
 
 ## 6. Honest limitations of this evaluation
 
-- **Agent 3 does not exist yet.** Every statement here about brief assembly, review flags and
+- **Agent 3 was built on 18 August, after this document was written.** Every statement here about brief assembly, review flags and
   scoring describes Agent 2's output and `tools/verify_corpus.py`, not the finished workflow. Its
   scope was fixed in writing by First Quadrant Labs on 13 August — verify evidence coverage,
   identify missing categories, highlight conflicts or weak evidence, prepare the final brief.

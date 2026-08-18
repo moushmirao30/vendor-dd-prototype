@@ -2,10 +2,26 @@
 
 **Purpose:** everything a fresh chat session needs to pick this project up cold.
 Read it top to bottom before touching anything.
-**Last updated: 13 August 2026, day 6 — defect 27–37 pass, and the client's written guidance.**
+**Last updated: 19 August 2026 — DAY 12 of 20. 16 commits, 120 tests, all three agents complete.**
+
+> ### ⚠ DATES IN THIS FILE WERE WRONG UNTIL 19 AUG. CORRECTED.
+> Everything below was written as "13 August" because the assistant's clock said so. Git says
+> otherwise, and git is the evidence:
+> * **13 Aug** — Agent 1 and Agent 2 re-run over all seven vendors (`ran_on 2026-08-13T21:34`,
+>   corpus mtimes 13 Aug). This part of the record was right.
+> * **14–17 Aug** — **no commits, no work.** Four days lost.
+> * **18 Aug** — commits `e39ffd2` and `64fca64`; the client's reply arrived; defects 27–39;
+>   documents rewritten; Agent 3 built (`src/agent3_review.py` mtime 18 Aug).
+> * **19 Aug** — today. Day 12 of the brief's 20-day cycle. **8 days to the 27 Aug submission
+>   target, 10 to the 29 Aug deadline.**
+>
+> The lesson is the project's own: **check the documentation against the data.** Every "13 August"
+> further down that refers to code, defects or documents should read 18 August; the corpus and its
+> measurements genuinely are 13 August. `docs/evaluation.md` and `docs/confidence_rules.md` carry
+> the same wrong dateline and need the same correction.
 
 > ### ⚠ READ §1.1 BEFORE ANY DESIGN DECISION
-> First Quadrant Labs replied to the clarification email in writing on 13 August. **That reply
+> First Quadrant Labs replied to the clarification email in writing on 18 August. **That reply
 > outranks every assumption in this document and every locked decision in §2 where they conflict.**
 > It changed the submission format and questioned the confidence rule. A design choice that
 > contradicts §1.1 is drift, however well argued.
@@ -56,7 +72,7 @@ is the exact failure defect 23 exists to prevent. **Measure a fix against real d
 believing it. Reasoning is not verification.**
 
 **Rule A also means: an assistant must say what it could NOT check.** Cowork's bridge to this
-machine has no `pytest` and no network. The fix pass of 13 Aug was therefore run by copying the
+machine has no `pytest` and no network. The fix pass of 18 Aug was therefore run by copying the
 repo, the corpus and all 55 cached pages into a Linux container with network access, installing
 pytest there, and running the suite and `verify_corpus.py` for real. Numbers quoted below come
 from that run. **Re-run both on Windows yourself before committing** — that is the environment
@@ -81,9 +97,11 @@ research briefs, where every statement traces back to the page it came from. The
 "a controlled internal experiment, not a full procurement automation system" — it is a
 **restraint test**. Roughly half the marks live in the prose deliverables.
 
-- **Deadline: Saturday 29 August 2026.** 16 days left as of this update.
+- **Deadline: Saturday 29 August 2026. 10 days left. Submission target 27 Aug — 8 days.**
 - The brief describes a **20-day cycle**. Day 1 = 8 Aug 2026, so **day N = 7 Aug + N**.
-  Today, 13 Aug, is **day 6**. Day 20 = 27 Aug, two days before the deadline.
+  Today, 19 Aug, is **day 12**. Day 20 = 27 Aug, two days before the deadline.
+- **4 days were lost (14–17 Aug, no commits).** The plan below absorbs that; it has no further
+  slack before the 27 Aug target.
 - Submit to **projects@firstquadrantlabs.com** AND upload to the LMS.
 - All queries go through that one project email, consolidated into one message where possible.
 - Brief PDF: `C:\Users\Moushmi Rao\GEN-AGENTIC_AI\Projects\Research Project_1\Project_Brief_1.pdf`
@@ -92,7 +110,7 @@ research briefs, where every statement traces back to the page it came from. The
 
 ---
 
-## 1.1 CLIENT GUIDANCE — received in writing 13 August 2026. AUTHORITATIVE.
+## 1.1 CLIENT GUIDANCE — received in writing 18 August 2026. AUTHORITATIVE.
 
 First Quadrant Labs' reply to the consolidated clarification email. This is the client speaking
 about their own brief, in writing. **Where it conflicts with anything else in this document, it
@@ -181,10 +199,11 @@ Implementing their wording literally is impossible inside the locked no-LLM deci
 High, so Postman's 10/10 → High on coverage 2/5 becomes impossible. The client has prescribed the
 fix for the biggest open defect in the system without knowing it existed.
 
-**Recommendation: implement it, additively, alongside Agent 3 — not as an Agent 2 redesign.** Keep
-`evidence_level` intact and rename it; add a second function for confidence. Roughly 40 lines.
-Declining is defensible only in writing, and reads badly: a consulting client gave explicit written
-guidance and the deliverable ignored it.
+**✅ IMPLEMENTED 18 Aug, in `src/review_rules.py`.** `extraction_quality()` is Agent 2's old
+measure under its honest name; `confidence()` applies the client's definition. Agent 2 was not
+redesigned — the client said it did not need to be, and it did not.
+**The "no caveat" clause makes defect 31 unrepresentable rather than merely reported:** a field
+whose home page could not be read can no longer score High, so Postman can no longer tie Sentry.
 
 ### 5 · Four NEW requirements
 - **Agent 3 scope, confirmed narrow:** *"focus on review and synthesis rather than introducing
@@ -229,11 +248,11 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 | Storage | **JSON canonical + CSV export** | page text contains commas/quotes/newlines; CSV as primary store corrupts silently | "CSV, JSON, or SQLite" |
 | Agent 1 | **Curated seed first, discovery fills gaps** | a human-checked URL outranks a guessed one (defect 10) | "collected public URLs or a pre-prepared vendor source file" |
 | Agent 2 `value` | **A QUOTE, never a summary** | no LLM ⇒ any "summary" is machine-assembled text a reviewer cannot trace | "source-backed evidence snippets" |
-| Agent 2 confidence | measured on the **longest sentence**, not the whole block | a bullet list is a label, not a claim (defect 15). **QUESTIONED BY THE CLIENT 13 Aug — §1.1 item 4. Keep this logic but rename it EXTRACTION QUALITY, and add a second confidence axis on their definition** | "Confidence level: High / Medium / Low" |
+| Agent 2 confidence | measured on the **longest sentence**, not the whole block | a bullet list is a label, not a claim (defect 15). **✅ RESOLVED 18 Aug.** Questioned by the client (§1.1 item 4); this logic is kept and renamed `extraction_quality`, with `confidence` added as a second axis on their definition. `src/review_rules.py` | "Confidence level: High / Medium / Low" |
 | Agent 2 ranking | sorts by **confidence level first** | the quote printed under a label must be the evidence that earned it | "outputs are structured and easy to review" |
 | `preferred_source_types` | **orders** evidence, never filters it | GitLab really does state FedRAMP on its pricing page | — |
 | Generic-term noise | **Agent 3 raises a flag**, dictionary left alone | avoids over-fitting the dictionary to one vendor | "review flags for manual follow-up" |
-| ~~Submission format~~ | ~~zip including `.git/`, excluding `.venv/`~~ **WITHDRAWN 13 Aug — see §1.1 item 3.** Ship the structured corpus, the code, and a NEW **source manifest**; keep the 22 MB HTML cache local; README explains re-collection | the client asked us not to redistribute verbatim third-party pages | "a structured zip folder or repository format" |
+| ~~Submission format~~ | ~~zip including `.git/`, excluding `.venv/`~~ **WITHDRAWN 18 Aug — see §1.1 item 3.** Ship the structured corpus, the code, and a NEW **source manifest**; keep the 22 MB HTML cache local; README explains re-collection | the client asked us not to redistribute verbatim third-party pages | "a structured zip folder or repository format" |
 | Repo visibility | **private** | the corpus stores ~70,000 chars of verbatim vendor text per vendor | — |
 | Code delivery | written into the repo with full explanation + `docs/code_walkthrough.md` | I must be able to defend every line | "the agent structure is simple, controlled, and understandable" |
 
@@ -241,9 +260,9 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 
 ## 3. What exists right now
 
-**13 commits (`b7068bb`). 101 pytest passing (was 97; +4 written with defects 34–36).
-7 vendors, 49 pages, 55 cached files. `verify_corpus.py`: 0 FAIL across all seven.**
-**Everything from 12–13 Aug is UNCOMMITTED, including the defect 27–36 fixes and the defect 37 report — see §7.**
+**16 commits, `64fca64`, pushed. 120 pytest passing. All three agents complete.
+7 vendors, 49 pages, 55 cached files, 7 briefs. `verify_corpus.py`: 0 FAIL across all seven.**
+**Agent 3 is written and tested but NOT YET COMMITTED — 4 new files plus 3 modified. See §7.**
 
 ```
 vendor-dd-prototype/
@@ -259,16 +278,23 @@ vendor-dd-prototype/
 │   │                         · longest_sentence_length · evidence_level · score_field_confidence
 │   ├─ agent1_collect.py      AGENT 1 — collector, audit trail, usability check, save/load
 │   ├─ agent2_extract.py      AGENT 2 — extraction, ranking, caveats, save/load
-│   └─ schema.py              SourceRecord · ExtractedField · VendorBrief
+│   ├─ agent3_review.py       AGENT 3 — coverage, missing, weak evidence, conflicts, brief
+│   ├─ review_rules.py        THE REVIEW PREDICATES, imported by Agent 3 AND verify_corpus
+│   └─ schema.py              SourceRecord · ExtractedField · VendorBrief (+ coverage)
 ├─ tools/
-│   └─ verify_corpus.py       CORPUS HEALTH CHECKER — run before every commit
+│   ├─ verify_corpus.py       CORPUS HEALTH CHECKER — run before every commit
+│   └─ review_all.py          runs Agent 3 over every vendor; writes data/briefs/
 ├─ data/corpus/               7 vendors × {json, _run.json, _fields.json}
+├─ data/briefs/               7 × <slug>_brief.json — Agent 3's output
 ├─ data/cache/html/           55 × v2_*.html — offline replay (gitignored)
 ├─ docs/
 │   ├─ confidence_rules.md    the written confidence rule + worked examples
 │   ├─ architecture.md        DRAFT — see §8
-│   └─ evaluation.md          DRAFT — written 13 Aug from the corpus
-└─ tests/                     101 tests, all offline
+│   └─ evaluation.md          rewritten 18 Aug, figures fact-checked by script
+└─ tests/                     120 tests, all offline
+    ├─ test_parse.py · test_agent1.py · test_agent2.py · test_agent3.py (19)
+    ├─ test_fetch_robots.py · test_app_smoke.py · test_text_quality.py
+    └─ fixtures/  5 HTML files modelled on real vendor page shapes
 ```
 
 ### The core idea, in case it needs restating
@@ -293,7 +319,7 @@ Four mechanisms now produce it, all measured on real pages:
 | **JavaScript rendering** | Atlassian | product: **52 readable chars, 0 blocks from 898,035 bytes**; pricing: 66 chars from 1,213,336 | Atlassian publishes pricing perfectly well. We cannot read it. |
 | **A JS shell behind a redirect** | Postman | privacy page: **0 readable chars from 4,727 bytes** | Field reported FOUND/High from the *security* page while the privacy policy was never read |
 | **An unguessable URL** | JetBrains | security page 404'd six times before the seed was corrected; `terms` still 404s three times | JetBrains publishes *"SOC 2 Type II and GDPR compliance"* at `/legal/docs/privacy/trust-center/` |
-| **A confident quote that says nothing** *(found and FIXED 13 Aug)* | GitHub | `security_trust` = *"…the content of your Account and its security are up to you."* — the **terms of service**, one matched term | The AICPA SOC 1/SOC 2 Type 2 statement, matching four terms, ranked **second** and never became the value. Now fixed: see defects 27, 28, 30 |
+| **A confident quote that says nothing** *(found and FIXED 18 Aug)* | GitHub | `security_trust` = *"…the content of your Account and its security are up to you."* — the **terms of service**, one matched term | The AICPA SOC 1/SOC 2 Type 2 statement, matching four terms, ranked **second** and never became the value. Now fixed: see defects 27, 28, 30 |
 
 **A 200 means the URL exists, not that it is the right page, and not that it contains words.
 A 404 means our URL guess was wrong, not that the vendor is silent.
@@ -305,7 +331,7 @@ The machinery that enforces the first three:
 - caveat entries injected into a field's **evidence list**, because a reviewer reads the brief, not the trail
 - `tools/verify_corpus.py`, which FAILs on an uncaveated confident answer
 
-What now guards the fourth (all added 13 Aug):
+What now guards the fourth (all added 18 Aug):
 - `preferred_source_types` no longer treats a terms-of-service page as a home for security claims
 - ranking and scoring both ask "is this a complete sentence?" rather than "which HTML tag was it in"
 - the field's headline is the sentence carrying the MOST matched terms, not the first one found
@@ -317,7 +343,7 @@ while half its primary documents were never read. See defect 31.**
 
 ---
 
-## 5. Thirty-seven defects, and the headline they add up to
+## 5. Thirty-nine defects, and the headline they add up to
 
 **The automated test suite caught one of them. Every other one was found by opening the artifact
 and reading what it actually said — the screen, then the JSON, then the raw HTML.**
@@ -336,7 +362,7 @@ Full table: project memory (`project_defect_log.md`). The ones that matter most:
 | 25 | `SLA` in a CVSS remediation clause scored High for uptime | a string match is not a meaning |
 | 26 | Agent 2 only ever received `records`, so a never-collected page type was invisible to it | JetBrains NOT_FOUND cited the wrong pages |
 
-### 27–37 — FOUND 13 Aug 2026. All verified against the real corpus; 36 fixed, 37 recorded.
+### 27–39 — FOUND 18 Aug 2026. All verified against the real corpus; 36 fixed, 37–39 recorded.
 
 | # | Defect | Fix that shipped |
 |---|---|---|
@@ -352,6 +378,20 @@ Full table: project memory (`project_defect_log.md`). The ones that matter most:
 | **36** | **Two docstrings described one rule differently, and `PARTIAL` was unreachable.** `status_from_confidence`: *"PARTIAL — Low, something matched but only a heading."* `score_field_confidence`: *"Medium — named only in a heading … on an authoritative page."* The code followed the second, so PARTIAL occurred **0 times in 56 field results**. | Bare heading → Low → PARTIAL. Bullet lists on authoritative pages still score Medium. Now 3 PARTIALs: Linear pricing, Linear data residency, Sentry data residency. **Two docstrings disagreeing about one rule is how a codebase stops being auditable.** |
 
 | **37** | **A field's confidence label can be earned by a sentence that does not contain the matched term.** `evidence_level` measures the longest sentence anywhere in the block. In **9 of 122 blocks** that sentence carries no matched term. Atlassian's security field: `hipaa` appears only in the 39-character section title *"Sensitive Health Information and HIPAA."*, while the High came from a 322-character sentence about something else in the same ToS section. | **NOT FIXED, DELIBERATELY.** The obvious tightening — score only the longest sentence carrying the term — also demotes Sentry's *"High Availability"* heading with a full paragraph beneath it and GitLab's *"Trust Center Documents"*. Vendors do not repeat a heading inside its own paragraph, so the strict rule trades a cosmetic over-score for a false negative — the same mistake as the route-not-taken below. `verify_corpus` now raises `claim-not-in-matched-sentence` on all nine so a human sees them. |
+
+### 38–39 — found in AGENT 3 ITSELF, 18 Aug, before it was delivered
+
+| # | Defect | Fix |
+|---|---|---|
+| **38** | **A negation-based conflict detector fired on 3 of 7 vendors and every hit was false.** It reported *"negative on privacy, plain on privacy"* — comparing three blocks of the SAME privacy policy against each other. A privacy policy contains both "we do not sell your data" and ordinary positive statements; that is what a privacy policy IS. | **Deleted, not tuned.** There is no threshold that turns "this paragraph contains the word not" into evidence of contradiction. **A detector that produces false positives is worse than one that produces nothing, because it teaches the reviewer to skim past flags — and the flags are the entire product.** |
+| **39** | **"Could not be evaluated" was applied whenever ANY page of the vendor was unreadable.** That hedged JetBrains' data-residency NOT_FOUND into a tool limitation even though both of its home pages — security and privacy — read perfectly well and JetBrains simply does not publish it. | Test the field's OWN home page, not the vendor's worst page. Now **3 could-not-be-evaluated vs 7 genuine not-founds**. **Over-hedging is its own dishonesty: it hides a real finding behind our own excuse, and it is the mirror image of defect 23.** It also broke the client's explicit request to distinguish the two. |
+
+Also corrected before delivery: `vendor_overview` first mined the product page body and returned a
+**changelog entry** for Linear and navigation fragments for GitLab and JetBrains. The product page
+contributed exactly 1 of 122 evidence blocks — it is the least structured page a vendor publishes.
+The overview is now the product page `<title>`, already in `SourceRecord.page_title`. **A `<title>`
+lives in the HTML head and is served before JavaScript runs**, so Atlassian still yields "Jira |
+Project Management for the AI Era | Atlassian" from a page whose body gives 52 characters.
 
 ### A ROUTE NOT TAKEN — keep this, it is the best thing in the evaluation
 The first version of defect 28's fix dropped blocks whose heading was not a complete sentence.
@@ -392,7 +432,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
   guarantee and makes the next person's correct fix look like a regression.
 - **Two docstrings describing one rule differently is how a codebase stops being auditable**
   (defect 36) — and that disagreement had silently killed an entire status value.
-- **Measure a fix against real data before believing it.** On 13 Aug three of four candidate
+- **Measure a fix against real data before believing it.** On 18 Aug three of four candidate
   findings were false, and one "fix" was a regression only the corpus exposed.
 - **We never bypass access controls.** No browser-impersonating headers.
 
@@ -414,7 +454,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
    hand in the browser. It also has **no pytest**, so an assistant cannot run the suite; only
    `verify_corpus.py` and hand-written checks run there. Always re-run `pytest` yourself.
 7. `data/cache/html/*` is gitignored, so a bare `git clone` cannot replay offline. That used to be
-   the argument for shipping a zip including `.git/`. **The client withdrew that on 13 Aug (§1.1
+   the argument for shipping a zip including `.git/`. **The client withdrew that on 18 Aug (§1.1
    item 3): the cache is NOT submitted.** The consequence stands and must be stated in the README —
    a reviewer re-collects the public sources before they can replay. The cache stays local for
    development.
@@ -426,7 +466,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 
 ## 7. Where things stand and what happens next
 
-### State at 13 Aug, after the fix pass — every number below was produced by running it
+### State at 19 Aug — every number below was produced by running it, not recalled
 - **101 pytest passing** (97 before; +2 for defect 34's wiring, +1 for 35, +1 for 28).
 - `python tools/verify_corpus.py` → **0 FAIL across all seven vendors.**
 - Field totals moved **46 FOUND / 10 NOT_FOUND / 0 PARTIAL → 43 / 10 / 3**. PARTIAL is reachable
@@ -439,18 +479,39 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
   carries the SOC 2 Type II sentence, which is now the field's value. `terms` still 404s three
   times — and, since defect 34, is finally *reported* as never collected.
 
-### IMMEDIATELY OUTSTANDING — verified against the repo, evening of 13 Aug
+### IMMEDIATELY OUTSTANDING — verified against the repo, 19 Aug
 
-**Done today, confirmed by inspection, not by memory:**
+**Done 13 Aug (corpus) and 18 Aug (commits), confirmed by inspection, not by memory:**
 - ✅ Commit `07127e8` landed — the 12 Aug work plus the first round of docs. **It does NOT contain
       the defect 27–37 code fixes**; those are still in the working tree.
-- ✅ Agent 1 AND Agent 2 re-run for all seven vendors (`ran_on` 21:28–21:34 IST), using the fixed
-      code. **Defect 34 verified in production: `jetbrains_run.json` now carries `skip: terms`** —
-      the step that had never once been emitted since the day it was written.
-- ✅ Clarification email sent and answered. See §1.1.
+- ✅ **13 Aug:** Agent 1 AND Agent 2 re-run for all seven vendors (`ran_on 2026-08-13T21:34`).
+      **Defect 34 verified in production: `jetbrains_run.json` carries `skip: terms`** — the step
+      that had never once been emitted since the day it was written.
+- ✅ **18 Aug:** commits `e39ffd2` and `64fca64` pushed; clarification email answered (§1.1).
+
+**Done 18 Aug — AGENT 3 IS BUILT:**
+- ✅ `src/review_rules.py` — the review predicates in one place. **`tools/verify_corpus.py` now
+      IMPORTS them instead of keeping its own copies**, so the checker that gates a commit and the
+      brief that reaches a reviewer cannot drift. Output is byte-identical after the refactor.
+- ✅ `src/agent3_review.py` — coverage, missing categories, weak evidence, conflicts, final brief.
+      Exactly the four verbs the client fixed in writing, nothing else.
+- ✅ **Two-axis confidence live (§1.1 item 4).** `extraction_quality` is the old sentence-based
+      measure under its honest name; `confidence` follows the client's definition. **A caveated
+      field can no longer be High — defect 31 is now unrepresentable, not merely reported.**
+- ✅ `tools/review_all.py` — CLI, same shape as `verify_corpus.py`, writes `data/briefs/*.json`.
+- ✅ **120 tests passing** (was 101). All seven briefs generated.
+- Two defects of my own were found and fixed before delivery: a negation-based conflict detector
+  that fired on three of seven vendors with every hit false, and a "not found vs could not be
+  evaluated" test so broad that it hedged a genuine JetBrains finding into a limitation.
 
 **Still outstanding, in this order:**
-- [ ] **Confirm `pytest -q` = 101 passed on Windows.** Not yet verified there; the fix pass ran in
+- [ ] **Confirm `pytest -q` = 120 passed on Windows**, then `python tools\review_all.py`.
+- [ ] **COMMIT AGENT 3** — 4 new files (`src/review_rules.py`, `src/agent3_review.py`,
+      `tools/review_all.py`, `tests/test_agent3.py`) and 3 modified (`src/schema.py`,
+      `tools/verify_corpus.py`, `HANDOFF.md`). Nothing else is uncommitted.
+- [ ] **Replace the "designed, not yet implemented" box in `docs/confidence_rules.md`** with the
+      rule as built. It is now the only document in the repo describing behaviour that has been
+      superseded, and leaving it is the exact failure §8 exists to prevent. Not yet verified there; the fix pass ran in
       a Linux container.
 - [ ] **Commit the CODE — 12 files — BEFORE the corpus.** The corpus on disk was generated by code
       that is not yet committed. Committing the corpus first would produce a repo where the
@@ -461,15 +522,20 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 - [ ] **Then commit the corpus** — 6 untracked vendors + gitlab. `verify_corpus` must show 0 FAIL
       first.
 - [ ] Delete `_to_delete/`.
-- [ ] Correct `docs/architecture.md` §3, §6, §10, §11 (§8 lists what is wrong in each).
+- [ ] Correct `docs/architecture.md` §3, §6, §10, §11 (§8 lists what is wrong in each). §6 marks
+      Agent 3 "NOT BUILT YET" — it is built; describe what it actually does.
 - [ ] Rewrite the `README.md` submission section — the client withdrew the cache-in-zip plan
       (§1.1 item 3) and the README still describes it.
 
-**A note on how today went, for the next session.** Day 6 produced no new capability: no Agent 3,
-no orchestrator, no export. What it produced was eleven defects found and ten fixed, three
-documents rewritten against verified data, and a client reply that fixed the scope in writing.
-That was the right trade on day 6 and it is the wrong trade on day 8. **From 14 Aug the measure is
-shipped capability, not documents.**
+**Where the time actually went, for the next session.** Day 6 (13 Aug) re-ran the agents. **Days
+7–10 (14–17 Aug) produced nothing — no commits.** Day 11 (18 Aug) produced eleven defects found and
+ten fixed, three documents rewritten against verified data, a client reply that fixed the scope in
+writing, and Agent 3.
+
+That is a good day 11 and a bad four days before it. **The project is now on day 12 of 20 with
+three of ten brief deliverables complete and no slack left before the 27 Aug target.** From here
+the measure is shipped capability: export, orchestrator, UI, then documents. The replanned table
+below assumes no further lost days.
 
 ### The per-vendor loop
 ```
@@ -479,20 +545,40 @@ git add data/corpus/<slug>*.json
 git commit -m "<what this vendor taught>"   # the finding, not "add <slug>.json"
 ```
 
-### Remaining build — dated, not day-numbered
+### Remaining build — REPLANNED 19 Aug from the real calendar
 
-| Dates | Work |
-|---|---|
-| **13 Aug** (day 6) | ✅ Defects 27–37. ✅ Clarification email sent AND answered — §1.1. Docs rewritten. Still to do today: pytest on Windows, re-run Agent 1+2 for all seven, commit code then corpus. |
-| **14–16 Aug** | **Agent 3.** Extract the shared predicates out of `tools/verify_corpus.py` into `src/`, then build `src/agent3_review.py` on top of them — **`verify_corpus.py` is already a working prototype of Agent 3** (`vendor-score`, coverage, `field-status`, `off-home-evidence`, `unread-home-page`, `unusable-page`, `thin-density`, `claim-not-in-matched-sentence`). Import them; do not reimplement, or the tool and the product drift and that is defect 15 again. **The client fixed Agent 3's scope in writing (§1.1 item 5): verify evidence coverage, identify missing categories, highlight conflicts or weak evidence, prepare the final brief — and nothing else.** Required flags from real data: (a) evidence only from outside `preferred_source_types` — on GitLab three of five core fields draw their strongest evidence from the *privacy policy*; (b) gated evidence — Sentry's SOC 2 reports are "available to customers … upon request"; (c) coverage vs score (defect 31); (d) **conflicts between sources — NEW, client-requested, not built today**; (e) cite only terms visible in the printed quote. Populate `VendorBrief.vendor_overview` and `.product_category` (category from `vendors.yaml`, overview quoted from the product page). **Do the two-axis confidence change here (§1.1 item 4) — additive, ~40 lines, and it closes defect 31.** |
-| **17–18 Aug** | `src/export.py` (JSON/CSV/Markdown) **plus the SOURCE MANIFEST export — new client-required deliverable, §1.1 item 3**; `src/orchestrator.py` (1→2→3). Wire the Vendor brief and Export tabs. **The UI must show the chain end to end: Source → Extracted Evidence → Structured Field → Confidence → Review Flag → Final Brief (§1.1 item 5).** |
-| **19 Aug** | **FEATURE FREEZE.** Anything unfinished becomes a limitations entry — that scores better than a half-working feature. |
-| **14 Aug onward, in parallel** | `docs/evaluation.md`. It is already ~90% writable from the corpus and the defect log and does **not** depend on Agent 3. Writing it early hedges the worst case. |
-| **20–25 Aug** | `assumptions_limitations.md`, `test_cases.md`, `code_walkthrough.md`. Correct `architecture.md` (§8). Screenshots. |
-| **26 Aug** | Fresh-clone test: delete the venv, follow the README exactly, confirm it runs first try. Remove `_to_delete/`. **Package per §1.1 item 3 — structured corpus + code + source manifest, HTML cache EXCLUDED, README explaining re-collection.** Verify by unpacking the archive somewhere clean and checking that nothing in it is a verbatim third-party page. |
-| **27 Aug** (day 20) | **Submit.** Email + LMS. Never submit on the deadline day; 28–29 Aug is buffer, not schedule. |
+**Position: day 12 of 20. Three of ten brief deliverables complete. 8 days to the submission
+target.** The old plan put feature freeze on 19 Aug — today — with `export.py`, the orchestrator
+and two UI tabs still unwritten. That was never survivable, so freeze moves to 21 Aug and the
+documents compress. There is no slack left before 27 Aug; anything that slips comes out of the
+buffer, not out of the documents.
 
----
+| Date | Day | Work |
+|---|---|---|
+| **19 Aug** | 12 | **Commit Agent 3 first** (7 files, currently uncommitted — a day's work living only on disk). Then `src/export.py`: JSON / CSV / Markdown **plus the client's SOURCE MANIFEST** (§1.1 item 3 — new deliverable, data already in Agent 1's trail). Then `src/orchestrator.py`, 1→2→3, which is a brief deliverable in its own right ("Python orchestration code for the agent workflow"). |
+| **20 Aug** | 13 | `app.py` tabs 4 and 5, wired to show the client's required chain end to end: **Source → Extracted Evidence → Structured Field → Confidence → Review Flag → Final Brief** (§1.1 item 5). Screenshot every tab as you go — screenshots are a listed deliverable and are always the thing left until it is too late. |
+| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. Then the three document corrections that are already known and cheap: the `docs/confidence_rules.md` "designed, not yet implemented" box → the rule as built; `docs/architecture.md` §3/§6/§10/§11; the `README.md` submission section (§1.1 item 3, and it must explain how a reviewer re-collects). |
+| **22–24 Aug** | 15–17 | The three unwritten documents, in this order of value: **`assumptions_limitations.md`** (it also owes the brief's "mention lower-cost alternatives" line — Ollama, local models, template summaries), **`test_cases.md`**, **`code_walkthrough.md`**. `docs/evaluation.md` is already written; re-read it against the final code rather than rewriting it. |
+| **25 Aug** | 18 | **Fresh-clone test.** Delete the venv, follow the README exactly, confirm it runs first try. Remove `_to_delete/`. Package per §1.1 item 3 — structured corpus + code + source manifest, **HTML cache EXCLUDED** — then unpack the archive somewhere clean and confirm nothing in it is a verbatim third-party page. |
+| **26 Aug** | 19 | Buffer. Use it for whatever slipped, or for the optional LLM summarisation toggle **only if everything else is finished** (§1.1 item 1 — must work with no API key, must link back to evidence). |
+| **27 Aug** | 20 | **Submit.** Email projects@firstquadrantlabs.com and upload to the LMS. 28–29 Aug is buffer, not schedule. |
+
+### DECISION MADE 19 AUG: DO NOT RE-COLLECT THE CORPUS
+
+The corpus was collected on **13 August and is now 6 days old**. Vendor pages demonstrably move —
+Linear's `docs` page went from 24,444 bytes to 540,090 between 12 and 13 August, and its security
+page now publishes `<h2>SOC 2 compliance</h2>` with an empty body where a full SOC 2 sentence was
+recorded on 10 August.
+
+**Freeze it.** Re-collecting would invalidate every measured figure in `docs/evaluation.md`,
+`docs/confidence_rules.md` and this file — the 8-of-49 unusable pages, the 122 evidence blocks, the
+per-vendor coverage table — and each of those was fact-checked by script against the corpus. That
+is a day of re-verification bought for nothing, on a plan with no slack.
+
+What to do instead: **state the collection date plainly** in the README and the evaluation, and
+present the drift as a finding rather than a staleness problem. "The cache, not the live web, is
+the record of what was evaluated" is already in the evaluation's limitations — it is a stronger
+sentence when the reader can see the corpus is dated.
 
 ## 8. Known-wrong things in the current documents — fix before submission
 
@@ -503,25 +589,25 @@ code does not have is worse than no document.
   **False.** True for Statuspage-hosted status pages; false for Atlassian's marketing pages,
   Postman's privacy policy and docs, JetBrains' pricing and docs, and Linear's docs. Rewrite as:
   *rendering is excluded by scope, and the cost of that exclusion is measured and reported.*
-- **`docs/architecture.md` §6** documents Agent 3, which does not exist. Keep the "NOT BUILT YET"
-  marker until it does.
 - **`docs/architecture.md` §11** asserts GitHub's *"GitHub's API stays secure with ISO, SOC 2, and
   GDPR"* scores **High**. It was false when written and is true now, for a reason worth telling:
   the sentence is a bare `<h2>` with no paragraph under it, so it scored `heading_only` → Medium,
   ranked 9th of 9 and never reached the brief at all — until defect 28 made scoring and ranking
   ask "is this a sentence?" instead of "which tag was it in". **Rewrite the paragraph around what
   actually happened.** A claim that was accidentally right is worth less than a defect explained.
-- **`docs/architecture.md` §3** says "94 offline tests" and "43 seed URLs". It is now **101 tests**;
+- **`docs/architecture.md` §3** says "94 offline tests" and "43 seed URLs". It is now **120 tests**;
   recount the seeds.
-- **`config/settings.yaml`** — worked examples CORRECTED 13 Aug (defect 33). Nothing owed.
-- **`docs/confidence_rules.md` — CORRECTED 13 Aug** for defects 27, 28 and 36, and its worked
+- **`docs/architecture.md` §6** marks Agent 3 "NOT BUILT YET". It is built. Describe the shared
+  predicate module and the two-axis confidence.
+- **`config/settings.yaml`** — worked examples CORRECTED 18 Aug (defect 33). Nothing owed.
+- **`docs/confidence_rules.md` — CORRECTED 18 Aug** for defects 27, 28 and 36, and its worked
   examples re-derived from the corpus. Three of its six rows had gone stale exactly as
   `settings.yaml` had: the Linear row quoted *"Linear undergoes regular Service Organization
   Controls audits (SOC 2 Type II)."*, a sentence that **appears nowhere in the current corpus** —
   Linear's security page now yields `<h2>SOC 2 compliance</h2>` with an empty body. The Atlassian
   row described the field as Low/PARTIAL from alt-text; it is FOUND/High from the terms page.
   Nothing owed.
-- **`docs/evaluation.md` — REWRITTEN 13 Aug** against the corrected corpus. Every figure in it was
+- **`docs/evaluation.md` — REWRITTEN 18 Aug** against the corrected corpus. Every figure in it was
   fact-checked against `data/corpus/` by script, not by eye.
 - **`README.md` is now wrong about the submission** — it describes shipping the cache for offline
   replay. §1.1 item 3 withdrew that. It must instead explain **how a reviewer re-collects the
@@ -543,9 +629,10 @@ code does not have is worse than no document.
 cd "C:\Users\Moushmi Rao\GEN-AGENTIC_AI\Projects\Research Project_1\vendor-dd-prototype"
 .venv\Scripts\activate
 pip install -r requirements.txt
-pytest -q                       # expect 101 passed. Re-run after every extraction, not just
+pytest -q                       # expect 120 passed. Re-run after every extraction, not just
                                 # after code changes
 python tools/verify_corpus.py   # expect 0 FAIL before any commit
+python tools/review_all.py      # AGENT 3 over every vendor -> data/briefs/*.json
 streamlit run app.py            # then http://localhost:8501
 ```
 
@@ -591,18 +678,18 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 | No manager agents, memory layers, autonomous browsing loops | Met | linear orchestration by design |
 | 5–8 vendors, one practical category | Met — 7 developer productivity tools | `config/vendors.yaml` |
 | Only public, official/credible sources | Met | seeds are official vendor domains; robots honoured |
-| Source types: product, pricing, security/trust, privacy, terms, docs, integrations, status | Met | 6–8 per vendor collected. `trust` became a first-class authoritative type on 13 Aug because the brief pairs it with `security` in one bullet |
+| Source types: product, pricing, security/trust, privacy, terms, docs, integrations, status | Met | 6–8 per vendor collected. `trust` became a first-class authoritative type on 18 Aug because the brief pairs it with `security` in one bullet |
 | Structured store with vendor name, source URL, source type, page title, collected text, date collected, tags, evidence note | Met — `SourceRecord` maps 1:1 | `src/schema.py` |
 | Input: vendor name/list, collected URLs or pre-prepared source file, optional category filter | Partial — **optional research-category filter not implemented** | `app.py` |
 | Output: overview, category, key sources, security, privacy, support, integrations, pricing, missing/unclear, review flags, evidence snippets, confidence | Schema complete, **unpopulated until Agent 3** | `VendorBrief` in `src/schema.py` |
 | Streamlit: select vendor · view sources · run or replay · see agent steps · inspect evidence · view brief · export JSON/CSV/Markdown | 5 of 7 — **brief and export tabs are stubs** | `app.py` tabs 4 and 5 |
 | Runs locally on a standard laptop, low cost, no heavy infrastructure | Met | no LLM, no GPU, no paid service |
-| Missing or unclear information flagged instead of guessed | Met for collection, **pending for the brief** | caveats + `verify_corpus`; Agent 3 owes the flag list. `PARTIAL` became reachable on 13 Aug (defect 36), so "we saw a hint" is no longer reported as "the vendor said so" |
-| Confidence level: High / Medium / Low | Met, rule corrected 13 Aug | `docs/confidence_rules.md` **still describes the pre-defect-36 rule** — update it |
+| Missing or unclear information flagged instead of guessed | Met for collection, **pending for the brief** | caveats + `verify_corpus`; Agent 3 owes the flag list. `PARTIAL` became reachable on 18 Aug (defect 36), so "we saw a hint" is no longer reported as "the vendor said so" |
+| Confidence level: High / Medium / Low | Met, rule corrected 18 Aug | `docs/confidence_rules.md` **still describes the pre-defect-36 rule** — update it |
 | Lower-cost alternatives (Ollama, local models, rule-based, template summaries) mentioned and supported | **Rule-based is built; the alternatives are not yet written down anywhere.** The brief asks that they be *mentioned* | owed by `assumptions_limitations.md` |
 | Deliverables: prototype · orchestration code · corpus · ≥5 sample outputs · README · architecture note · assumptions & limitations · test cases · evaluation summary · screenshots | 4 of 10 complete | see §7 |
 | Zip or repository, all code, data, README, screenshots, sample outputs | Planned — **packaging rewritten by client instruction** | structured corpus + code + source manifest; HTML cache EXCLUDED; README explains re-collection (§1.1 item 3) |
-| Queries only via projects@firstquadrantlabs.com, consolidated | **Sent and answered 13 Aug** | §1.1 |
+| Queries only via projects@firstquadrantlabs.com, consolidated | **Sent and answered 18 Aug** | §1.1 |
 
 ### Added by the client's written guidance, 13 Aug (§1.1). Not in the original brief.
 
@@ -610,15 +697,15 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 |---|---|---|
 | Rule-based extraction as delivered behaviour; verbatim evidence praised for auditability | **Met and endorsed** | quote it in the evaluation |
 | Optional LLM summarisation toggle — must work without an API key, must link back to evidence | **Not built.** Last item in the build order, only if time permits | — |
-| No headless browser; distinguish "not found" from "could not be evaluated" | **Met** via caveats; **match their wording** in the brief | Agent 2 caveats |
-| Check other official sources before marking a category unavailable, else flag for manual review | Behaviour exists (all pages searched); **not visible in the brief** | Agent 3 owes the wording |
+| No headless browser; distinguish "not found" from "could not be evaluated" | **Met, in their exact wording**, per field rather than per vendor: 3 could-not-be-evaluated vs 7 genuine not-founds | `agent3_review.review_vendor` |
+| Check other official sources before marking a category unavailable, else flag for manual review | **Met** — a not-found now states that the field's own pages read cleanly and how many others did not | `agent3_review.review_vendor` |
 | Number AND percentage of inaccessible pages in the evaluation | **Met — 8 of 49, 16.3%** | `docs/evaluation.md` §1.1 |
 | Do NOT ship the 22 MB HTML cache | **Locked decision withdrawn**; packaging step rewritten | §1.1 item 3, §7 |
 | **SOURCE MANIFEST — new deliverable** | **Not built.** Data exists in Agent 1's trail | `src/export.py`, 17–18 Aug |
 | README explains how a reviewer re-collects the sources | **Not written** | §8 |
-| Confidence not based primarily on sentence length | **Not implemented.** Two-axis model designed | §1.1 item 4, Agent 3 |
-| Agent 3 = review and synthesis only; coverage, missing categories, conflicts, final brief | **Not built.** Scope now fixed in writing | 14–16 Aug |
-| **Conflict detection between sources — new** | **Not built.** No contradiction detection today | Agent 3 |
+| Confidence not based primarily on sentence length | **IMPLEMENTED 18 Aug** — two axes, and a caveated field can no longer score High | `review_rules.confidence` |
+| Agent 3 = review and synthesis only; coverage, missing categories, conflicts, final brief | **BUILT 18 Aug** | `src/agent3_review.py` |
+| **Conflict detection between sources — new** | **Built and unit-tested. Returns ZERO on the real corpus** — reported as a finding, not hidden. Value-level only (percentages, audit levels); semantic contradiction needs an LLM | `review_rules.conflicting_values` |
 | Offline replay demonstrated in the submission | **Not demonstrated.** Reconcile with the cache exclusion | screenshots + demo notes |
 | UI shows Source → Evidence → Field → Confidence → Flag → Brief | **Partially** — tabs 4 and 5 are stubs | `app.py` |
 | Cross-vendor comparison table in the evaluation | **Met** | `docs/evaluation.md` §2 |

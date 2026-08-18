@@ -108,6 +108,22 @@ class VendorBrief:
     overall_confidence: Confidence = "NOT_FOUND"
     confidence_score: int = 0                                # 0-10, see docs/confidence_rules.md
 
+    # COVERAGE TRAVELS WITH THE SCORE. ALWAYS. (defect 31, added 13 Aug 2026)
+    #
+    # `confidence_score` counts what was FOUND. It cannot count what was never
+    # LOOKED AT. Measured on the real corpus: Postman scores 10/10 -> High with
+    # four core fields resting on pages that returned no readable text at all,
+    # and Sentry scores 10/10 -> High with every page read. Printed alone, those
+    # two vendors are indistinguishable to an operations lead — which is exactly
+    # the failure this project exists to report, reproduced by our own scoring.
+    #
+    # These three fields are on the dataclass rather than computed at render
+    # time so that no exporter, template or UI panel can show the score without
+    # them being available beside it.
+    coverage_verified: int = 0        # core fields whose evidence carries no caveat
+    coverage_total: int = 0           # core fields in total
+    coverage_caveated: list[str] = field(default_factory=list)
+
     # Printed on every export. The brief requires the output to state plainly
     # that this is a first-pass aid and that final review stays manual.
     disclaimer: str = (

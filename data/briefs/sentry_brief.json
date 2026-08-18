@@ -1,0 +1,434 @@
+{
+  "vendor_name": "Sentry",
+  "vendor_slug": "sentry",
+  "generated_on": "2026-08-18",
+  "vendor_overview": "Application Performance Monitoring & Error Tracking Software | Sentry",
+  "product_category": "developer productivity tools",
+  "key_sources": [
+    "https://sentry.io/welcome/",
+    "https://sentry.io/pricing/",
+    "https://sentry.io/security/",
+    "https://sentry.io/privacy/",
+    "https://docs.sentry.io/",
+    "https://status.sentry.io/",
+    "https://sentry.io/terms"
+  ],
+  "fields": {
+    "security_trust": {
+      "name": "security_trust",
+      "label": "Security and trust information",
+      "status": "FOUND",
+      "value": "Sentry has obtained the following compliance certifications: SOC2 Type I SOC2 Type II HIPAA Attestation ISO 27001 If you already use Sentry, you can access the report and certificate via your Sentry account.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Compliance Certifications",
+          "snippet": "Sentry has obtained the following compliance certifications: SOC2 Type I SOC2 Type II HIPAA Attestation ISO 27001 If you already use Sentry, you can access the report and certificate via your Sentry account. Otherwise, contact us for a copy of any report(s) you’re interested in reading (it’ll be less infuriating than your social feed.)",
+          "matched_terms": [
+            "soc2",
+            "iso 27001",
+            "hipaa"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 16
+        },
+        {
+          "heading": "Third-Party Audit",
+          "snippet": "Google Cloud Platform undergoes various third-party independent audits regularly and can provide verification of compliance controls for its data centers, infrastructure, and operations. This includes, but is not limited to, the SSAE 18-compliant SOC 2 certification and ISO 27001 certification. Sentry undergoes regular third-party independent audits on a regular basis and Sentry’s SOC 2 report and ISO 27001 certificate are available to customers via their Sentry account or upon request.",
+          "matched_terms": [
+            "soc 2",
+            "iso 27001"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 16
+        },
+        {
+          "heading": "SAML 2.0",
+          "snippet": "To facilitate user authentication through the web browser and improve identity management, Sentry offers Security Assertion Markup Language (SAML)-based SSO and System Cross-Domain Identity Management (SCIM) as standard features to customers on its Business and Enterprise plans. SAML 2.0 enhances user-based security and streamlines signup and login from trusted portals to enhance user experience, access management, and auditability. SCIM enables automated account provisioning. Sentry integrates with SAML 2.0 and SCIM providers including Azure Active Directory and Okta.",
+          "matched_terms": [
+            "saml",
+            "scim"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 16
+        }
+      ],
+      "extraction_quality": "High",
+      "confidence_reason": "stated directly on the vendor's own security page, quoted in full, with no collection limitation"
+    },
+    "privacy_data_handling": {
+      "name": "privacy_data_handling",
+      "label": "Privacy and data-handling references",
+      "status": "FOUND",
+      "value": "Customer controls what Service Data (including what, if any, personal information) are sent to and processed by the Service by configuring SDKs and the Service.",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Terms of Service",
+          "snippet": "…different software languages, frameworks and libraries. Customer controls what Service Data (including what, if any, personal information) are sent to and processed by the Service by configuring SDKs and the Service. Customer may also elect to import and export Service Data between the Service and certain Third-Party Platforms (e.g., messaging services, code repositories and project management solutions) through supported integrations. Overview. Sentry offers a suite of software-as-a-service solutions designed to identify, monitor and alert Customer to problems that are occurring in a Customer…",
+          "matched_terms": [
+            "privacy policy",
+            "gdpr",
+            "ccpa",
+            "personal data",
+            "personal information",
+            "data subject"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/terms",
+          "source_type": "terms",
+          "evidence_of": 19,
+          "terms_not_shown": [
+            "privacy policy",
+            "gdpr",
+            "ccpa",
+            "personal data",
+            "data subject"
+          ]
+        },
+        {
+          "heading": "International data transfers",
+          "snippet": "In some cases your personal information is transferred to, and processed in, countries other than the country in which you are resident. These countries may have data protection laws that are different from the laws of your country (and, in some cases, may not be as protective). Specifically, our Site and Service are hosted in the United States and Germany, and our affiliate companies and third-party service providers operate around the world, including in the United States, Canada and Europe. This means that when we collect your personal information, we may process it in any of these countrie…",
+          "matched_terms": [
+            "privacy policy",
+            "personal data",
+            "personal information",
+            "standard contractual clauses"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 19,
+          "terms_not_shown": [
+            "privacy policy",
+            "personal data",
+            "standard contractual clauses"
+          ]
+        },
+        {
+          "heading": "Privacy Policy",
+          "snippet": "…(May 1, 2018) 1.0.0 (October 17, 2017) of this Agreement was created on October 29, 2025. Read what has changed This Privacy Policy sets out how Sentry collects, discloses, and uses personal information about you and how you can exercise your privacy rights. This Privacy Policy applies to personal information that we collect when you visit our website at sentry.io (“ Site ”), use our products and services (“ Service ”), or otherwise interact with us (e.g., by attending an event or communicating with us). If you do not agree with this policy, please do not access or use our Site or Service or i…",
+          "matched_terms": [
+            "privacy policy",
+            "data retention",
+            "personal information"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 19,
+          "terms_not_shown": [
+            "data retention"
+          ]
+        }
+      ],
+      "extraction_quality": "High",
+      "confidence_reason": "the top card cites terms its quoted text does not show"
+    },
+    "support_documentation": {
+      "name": "support_documentation",
+      "label": "Support and documentation availability",
+      "status": "FOUND",
+      "value": "Sentry retains event data in production for the period set forth in our documentation based on data and plan type by default.",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Data Retention",
+          "snippet": "Sentry retains event data in production for the period set forth in our documentation based on data and plan type by default. Individual events are aggregated into broader issues. Individual events are deleted after the above retention period. Issues are deleted when all associated events are deleted. We create regular backups of event data in production. We delete backups 90 days after creation.",
+          "matched_terms": [
+            "documentation"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 5
+        },
+        {
+          "heading": "Data into System",
+          "snippet": "…for proactively scrubbing data, ideally through an extensible interface that the user can customize. Sentry provides documentation outlining SDK configuration to filter out bits of data for security and privacy purposes, but that otherwise delivers the rest of the event data intact. Scrubbing the following values is recommended: Values where the keyname matches password, passwd, or secret Values that match the regular expression of r'^(?:\\d[ -]\\*?){13,16}\\$' (credit card-like) Session cookies Authentication header (HTTP)",
+          "matched_terms": [
+            "documentation"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 5
+        },
+        {
+          "heading": "Physical Access Control",
+          "snippet": "…Security Whitepaper: Google data centers also implement “security measures such as laser beam intrusion detection and 24/7 monitoring by high-resolution interior and exterior cameras” to detect and track intruders. In addition, “access logs, activity records, and camera footage are available in case an incident occurs” and “experienced security guards, who have undergone rigorous background checks and training, routinely patrol” Google data centers. Sentry employees do not have physical access to Google data centers, servers, network equipment, or storage.",
+          "matched_terms": [
+            "24/7"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 5
+        }
+      ],
+      "extraction_quality": "High",
+      "confidence_reason": "evidence came from security, never from docs/product"
+    },
+    "integrations_api": {
+      "name": "integrations_api",
+      "label": "Integration or API availability",
+      "status": "FOUND",
+      "value": "…Third-Party Platforms (e.g., messaging services, code repositories and project management solutions) through supported integrations.",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Terms of Service",
+          "snippet": "…Third-Party Platforms (e.g., messaging services, code repositories and project management solutions) through supported integrations. Overview. Sentry offers a suite of software-as-a-service solutions designed to identify, monitor and alert Customer to problems that are occurring in a Customer Application. These Services include code coverage reporting, error monitoring, performance monitoring and other application monitoring solutions. Customer uses SDKs to bundle Service Data about the Customer Application and send that Service Data to the Service. Customer may either create its own SDKs or s…",
+          "matched_terms": [
+            "integrations",
+            "sdk"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/terms",
+          "source_type": "terms",
+          "evidence_of": 12,
+          "terms_not_shown": [
+            "sdk"
+          ]
+        },
+        {
+          "heading": "REST API Authentication (API Key)",
+          "snippet": "Sentry’s REST API uses an auth token for authentication. Authentication tokens are passed using the auth header and are used to authenticate a user account with the API. We strongly recommend using organization-wide authentication tokens.",
+          "matched_terms": [
+            "rest api"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 12
+        },
+        {
+          "heading": "Errors",
+          "snippet": "Errors are sent every time an SDK catches a bug. Pay-as-you-go rates (Team) 50K – 100K $0.0003625 100K – 500K $0.0002188 500K – 10M $0.0001875 10M – 20M $0.0001625 20M+ $0.0001500 Annual total: $ 312.00 /yr This calculator provides an estimate only. Your actual bill may differ due to rounding. Volumes above the slider maximums are supported on pay-as-you-go plans. Annual and prepaid billing options with additional discounts are available during checkout.",
+          "matched_terms": [
+            "sdk"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 12
+        }
+      ],
+      "extraction_quality": "High",
+      "confidence_reason": "evidence came from pricing, security, terms, never from docs/integrations/product; the top card cites terms its quoted text does not show"
+    },
+    "pricing_availability": {
+      "name": "pricing_availability",
+      "label": "Pricing or plan availability",
+      "status": "FOUND",
+      "value": "New users only: Get 5,000 free replays per month for your first 3 months.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "5,000 Session Replays on us",
+          "snippet": "New users only: Get 5,000 free replays per month for your first 3 months.",
+          "matched_terms": [
+            "per month"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 5
+        },
+        {
+          "heading": "Terms of Service",
+          "snippet": "…the invoice date. Fees for renewal Subscription Terms are at Sentry’s then-current rates, regardless of any discounted pricing in a prior Order. Except as expressly otherwise set forth herein, all fees are non-refundable. All Fees are exclusive of any applicable sales or other taxes or similar fees imposed by any government authority. Customer will (a) pay or reimburse all such taxes and fees (including any interest or penalties), if any, due, based on or measured by amounts payable by Customer under this Agreement (excluding taxes based on Sentry’s net income) or (b) furnish Sentry with evide…",
+          "matched_terms": [
+            "pricing"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/terms",
+          "source_type": "terms",
+          "evidence_of": 5
+        },
+        {
+          "heading": "business",
+          "snippet": "For teams that need more powerful debugging $80/mo $80/mo When billed annually with default pre-paid data Team features + Unlimited custom dashboards Unlimited custom dashboards Unlimited metric monitors with anomaly detection Unlimited metric monitors with anomaly detection Advanced quota management Advanced quota management SAML + SCIM support ( See pricing ) SAML + SCIM support ( See pricing )",
+          "matched_terms": [
+            "billed annually",
+            "pricing"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 5
+        }
+      ],
+      "extraction_quality": "High",
+      "confidence_reason": "stated directly on the vendor's own pricing page, quoted in full, with no collection limitation"
+    },
+    "data_residency": {
+      "name": "data_residency",
+      "label": "Data residency / storage location",
+      "status": "PARTIAL",
+      "value": "Data Residency",
+      "confidence": "Low",
+      "evidence": [
+        {
+          "heading": "Data Residency",
+          "snippet": "Data Residency",
+          "matched_terms": [
+            "data residency"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://sentry.io/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 1
+        }
+      ],
+      "extraction_quality": "Low",
+      "confidence_reason": "only a label, a fragment or an image — nothing quotable was written"
+    },
+    "encryption": {
+      "name": "encryption",
+      "label": "Encryption practices",
+      "status": "FOUND",
+      "value": "All data is AES-256bit encrypted, both in transit and at rest.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Data through System",
+          "snippet": "Data is sent securely to Sentry via TLS to an HTTPS endpoint. All data is AES-256bit encrypted, both in transit and at rest. Sentry aggregates events along with contextual data related to the user’s environment, preceding events, and the release and deployment changeset. Events data is also enriched with artifacts like source maps or symbols uploaded by the user or sourced externally. Sentry’s latest SSL Labs Report can be found here.",
+          "matched_terms": [
+            "aes-256bit"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 2
+        },
+        {
+          "heading": "Data Encryption",
+          "snippet": "All data in Sentry servers is encrypted at rest. Google Cloud Platform stores and manages data cryptography keys in its redundant and globally distributed Key Management Service. So, if an intruder were ever able to access any of the physical storage devices, the Sentry data contained therein would still be impossible to decrypt without the keys, rendering the information a useless jumble of random characters. Encryption at rest also enables continuity measures like backup and infrastructure management without compromising data security and privacy. Sentry exclusively sends data over HTTPS tra…",
+          "matched_terms": [
+            "encrypted at rest"
+          ],
+          "match_location": "body",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 2
+        }
+      ],
+      "extraction_quality": "High",
+      "confidence_reason": "stated directly on the vendor's own security page, quoted in full, with no collection limitation"
+    },
+    "uptime_reliability": {
+      "name": "uptime_reliability",
+      "label": "Uptime, SLA and reliability",
+      "status": "FOUND",
+      "value": "In the event of a region-wide outage, Sentry will bring up a duplicate environment in a different Google Cloud Platform region. The Sentry operations team has extensive experience performing full region migrations.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Disaster Recovery",
+          "snippet": "In the event of a region-wide outage, Sentry will bring up a duplicate environment in a different Google Cloud Platform region. The Sentry operations team has extensive experience performing full region migrations.",
+          "matched_terms": [
+            "disaster recovery"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 9
+        },
+        {
+          "heading": "Business Continuity",
+          "snippet": "Sentry keeps hourly encrypted backups of data in multiple regions on Google Cloud Platform. While never expected, in the case of production data loss (i.e., primary data stores lost), we will restore organizational data from these backups.",
+          "matched_terms": [
+            "business continuity"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 9
+        },
+        {
+          "heading": "High Availability",
+          "snippet": "Every part of the Sentry service uses properly-provisioned, redundant servers (e.g., multiple load balancers, web servers, replica databases) in the case of failure. As part of regular maintenance, servers are taken out of operation without impacting availability.",
+          "matched_terms": [
+            "high availability"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://sentry.io/security/",
+          "source_type": "security",
+          "evidence_of": 9
+        }
+      ],
+      "extraction_quality": "High",
+      "confidence_reason": "stated directly on the vendor's own security page, quoted in full, with no collection limitation"
+    }
+  },
+  "missing_or_unclear": [
+    "Data residency / storage location: a heading or label only — the vendor named it but published no statement. Open the page."
+  ],
+  "review_flags": [
+    "Security and trust information: the vendor says the proof exists but does not publish it (\"available to customers\"). It cannot be closed from public sources alone.",
+    "Support and documentation availability: evidence came only from security, never from docs/product. The match is real; the finding is weak.",
+    "Integration or API availability: evidence came only from pricing, security, terms, never from docs/integrations/product. The match is real; the finding is weak.",
+    "Data residency / storage location: evidence came only from pricing, never from security/privacy. The match is real; the finding is weak.",
+    "Uptime, SLA and reliability: the confidence label was earned by a sentence that does not contain the matched term (longest term-carrying sentence is 17 characters). Read the quote before relying on the label."
+  ],
+  "overall_confidence": "High",
+  "confidence_score": 10,
+  "coverage_verified": 5,
+  "coverage_total": 5,
+  "coverage_caveated": [],
+  "disclaimer": "FIRST-PASS INTERNAL RESEARCH AID. Generated from public web pages only. This is not a vendor risk score, a security approval, or a procurement decision. Every field must be confirmed by a human reviewer before use.",
+  "steps": [
+    {
+      "action": "coverage",
+      "field_name": "-",
+      "detail": "10/10 core -> High, but only 5 of 5 core fields rest on evidence we could read"
+    },
+    {
+      "action": "weak-evidence",
+      "field_name": "security_trust",
+      "detail": "gated evidence: available to customers, contact us for, upon request"
+    },
+    {
+      "action": "weak-evidence",
+      "field_name": "support_documentation",
+      "detail": "off-home: security"
+    },
+    {
+      "action": "weak-evidence",
+      "field_name": "integrations_api",
+      "detail": "off-home: pricing, security, terms"
+    },
+    {
+      "action": "missing",
+      "field_name": "data_residency",
+      "detail": "label only, no claim written"
+    },
+    {
+      "action": "weak-evidence",
+      "field_name": "data_residency",
+      "detail": "off-home: pricing"
+    },
+    {
+      "action": "weak-evidence",
+      "field_name": "uptime_reliability",
+      "detail": "claim not in matched sentence (17 chars)"
+    },
+    {
+      "action": "overview",
+      "field_name": "-",
+      "detail": "quoted from the page title of https://sentry.io/welcome/"
+    },
+    {
+      "action": "assemble",
+      "field_name": "-",
+      "detail": "8 fields, 1 missing or unclear, 5 review flag(s), 7 readable source(s)"
+    }
+  ]
+}

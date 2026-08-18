@@ -5,10 +5,10 @@ apply it by hand to any page and get the same answer the code gets. That is the
 point: a reviewer who disagrees with a rating can see exactly which clause
 produced it.
 
-**Last corrected 13 August 2026** for defects 27, 28 and 36. The corrections are
+**Last corrected 18 August 2026** for defects 27, 28 and 36. The corrections are
 listed in full at the end of this file rather than folded silently into the text.
 
-> ## ⚠ CLIENT GUIDANCE, 13 AUGUST 2026 — this rule is scheduled to change
+> ## ⚠ CLIENT GUIDANCE, 18 AUGUST 2026 — THIS RULE HAS SINCE BEEN BUILT
 >
 > First Quadrant Labs reviewed this approach in writing and asked for one change:
 >
@@ -34,7 +34,7 @@ listed in full at the end of this file rather than folded silently into the text
 > cannot decide whether a field is clearly answered. Taking their wording at face value would
 > require breaking a locked decision they themselves endorsed in the same email.
 >
-> **How it will be implemented.** Their own next sentence supplies the resolution —
+> **How it was implemented.** Their own next sentence supplied the resolution —
 > *"You can additionally track extraction quality separately … complete sentence, bullet list,
 > table, etc."* So the single axis below becomes two:
 >
@@ -47,12 +47,16 @@ listed in full at the end of this file rather than folded silently into the text
 > forbids a caveated field from scoring High, so Postman's *10/10 → High on coverage 2/5* becomes
 > impossible. See "The score does not measure coverage" below.
 >
-> **Status: designed, not yet implemented.** It lands with Agent 3 (14–16 Aug) as an additive
-> change of roughly 40 lines, not a rewrite of Agent 2 — the client explicitly said Agents 1 and 2
-> do not need redesigning. **Everything below this box describes the rule as the code applies it
-> today.** When the change lands, this box is replaced by the new rule and moved into the
-> corrections list at the end. Leaving it as a description of unbuilt behaviour would make this the
-> third document in the project to describe code that does not exist.
+> **Status: BUILT 18 August 2026 in `src/review_rules.py`** — `extraction_quality()` and
+> `confidence()`, additive, without redesigning Agent 2, which the client said was unnecessary.
+> A caveated field can no longer score High, so defect 31 is unrepresentable rather than merely
+> reported.
+>
+> **⚠ EVERYTHING BELOW THIS BOX STILL DESCRIBES THE SINGLE-AXIS RULE AS AGENT 2 APPLIES IT.**
+> That is accurate — Agent 2 was not changed — but it is no longer the whole story, because Agent 3
+> now computes a second axis on top of it. **Rewriting the body of this file to document both axes
+> is an outstanding task (HANDOFF §7).** Until that happens this file is the last document in the
+> repo that a reader could mistake for the complete rule.
 
 ## Why confidence is needed at all
 
@@ -67,7 +71,7 @@ both as "yes" would hide the difference that actually matters to a reviewer.
 | **Authoritative** | security, **trust**, privacy, pricing, status, terms | The vendor is making a formal statement it can be held to. |
 | **Secondary** | product, docs, integrations, blog | Marketing or explanatory content; true, but not a commitment. |
 
-`trust` was added on 13 August 2026 with defect 27. The project brief names the
+`trust` was added on 18 August 2026 with defect 27. The project brief names the
 source category as *"security or trust center pages"* — one category, two URLs —
 so a vendor's trust centre is exactly as authoritative as its security page.
 GitHub is the only vendor in this corpus that publishes both.
@@ -154,7 +158,7 @@ code was never wrong; this list was.
 | `alt_text_only` | **Low** | **Low** |
 | no match at all | **NOT_FOUND** | **NOT_FOUND** |
 
-The bare-heading row **changed on 13 August 2026** (defect 36) — it used to read
+The bare-heading row **changed on 18 August 2026** (defect 36) — it used to read
 Medium on an authoritative page. See the corrections section.
 
 If several pieces of evidence exist for one field, the **best** one sets the
@@ -184,7 +188,7 @@ for a procurement team and it is the honest output.
 | NOT_FOUND | `NOT_FOUND` | nothing matched on any page we could read |
 
 `PARTIAL` exists so that "we saw a hint" is never printed with the same weight
-as "the vendor said so". **Until 13 August 2026 it was unreachable** — see the
+as "the vendor said so". **Until 18 August 2026 it was unreachable** — see the
 corrections section. It now occurs three times across the corpus: Linear's
 pricing and data-residency fields, and Sentry's data-residency field, each of
 which matched a section heading with no statement written under it.
@@ -223,9 +227,10 @@ returned no readable text; Sentry scores **10/10 → High** with every page read
 than write its own.** A build-time tool and a shipped brief computing the same
 thing two different ways is how the two start disagreeing.
 
-## Worked examples from the current corpus (re-derived 2026-08-13)
+## Worked examples from the current corpus (re-derived 2026-08-18)
 
-Every row below was re-checked against `data/corpus/*_fields.json` on 13 August.
+Every row below was re-checked against `data/corpus/*_fields.json` on 18 August, over a corpus
+collected on 13 August.
 The previous version of this table was written on 10 August and **three of its
 six rows had gone stale** — see the corrections section. A worked example decays
 the moment the data moves.
@@ -302,7 +307,7 @@ worth more to a reader than the rule alone.
    sentence, so the document and the code finally say the same thing.
 
 3. **This document and the code disagreed about a bare heading, and the
-   disagreement had killed an entire status value** (13 Aug, defect 36). Step 4
+   disagreement had killed an entire status value** (18 Aug, defect 36). Step 4
    said a heading-only match on an authoritative page scores **Medium**, which
    Step 5 then reports as **FOUND**. `agent2_extract.status_from_confidence`
    said, in its own docstring, *"PARTIAL — Low, something matched but only a
@@ -314,7 +319,7 @@ worth more to a reader than the rule alone.
    means. A bullet list on an authoritative page still scores Medium; only a bare
    heading changed.
 
-4. **Three of the six worked examples had gone stale** (13 Aug, the same failure
+4. **Three of the six worked examples had gone stale** (18 Aug, the same failure
    as defect 33 in `settings.yaml`). The Linear row quoted *"Linear undergoes
    regular Service Organization Controls audits (SOC 2 Type II)."* — that
    sentence appears nowhere in the current corpus, and Linear's security page now
