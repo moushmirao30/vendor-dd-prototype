@@ -280,10 +280,12 @@ vendor-dd-prototype/
 │   ├─ agent2_extract.py      AGENT 2 — extraction, ranking, caveats, save/load
 │   ├─ agent3_review.py       AGENT 3 — coverage, missing, weak evidence, conflicts, brief
 │   ├─ review_rules.py        THE REVIEW PREDICATES, imported by Agent 3 AND verify_corpus
+│   ├─ export.py              JSON/CSV/Markdown briefs · corpus.csv · SOURCE MANIFEST
 │   └─ schema.py              SourceRecord · ExtractedField · VendorBrief (+ coverage)
 ├─ tools/
 │   ├─ verify_corpus.py       CORPUS HEALTH CHECKER — run before every commit
-│   └─ review_all.py          runs Agent 3 over every vendor; writes data/briefs/
+│   ├─ review_all.py          runs Agent 3 over every vendor; writes data/briefs/
+│   └─ export_all.py          writes data/exports/ — corpus.csv, source_manifest.csv, briefs
 ├─ data/corpus/               7 vendors × {json, _run.json, _fields.json}
 ├─ data/briefs/               7 × <slug>_brief.json — Agent 3's output
 ├─ data/cache/html/           55 × v2_*.html — offline replay (gitignored)
@@ -291,7 +293,7 @@ vendor-dd-prototype/
 │   ├─ confidence_rules.md    the written confidence rule + worked examples
 │   ├─ architecture.md        DRAFT — see §8
 │   └─ evaluation.md          rewritten 18 Aug, figures fact-checked by script
-└─ tests/                     120 tests, all offline
+└─ tests/                     134 tests, all offline
     ├─ test_parse.py · test_agent1.py · test_agent2.py · test_agent3.py (19)
     ├─ test_fetch_robots.py · test_app_smoke.py · test_text_quality.py
     └─ fixtures/  5 HTML files modelled on real vendor page shapes
@@ -488,6 +490,11 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
       **Defect 34 verified in production: `jetbrains_run.json` carries `skip: terms`** — the step
       that had never once been emitted since the day it was written.
 - ✅ **18 Aug:** commits `e39ffd2` and `64fca64` pushed; clarification email answered (§1.1).
+- ✅ **19 Aug:** `src/export.py` — brief as JSON/CSV/Markdown, `corpus.csv`, and the client's
+      **source manifest**. `tools/export_all.py` runs the lot. **134 tests.** Verified: page text
+      with commas, quotes and newlines survives the CSV round trip; a naive `pd.read_csv` reads the
+      UTF-8 BOM cleanly; the Markdown brief never prints the score without coverage on the same
+      line, and cites only the terms visible in the quote it shows.
 
 **Done 18 Aug — AGENT 3 IS BUILT:**
 - ✅ `src/review_rules.py` — the review predicates in one place. **`tools/verify_corpus.py` now
@@ -555,7 +562,7 @@ buffer, not out of the documents.
 
 | Date | Day | Work |
 |---|---|---|
-| **19 Aug** | 12 | **Commit Agent 3 first** (7 files, currently uncommitted — a day's work living only on disk). Then `src/export.py`: JSON / CSV / Markdown **plus the client's SOURCE MANIFEST** (§1.1 item 3 — new deliverable, data already in Agent 1's trail). Then `src/orchestrator.py`, 1→2→3, which is a brief deliverable in its own right ("Python orchestration code for the agent workflow"). |
+| **19 Aug** | 12 | ✅ `src/export.py` + `tools/export_all.py` + the **SOURCE MANIFEST** are BUILT (134 tests). Still to do: **commit Agent 3, then commit the export layer** (7 files, currently uncommitted — a day's work living only on disk), then **`src/orchestrator.py`**, 1→2→3 — the last unbuilt module and a brief deliverable in its own right ("Python orchestration code for the agent workflow"). |
 | **20 Aug** | 13 | `app.py` tabs 4 and 5, wired to show the client's required chain end to end: **Source → Extracted Evidence → Structured Field → Confidence → Review Flag → Final Brief** (§1.1 item 5). Screenshot every tab as you go — screenshots are a listed deliverable and are always the thing left until it is too late. |
 | **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. Then the three document corrections that are already known and cheap: the `docs/confidence_rules.md` "designed, not yet implemented" box → the rule as built; `docs/architecture.md` §3/§6/§10/§11; the `README.md` submission section (§1.1 item 3, and it must explain how a reviewer re-collects). |
 | **22–24 Aug** | 15–17 | The three unwritten documents, in this order of value: **`assumptions_limitations.md`** (it also owes the brief's "mention lower-cost alternatives" line — Ollama, local models, template summaries), **`test_cases.md`**, **`code_walkthrough.md`**. `docs/evaluation.md` is already written; re-read it against the final code rather than rewriting it. |
@@ -681,7 +688,7 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 | Source types: product, pricing, security/trust, privacy, terms, docs, integrations, status | Met | 6–8 per vendor collected. `trust` became a first-class authoritative type on 18 Aug because the brief pairs it with `security` in one bullet |
 | Structured store with vendor name, source URL, source type, page title, collected text, date collected, tags, evidence note | Met — `SourceRecord` maps 1:1 | `src/schema.py` |
 | Input: vendor name/list, collected URLs or pre-prepared source file, optional category filter | Partial — **optional research-category filter not implemented** | `app.py` |
-| Output: overview, category, key sources, security, privacy, support, integrations, pricing, missing/unclear, review flags, evidence snippets, confidence | Schema complete, **unpopulated until Agent 3** | `VendorBrief` in `src/schema.py` |
+| Output: overview, category, key sources, security, privacy, support, integrations, pricing, missing/unclear, review flags, evidence snippets, confidence | **Met** — populated by Agent 3, exported in three formats | `src/agent3_review.py`, `src/export.py` |
 | Streamlit: select vendor · view sources · run or replay · see agent steps · inspect evidence · view brief · export JSON/CSV/Markdown | 5 of 7 — **brief and export tabs are stubs** | `app.py` tabs 4 and 5 |
 | Runs locally on a standard laptop, low cost, no heavy infrastructure | Met | no LLM, no GPU, no paid service |
 | Missing or unclear information flagged instead of guessed | Met for collection, **pending for the brief** | caveats + `verify_corpus`; Agent 3 owes the flag list. `PARTIAL` became reachable on 18 Aug (defect 36), so "we saw a hint" is no longer reported as "the vendor said so" |
@@ -701,7 +708,7 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 | Check other official sources before marking a category unavailable, else flag for manual review | **Met** — a not-found now states that the field's own pages read cleanly and how many others did not | `agent3_review.review_vendor` |
 | Number AND percentage of inaccessible pages in the evaluation | **Met — 8 of 49, 16.3%** | `docs/evaluation.md` §1.1 |
 | Do NOT ship the 22 MB HTML cache | **Locked decision withdrawn**; packaging step rewritten | §1.1 item 3, §7 |
-| **SOURCE MANIFEST — new deliverable** | **Not built.** Data exists in Agent 1's trail | `src/export.py`, 17–18 Aug |
+| **SOURCE MANIFEST — new deliverable** | **BUILT 19 Aug.** 54 attempts across 7 vendors: 5 never collected, 8 collected but unreadable | `src/export.py`, `data/exports/source_manifest.csv` |
 | README explains how a reviewer re-collects the sources | **Not written** | §8 |
 | Confidence not based primarily on sentence length | **IMPLEMENTED 18 Aug** — two axes, and a caveated field can no longer score High | `review_rules.confidence` |
 | Agent 3 = review and synthesis only; coverage, missing categories, conflicts, final brief | **BUILT 18 Aug** | `src/agent3_review.py` |

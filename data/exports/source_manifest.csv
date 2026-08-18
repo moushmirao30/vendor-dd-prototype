@@ -1,0 +1,55 @@
+﻿vendor,source_type,attempted_url,outcome,http_status,usable_as_evidence,page_title,date_collected,readable_blocks,content_sha256,note
+GitLab,product,https://about.gitlab.com/,COLLECTED,200,yes,"Finally, AI for the entire software lifecycle.",2026-08-13,19,aaf596aa06648849,
+GitLab,pricing,https://about.gitlab.com/pricing/,COLLECTED,200,yes,Pricing,2026-08-13,48,4900ffa88b1cfaaa,
+GitLab,security,https://about.gitlab.com/security/,COLLECTED,200,yes,Security,2026-08-13,27,5b7843b3af782cfe,
+GitLab,privacy,https://about.gitlab.com/privacy/,COLLECTED,200,yes,GitLab Privacy Statement,2026-08-13,23,546ec4fbc071feab,
+GitLab,docs,https://docs.gitlab.com/,COLLECTED,200,yes,GitLab Docs,2026-08-13,20,1c433d6e897c0436,
+GitLab,status,https://status.gitlab.com/,COLLECTED,200,yes,GitLab System Status,2026-08-13,8,f5d9cd427ef9ae1f,
+GitLab,terms,https://about.gitlab.com/terms,COLLECTED,200,yes,GitLab Terms of Use,2026-08-13,3,dedd54c8fbc37fd7,
+Linear,product,https://linear.app/,COLLECTED,200,yes,Linear – The system for product development,2026-08-13,11,788d89ebcaa1de6c,
+Linear,pricing,https://linear.app/pricing,COLLECTED,200,yes,Pricing – Linear,2026-08-13,6,20d4b105851bb9a1,
+Linear,security,https://linear.app/security,COLLECTED,200,yes,Security – Linear,2026-08-13,23,ae01d33535b2514b,
+Linear,privacy,https://linear.app/privacy,COLLECTED,200,yes,Privacy Policy,2026-08-13,30,97943ae22360709f,
+Linear,docs,https://linear.app/docs,COLLECTED BUT UNREADABLE,200,no,Linear Docs,2026-08-13,16,f2d316a2720b86ea,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+Linear,status,https://status.linear.app/,COLLECTED,200,yes,Linear Status,2026-08-13,15,b7da543523bd3a94,
+Linear,terms,https://linear.app/terms,COLLECTED,200,yes,Terms of Service,2026-08-13,55,f75208de4e303947,
+Sentry,product,https://sentry.io/welcome/,COLLECTED,200,yes,Application Performance Monitoring & Error Tracking Software | Sentry,2026-08-13,19,3bfb50b624046100,
+Sentry,pricing,https://sentry.io/pricing/,COLLECTED,200,yes,"Pricing: Free Developer Plan, Pay as You Grow | Sentry",2026-08-13,78,c4c42d24a94ac612,
+Sentry,security,https://sentry.io/security/,COLLECTED,200,yes,"Security, Privacy, and Compliance Practices | Sentry",2026-08-13,41,b190278e13cd0c61,
+Sentry,privacy,https://sentry.io/privacy/,COLLECTED,200,yes,"Privacy Policy 3.3.2 (October 29, 2025) | Sentry",2026-08-13,16,ec4678840bfa42d2,
+Sentry,docs,https://docs.sentry.io/,COLLECTED,200,yes,Sentry Docs | Application Performance Monitoring & Error Tracking Software,2026-08-13,4,dd0ef8659e16e7da,
+Sentry,status,https://status.sentry.io/,COLLECTED,200,yes,Sentry Status,2026-08-13,19,df5926eb9279a953,
+Sentry,terms,https://sentry.io/terms,COLLECTED,200,yes,"Terms of Service 3.0.0 (February 12, 2024) | Sentry",2026-08-13,1,75184f5397eb2199,
+Postman,product,https://www.postman.com/product/what-is-postman/,COLLECTED,200,yes,"Postman API Platform - Build, Test & Manage",2026-08-13,15,ca1a4ee1797dce41,
+Postman,pricing,https://www.postman.com/pricing/,COLLECTED,200,yes,Plans & Pricing | Postman API Platform,2026-08-13,24,65e28af4f293072a,
+Postman,security,https://www.postman.com/trust/security/,COLLECTED,200,yes,"Postman Security - Compliance, Privacy, & Reliability",2026-08-13,18,202416bdc8abfb0b,
+Postman,privacy,https://www.postman.com/legal/privacy-policy/,COLLECTED BUT UNREADABLE,200,no,,2026-08-13,0,2bc4efb8307797e0,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+Postman,docs,https://learning.postman.com/docs/introduction/overview/,COLLECTED BUT UNREADABLE,200,no,Get started in Postman | Postman Docs,2026-08-13,2,7e7f9df36bf1ab1b,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+Postman,status,https://status.postman.com/,COLLECTED,200,yes,Postman Status,2026-08-13,20,c1d5d7b4b49fc9c9,
+Postman,terms,https://www.postman.com/terms,FAILED,404,no,,,,,HTTP 404
+Postman,terms,https://www.postman.com/legal/terms,COLLECTED,200,yes,Postman Terms of Service | Postman,2026-08-13,3,accf4ca58718b912,
+Atlassian,product,https://www.atlassian.com/software/jira,COLLECTED BUT UNREADABLE,200,no,Jira | Project Management for the AI Era | Atlassian,2026-08-13,0,e3e16ddc2e506b2f,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+Atlassian,pricing,https://www.atlassian.com/software/jira/pricing,COLLECTED BUT UNREADABLE,200,no,Unlock the Best Jira Pricing Plans for Your Team Today | Atlassian,2026-08-13,0,1d21898cfde1450b,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+Atlassian,security,https://www.atlassian.com/trust/compliance,COLLECTED,200,yes,Comprehensive Data Protection | Atlassian,2026-08-13,33,214ae38eeccd6cb8,
+Atlassian,privacy,https://www.atlassian.com/legal/privacy-policy,COLLECTED,200,yes,Privacy Policy | Atlassian,2026-08-13,25,8b13a1baf0bf692a,
+Atlassian,docs,https://support.atlassian.com/,COLLECTED,200,yes,Atlassian Support,2026-08-13,17,30de977b0ef9b303,
+Atlassian,status,https://status.atlassian.com/,COLLECTED,200,yes,Atlassian Status,2026-08-13,18,4016a54e707fa4cc,
+Atlassian,terms,https://www.atlassian.com/legal/cloud-terms-of-service,COLLECTED,200,yes,Atlassian Customer Agreement | Atlassian,2026-08-13,29,2294efafc88c188b,
+GitHub,product,https://github.com/features,COLLECTED,200,yes,GitHub Features · GitHub,2026-08-13,77,c7a2701b42777888,
+GitHub,pricing,https://github.com/pricing,COLLECTED,200,yes,Pricing · Plans for every developer · GitHub,2026-08-13,140,6e14dab1b8f466f2,
+GitHub,security,https://github.com/security,COLLECTED,200,yes,GitHub Security · GitHub,2026-08-13,22,73973df9d1e4e4d9,
+GitHub,trust,https://github.com/trust-center,COLLECTED,200,yes,GitHub Trust Center · GitHub,2026-08-13,35,ce954f377a5ee180,
+GitHub,privacy,https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement,COLLECTED,200,yes,GitHub General Privacy Statement - GitHub Docs,2026-08-13,41,51646bb29f23d390,
+GitHub,docs,https://docs.github.com/,COLLECTED,200,yes,GitHub Docs,2026-08-13,13,143a00875a024e9e,
+GitHub,status,https://www.githubstatus.com/,COLLECTED,200,yes,GitHub Status,2026-08-13,21,5df96cfa05f78547,
+GitHub,terms,https://github.com/terms,COLLECTED,200,yes,GitHub Terms of Service - GitHub Docs,2026-08-13,69,c9b807cfd4d5f68b,
+JetBrains,product,https://www.jetbrains.com/idea/,COLLECTED,200,yes,The Leading IDE for Professional Java and Kotlin Development,2026-08-13,43,64c790be8ba51331,
+JetBrains,pricing,https://www.jetbrains.com/idea/buy/,COLLECTED BUT UNREADABLE,200,no,Buy IntelliJ IDEA,2026-08-13,0,cc55e8fad20e370a,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+JetBrains,security,https://www.jetbrains.com/legal/docs/privacy/trust-center/,COLLECTED,200,yes,Trust and Security at JetBrains,2026-08-13,3,3cfe839243dfeacc,
+JetBrains,privacy,https://www.jetbrains.com/legal/docs/privacy/privacy/,COLLECTED,200,yes,Privacy Notice,2026-08-13,18,dd78bed3e27dad3a,
+JetBrains,docs,https://www.jetbrains.com/help/idea/,COLLECTED BUT UNREADABLE,200,no,Getting started | IntelliJ IDEA Documentation,2026-08-13,0,900185bc503784df,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+JetBrains,status,https://status.jetbrains.com/,COLLECTED BUT UNREADABLE,200,no,JetBrains Services Status,2026-08-13,5,37a89009e3ae8afb,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+JetBrains,terms,https://www.jetbrains.com/terms,FAILED,404,no,,,,,HTTP 404
+JetBrains,terms,https://www.jetbrains.com/legal/terms,FAILED,404,no,,,,,HTTP 404
+JetBrains,terms,https://www.jetbrains.com/terms-of-service,FAILED,404,no,,,,,HTTP 404
+JetBrains,terms,(no seed - discovery only),NOT COLLECTED,0,no,,,,,"every candidate URL failed - our URL guess was wrong, which is not evidence the vendor publishes nothing"
