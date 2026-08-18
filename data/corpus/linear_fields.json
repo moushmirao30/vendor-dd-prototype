@@ -1,0 +1,425 @@
+{
+  "vendor_slug": "linear",
+  "ran_on": "2026-08-13T21:31:33",
+  "fields": [
+    {
+      "name": "security_trust",
+      "label": "Security and trust information",
+      "status": "FOUND",
+      "value": "All Business features + Invoice/PO billing SAML and SCIM Granular admin controls Enterprise-grade security Advanced org modeling Migration & onboarding support Priority support Account management Trusted by more than 40,000 companies",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Enterprise",
+          "snippet": "All Business features + Invoice/PO billing SAML and SCIM Granular admin controls Enterprise-grade security Advanced org modeling Migration & onboarding support Priority support Account management Trusted by more than 40,000 companies",
+          "matched_terms": [
+            "saml",
+            "scim"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/pricing",
+          "source_type": "pricing",
+          "evidence_of": 7
+        },
+        {
+          "heading": "SAML",
+          "snippet": "SAML",
+          "matched_terms": [
+            "saml"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://linear.app/security",
+          "source_type": "security",
+          "evidence_of": 7
+        },
+        {
+          "heading": "SCIM",
+          "snippet": "SCIM",
+          "matched_terms": [
+            "scim"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://linear.app/security",
+          "source_type": "security",
+          "evidence_of": 7
+        }
+      ]
+    },
+    {
+      "name": "privacy_data_handling",
+      "label": "Privacy and data-handling references",
+      "status": "FOUND",
+      "value": "This Privacy Policy covers how we treat Personal Data that we gather when you access or use our Services. “Personal Data” means any information that identifies or relates to a particular individual and also includes information referred to as “personally identifiable information” or “personal information” under applicable data privacy laws, rules or regulations.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "What this Privacy Policy Covers",
+          "snippet": "This Privacy Policy covers how we treat Personal Data that we gather when you access or use our Services. “Personal Data” means any information that identifies or relates to a particular individual and also includes information referred to as “personally identifiable information” or “personal information” under applicable data privacy laws, rules or regulations. This Privacy Policy does not cover the practices of companies we don’t own or control or people we don’t manage.",
+          "matched_terms": [
+            "privacy policy",
+            "personal data",
+            "personal information"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/privacy",
+          "source_type": "privacy",
+          "evidence_of": 29
+        },
+        {
+          "heading": "Privacy Policy",
+          "snippet": "Effective date: March 17, 2025 At Linear Orbit ( “Linear” ), we take your privacy seriously. Please read this Privacy Policy to learn how we treat your personal data. By using or accessing our Services in any manner, you acknowledge that you accept the practices and policies outlined below, and you hereby consent that we will collect, use and share your information as described in this Privacy Policy. Remember that your use of Linear’s Services is at all times subject to our Terms of Service. Any terms we use in this Policy without defining them have the definitions given to them in the Terms …",
+          "matched_terms": [
+            "privacy policy",
+            "personal data",
+            "data subject"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/privacy",
+          "source_type": "privacy",
+          "evidence_of": 29
+        },
+        {
+          "heading": "EU Residents ⁠",
+          "snippet": "…Lichtenstein, Norway or Iceland, you may have additional rights under the EU General Data Protection Regulation (the “GDPR”) with respect to your Personal Data, as outlined below. For this section, we use the terms “Personal Data” and “processing” as they are defined in the GDPR, but “Personal Data” generally means information that can be used to individually identify a person, and “processing” generally covers actions that can be performed in connection with data such as collection, use, storage and disclosure. Linear will be the controller of your Personal Data processed in connection with t…",
+          "matched_terms": [
+            "privacy policy",
+            "gdpr",
+            "personal data"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/privacy",
+          "source_type": "privacy",
+          "evidence_of": 29
+        }
+      ]
+    },
+    {
+      "name": "support_documentation",
+      "label": "Support and documentation availability",
+      "status": "FOUND",
+      "value": "…products (including Customer’s services), processes or materials that are not reasonably contemplated by Linear or the Documentation, or (c) where Customer’s use of the Service is not in accordance with this Agreement or the Documentation.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Linear’s Indemnification",
+          "snippet": "…products (including Customer’s services), processes or materials that are not reasonably contemplated by Linear or the Documentation, or (c) where Customer’s use of the Service is not in accordance with this Agreement or the Documentation.",
+          "matched_terms": [
+            "documentation"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/terms",
+          "source_type": "terms",
+          "evidence_of": 3
+        },
+        {
+          "heading": "Linear’s Ownership",
+          "snippet": "Linear owns the Service, Software, Linear Content, Documentation, and anything else provided by Linear to Customer (collectively the “ Linear Materials ”). Linear retains all right, title and interest (including, without limitation, all patent, copyright, trademarks, trade secret and other intellectual property rights) in and to the Linear Materials, all related and underlying technology and any updates, enhancements, upgrades, modifications, patches, workarounds, and fixes thereto and all derivative works of or modifications to any of the foregoing. There are no implied licenses under this Ag…",
+          "matched_terms": [
+            "documentation"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/terms",
+          "source_type": "terms",
+          "evidence_of": 3
+        },
+        {
+          "heading": "Permissions",
+          "snippet": "…for the Permissions set by Customer and its Users. Customer may, at its option, provide access to the Service and Documentation to its Affiliates (defined below), in which case all rights granted, and obligations incurred, under this Agreement will also inure to the benefit of such Affiliates. Customer represents and warrants that it is fully responsible for any breach of this Agreement by its Affiliates and that Customer has the power to negotiate this Agreement on behalf of its Affiliates. Customer will also be responsible for all payment obligations under this Agreement regardless of whethe…",
+          "matched_terms": [
+            "documentation"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/terms",
+          "source_type": "terms",
+          "evidence_of": 3
+        },
+        {
+          "heading": "The page this fact belongs on could not be read",
+          "snippet": "The docs page was collected but contained no readable text, so this answer comes from the terms page instead. Treat the confidence above as being about the quote, not about the vendor's actual docs document, which nobody has read.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "integrations_api",
+      "label": "Integration or API availability",
+      "status": "FOUND",
+      "value": "All Basic features + Unlimited teams Private teams and guests Triage Intelligence Loops Code Intelligence (beta) Linear Insights Linear Asks Zendesk and Intercom integrations",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Business",
+          "snippet": "All Basic features + Unlimited teams Private teams and guests Triage Intelligence Loops Code Intelligence (beta) Linear Insights Linear Asks Zendesk and Intercom integrations",
+          "matched_terms": [
+            "integrations"
+          ],
+          "match_location": "body",
+          "source_url": "https://linear.app/pricing",
+          "source_type": "pricing",
+          "evidence_of": 3
+        },
+        {
+          "heading": "US Region – Integrations",
+          "snippet": "US Region – Integrations",
+          "matched_terms": [
+            "integrations"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://status.linear.app/",
+          "source_type": "status",
+          "evidence_of": 3
+        },
+        {
+          "heading": "EU Region – Integrations",
+          "snippet": "EU Region – Integrations",
+          "matched_terms": [
+            "integrations"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://status.linear.app/",
+          "source_type": "status",
+          "evidence_of": 3
+        },
+        {
+          "heading": "The page this fact belongs on could not be read",
+          "snippet": "The docs page was collected but contained no readable text, so this answer comes from the pricing, status page instead. Treat the confidence above as being about the quote, not about the vendor's actual docs document, which nobody has read.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "pricing_availability",
+      "label": "Pricing or plan availability",
+      "status": "PARTIAL",
+      "value": "Pricing",
+      "confidence": "Low",
+      "evidence": [
+        {
+          "heading": "Pricing",
+          "snippet": "Pricing",
+          "matched_terms": [
+            "pricing"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://linear.app/pricing",
+          "source_type": "pricing",
+          "evidence_of": 1
+        }
+      ]
+    },
+    {
+      "name": "data_residency",
+      "label": "Data residency / storage location",
+      "status": "PARTIAL",
+      "value": "Trusted by more than 40,000 product teams around the globe",
+      "confidence": "Low",
+      "evidence": [
+        {
+          "heading": "Multi-region hosting",
+          "snippet": "Trusted by more than 40,000 product teams around the globe",
+          "matched_terms": [
+            "multi-region"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://linear.app/security",
+          "source_type": "security",
+          "evidence_of": 7
+        },
+        {
+          "heading": "US Region – Linear API",
+          "snippet": "US Region – Linear API",
+          "matched_terms": [
+            "us region"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://status.linear.app/",
+          "source_type": "status",
+          "evidence_of": 7
+        },
+        {
+          "heading": "EU Region – Linear API",
+          "snippet": "EU Region – Linear API",
+          "matched_terms": [
+            "eu region"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://status.linear.app/",
+          "source_type": "status",
+          "evidence_of": 7
+        }
+      ]
+    },
+    {
+      "name": "encryption",
+      "label": "Encryption practices",
+      "status": "NOT_FOUND",
+      "value": "",
+      "confidence": "NOT_FOUND",
+      "evidence": [
+        {
+          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
+          "snippet": "1 page(s) for this vendor (docs) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "uptime_reliability",
+      "label": "Uptime, SLA and reliability",
+      "status": "NOT_FOUND",
+      "value": "",
+      "confidence": "NOT_FOUND",
+      "evidence": [
+        {
+          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
+          "snippet": "1 page(s) for this vendor (docs) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "product",
+      "detail": "11 blocks from 1,272,657 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "pricing",
+      "detail": "6 blocks from 788,776 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "security",
+      "detail": "23 blocks from 646,757 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "privacy",
+      "detail": "30 blocks from 537,198 characters of HTML"
+    },
+    {
+      "action": "unusable-page",
+      "field_name": "-",
+      "source_type": "docs",
+      "detail": "skipped - Agent 1 recorded only 16 heading blocks on this page; it was collected but is not readable. NOT this page's fields' fault if they come back NOT_FOUND."
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "status",
+      "detail": "15 blocks from 209,386 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "terms",
+      "detail": "55 blocks from 542,772 characters of HTML"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://linear.app/pricing"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "security",
+      "detail": "6 block(s) matched on https://linear.app/security"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://linear.app/security"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "privacy",
+      "detail": "28 block(s) matched on https://linear.app/privacy"
+    },
+    {
+      "action": "match",
+      "field_name": "support_documentation",
+      "source_type": "terms",
+      "detail": "3 block(s) matched on https://linear.app/terms"
+    },
+    {
+      "action": "unread-home-page",
+      "field_name": "support_documentation",
+      "source_type": "docs",
+      "detail": "support_documentation reported FOUND from terms, but its own page type (docs) was unreadable — caveat attached to the field"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://linear.app/pricing"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "status",
+      "detail": "4 block(s) matched on https://status.linear.app/"
+    },
+    {
+      "action": "unread-home-page",
+      "field_name": "integrations_api",
+      "source_type": "docs",
+      "detail": "integrations_api reported FOUND from pricing, status, but its own page type (docs) was unreadable — caveat attached to the field"
+    },
+    {
+      "action": "match",
+      "field_name": "pricing_availability",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://linear.app/pricing"
+    },
+    {
+      "action": "match",
+      "field_name": "data_residency",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://linear.app/security"
+    },
+    {
+      "action": "match",
+      "field_name": "data_residency",
+      "source_type": "status",
+      "detail": "12 block(s) matched on https://status.linear.app/"
+    },
+    {
+      "action": "no-match",
+      "field_name": "encryption",
+      "source_type": "-",
+      "detail": "no match for any of 9 terms across 6 readable page(s) — reported as NOT_FOUND — CAUTION: 1 further page(s) (docs) were collected but not readable, so this NOT_FOUND may be our limit rather than the vendor's silence"
+    },
+    {
+      "action": "no-match",
+      "field_name": "uptime_reliability",
+      "source_type": "-",
+      "detail": "no match for any of 11 terms across 6 readable page(s) — reported as NOT_FOUND — CAUTION: 1 further page(s) (docs) were collected but not readable, so this NOT_FOUND may be our limit rather than the vendor's silence"
+    }
+  ]
+}

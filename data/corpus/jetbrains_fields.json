@@ -1,0 +1,336 @@
+{
+  "vendor_slug": "jetbrains",
+  "ran_on": "2026-08-13T21:34:50",
+  "fields": [
+    {
+      "name": "security_trust",
+      "label": "Security and trust information",
+      "status": "FOUND",
+      "value": "You can also find details on our SOC 2 Type II and GDPR compliance, access security resources, and view our controls across various security domains.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Trust and Security at JetBrains",
+          "snippet": "Please visit our Trust Center to learn more about JetBrains' security practices, compliance certifications, and data protection measures. Our Trust Center provides comprehensive information on our infrastructure security, organizational security policies, product security features, and data privacy procedures. You can also find details on our SOC 2 Type II and GDPR compliance, access security resources, and view our controls across various security domains. For any security or compliance-related inquiries, contact us at security-compliance@jetbrains.com.",
+          "matched_terms": [
+            "soc 2",
+            "soc 2 type ii",
+            "trust center"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/legal/docs/privacy/trust-center/",
+          "source_type": "security",
+          "evidence_of": 3
+        },
+        {
+          "heading": "7. Security",
+          "snippet": "…location with appropriate security measures in place.For more details about security at JetBrains, please visit our Trust Center.",
+          "matched_terms": [
+            "trust center"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/legal/docs/privacy/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 3
+        },
+        {
+          "heading": "Companies worldwide trust IntelliJ IDEA",
+          "snippet": "Proven compliance and security JetBrains tools adhere to industry-leading security standards, including SOC 2 certification, ensuring your organization’s data is protected and our products are compliant with global regulations.",
+          "matched_terms": [
+            "soc 2"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/idea/",
+          "source_type": "product",
+          "evidence_of": 3
+        }
+      ]
+    },
+    {
+      "name": "privacy_data_handling",
+      "label": "Privacy and data-handling references",
+      "status": "FOUND",
+      "value": "Your Privacy Choices: The privacy choices you have regarding your personal information are determined by the specific laws applicable to you and your data.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "10. Your Privacy Choices and Rights",
+          "snippet": "Your Privacy Choices: The privacy choices you have regarding your personal information are determined by the specific laws applicable to you and your data. The following may apply to you: Email communications. If you receive an unwanted email from us, you can use the unsubscribe link found at the bottom of the email to opt out of receiving future emails. Note that you will continue to receive transaction and product-related emails regarding JetBrains Products you have access to. We may also send you certain non-promotional and transactional communications and you will not be able to opt out of…",
+          "matched_terms": [
+            "data retention",
+            "personal data",
+            "personal information",
+            "right to erasure"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/legal/docs/privacy/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 15
+        },
+        {
+          "heading": "JetBrains Privacy Notice",
+          "snippet": "Version 3.2, last updated: 12 June 2026 In this Privacy Notice, we describe the types of data, including Personal Data, (collectively, “data”) that we and our associated companies collect from you when you use JetBrains Websites and certain JetBrains products and services as described in this Privacy Notice (collectively, our “services”), how we and our associated companies use and disclose that data, and your options for accessing or updating your data. For information about your privacy choices, please see Section 10, Your Privacy Choices and Rights, and Section 14, Privacy Notice Specificat…",
+          "matched_terms": [
+            "data processing agreement",
+            "personal data",
+            "personal information"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/legal/docs/privacy/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 15
+        },
+        {
+          "heading": "1. Definitions",
+          "snippet": "…definitions are used throughout this Privacy Notice: COPPA. Children’s Online Privacy Protection Act. in the US. GDPR. General Data Protection Regulation (EU) 2016/679 as amended. JetBrains Software Product. Any software product distributed or made available by JetBrains under the JetBrains Subscription Agreement or any other JetBrains Agreement, excluding third-party software. Any such third-party software is governed by its own terms and conditions and Privacy Notice. JetBrains Software as a Service. Any JetBrains Software Product that is offered as a hosted solution, where the software is i…",
+          "matched_terms": [
+            "gdpr",
+            "personal data",
+            "data subject"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/legal/docs/privacy/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 15
+        }
+      ]
+    },
+    {
+      "name": "support_documentation",
+      "label": "Support and documentation availability",
+      "status": "NOT_FOUND",
+      "value": "",
+      "confidence": "NOT_FOUND",
+      "evidence": [
+        {
+          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
+          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "integrations_api",
+      "label": "Integration or API availability",
+      "status": "NOT_FOUND",
+      "value": "",
+      "confidence": "NOT_FOUND",
+      "evidence": [
+        {
+          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
+          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "pricing_availability",
+      "label": "Pricing or plan availability",
+      "status": "FOUND",
+      "value": "Licensing FAQs Purchase Terms Contact Sales",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Help",
+          "snippet": "Licensing FAQs Purchase Terms Contact Sales",
+          "matched_terms": [
+            "contact sales"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/legal/docs/privacy/trust-center/",
+          "source_type": "security",
+          "evidence_of": 1
+        },
+        {
+          "heading": "The page this fact belongs on could not be read",
+          "snippet": "The pricing page was collected but contained no readable text, so this answer comes from the security page instead. Treat the confidence above as being about the quote, not about the vendor's actual pricing document, which nobody has read.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "data_residency",
+      "label": "Data residency / storage location",
+      "status": "NOT_FOUND",
+      "value": "",
+      "confidence": "NOT_FOUND",
+      "evidence": [
+        {
+          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
+          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "encryption",
+      "label": "Encryption practices",
+      "status": "FOUND",
+      "value": "To encrypt data at rest, we use strong, up-to-date encryption algorithms, such as AES-256.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "7. Security",
+          "snippet": "…protocol to encrypt your data. To encrypt data at rest, we use strong, up-to-date encryption algorithms, such as AES-256. All encryption keys are regularly rotated, and access to them is strictly limited. We thoroughly review all Personal Data usage processes before implementation to help achieve compliance with applicable data-protection-related laws and to safeguard user information. This is done to minimize data usage and to make sure that you, as the data owner, are informed about the processing. When the reason for data storage expires, and we are no longer required to keep it, we remove …",
+          "matched_terms": [
+            "aes-256"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.jetbrains.com/legal/docs/privacy/privacy/",
+          "source_type": "privacy",
+          "evidence_of": 1
+        }
+      ]
+    },
+    {
+      "name": "uptime_reliability",
+      "label": "Uptime, SLA and reliability",
+      "status": "NOT_FOUND",
+      "value": "",
+      "confidence": "NOT_FOUND",
+      "evidence": [
+        {
+          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
+          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "product",
+      "detail": "43 blocks from 203,497 characters of HTML"
+    },
+    {
+      "action": "unusable-page",
+      "field_name": "-",
+      "source_type": "pricing",
+      "detail": "skipped - Agent 1 recorded only 0 heading blocks on this page; it was collected but is not readable. NOT this page's fields' fault if they come back NOT_FOUND."
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "security",
+      "detail": "3 blocks from 44,520 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "privacy",
+      "detail": "18 blocks from 102,713 characters of HTML"
+    },
+    {
+      "action": "unusable-page",
+      "field_name": "-",
+      "source_type": "docs",
+      "detail": "skipped - Agent 1 recorded only 0 heading blocks on this page; it was collected but is not readable. NOT this page's fields' fault if they come back NOT_FOUND."
+    },
+    {
+      "action": "unusable-page",
+      "field_name": "-",
+      "source_type": "status",
+      "detail": "skipped - Agent 1 recorded only 5 heading blocks on this page; it was collected but is not readable. NOT this page's fields' fault if they come back NOT_FOUND."
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "product",
+      "detail": "1 block(s) matched on https://www.jetbrains.com/idea/"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://www.jetbrains.com/legal/docs/privacy/trust-center/"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "privacy",
+      "detail": "1 block(s) matched on https://www.jetbrains.com/legal/docs/privacy/privacy/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://www.jetbrains.com/legal/docs/privacy/trust-center/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "privacy",
+      "detail": "14 block(s) matched on https://www.jetbrains.com/legal/docs/privacy/privacy/"
+    },
+    {
+      "action": "no-match",
+      "field_name": "support_documentation",
+      "source_type": "-",
+      "detail": "no match for any of 14 terms across 3 readable page(s) — reported as NOT_FOUND — CAUTION: 3 further page(s) (pricing, docs, status) were collected but not readable, so this NOT_FOUND may be our limit rather than the vendor's silence"
+    },
+    {
+      "action": "no-match",
+      "field_name": "integrations_api",
+      "source_type": "-",
+      "detail": "no match for any of 13 terms across 3 readable page(s) — reported as NOT_FOUND — CAUTION: 3 further page(s) (pricing, docs, status) were collected but not readable, so this NOT_FOUND may be our limit rather than the vendor's silence"
+    },
+    {
+      "action": "match",
+      "field_name": "pricing_availability",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://www.jetbrains.com/legal/docs/privacy/trust-center/"
+    },
+    {
+      "action": "match",
+      "field_name": "pricing_availability",
+      "source_type": "privacy",
+      "detail": "1 block(s) matched on https://www.jetbrains.com/legal/docs/privacy/privacy/"
+    },
+    {
+      "action": "unread-home-page",
+      "field_name": "pricing_availability",
+      "source_type": "pricing",
+      "detail": "pricing_availability reported FOUND from security, but its own page type (pricing) was unreadable — caveat attached to the field"
+    },
+    {
+      "action": "no-match",
+      "field_name": "data_residency",
+      "source_type": "-",
+      "detail": "no match for any of 9 terms across 3 readable page(s) — reported as NOT_FOUND — CAUTION: 3 further page(s) (pricing, docs, status) were collected but not readable, so this NOT_FOUND may be our limit rather than the vendor's silence"
+    },
+    {
+      "action": "match",
+      "field_name": "encryption",
+      "source_type": "privacy",
+      "detail": "1 block(s) matched on https://www.jetbrains.com/legal/docs/privacy/privacy/"
+    },
+    {
+      "action": "no-match",
+      "field_name": "uptime_reliability",
+      "source_type": "-",
+      "detail": "no match for any of 11 terms across 3 readable page(s) — reported as NOT_FOUND — CAUTION: 3 further page(s) (pricing, docs, status) were collected but not readable, so this NOT_FOUND may be our limit rather than the vendor's silence"
+    }
+  ]
+}

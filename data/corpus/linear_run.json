@@ -1,55 +1,62 @@
 {
-  "vendor_slug": "gitlab",
-  "ran_on": "2026-08-13T21:28:39",
+  "vendor_slug": "linear",
+  "ran_on": "2026-08-13T21:29:18",
   "steps": [
     {
       "action": "curated-seed",
       "source_type": "product",
-      "url": "https://about.gitlab.com/",
+      "url": "https://linear.app/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "pricing",
-      "url": "https://about.gitlab.com/pricing/",
+      "url": "https://linear.app/pricing",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "security",
-      "url": "https://about.gitlab.com/security/",
+      "url": "https://linear.app/security",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "privacy",
-      "url": "https://about.gitlab.com/privacy/",
+      "url": "https://linear.app/privacy",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "docs",
-      "url": "https://docs.gitlab.com/",
+      "url": "https://linear.app/docs",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "status",
-      "url": "https://status.gitlab.com/",
+      "url": "https://status.linear.app/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "discovered",
       "source_type": "terms",
-      "url": "https://about.gitlab.com/terms",
+      "url": "https://linear.app/terms",
       "status": 200,
       "outcome": "found"
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "docs",
+      "url": "https://linear.app/docs",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 1034 characters of readable text and 16 heading blocks from 540,090 bytes of HTML (1.96 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
     }
   ]
 }

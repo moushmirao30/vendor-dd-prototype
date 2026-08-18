@@ -1,0 +1,69 @@
+{
+  "vendor_slug": "atlassian",
+  "ran_on": "2026-08-13T21:33:46",
+  "steps": [
+    {
+      "action": "curated-seed",
+      "source_type": "product",
+      "url": "https://www.atlassian.com/software/jira",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "pricing",
+      "url": "https://www.atlassian.com/software/jira/pricing",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "security",
+      "url": "https://www.atlassian.com/trust/compliance",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "privacy",
+      "url": "https://www.atlassian.com/legal/privacy-policy",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "docs",
+      "url": "https://support.atlassian.com/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "status",
+      "url": "https://status.atlassian.com/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "terms",
+      "url": "https://www.atlassian.com/legal/cloud-terms-of-service",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "product",
+      "url": "https://www.atlassian.com/software/jira",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 52 characters of readable text and 0 heading blocks from 898,035 bytes of HTML (0.06 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "pricing",
+      "url": "https://www.atlassian.com/software/jira/pricing",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 66 characters of readable text and 0 heading blocks from 1,213,336 bytes of HTML (0.06 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
+    }
+  ]
+}

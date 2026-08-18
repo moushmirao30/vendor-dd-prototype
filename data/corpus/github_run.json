@@ -1,53 +1,60 @@
 {
-  "vendor_slug": "gitlab",
-  "ran_on": "2026-08-13T21:28:39",
+  "vendor_slug": "github",
+  "ran_on": "2026-08-13T21:34:15",
   "steps": [
     {
       "action": "curated-seed",
       "source_type": "product",
-      "url": "https://about.gitlab.com/",
+      "url": "https://github.com/features",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "pricing",
-      "url": "https://about.gitlab.com/pricing/",
+      "url": "https://github.com/pricing",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "security",
-      "url": "https://about.gitlab.com/security/",
+      "url": "https://github.com/security",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "trust",
+      "url": "https://github.com/trust-center",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "privacy",
-      "url": "https://about.gitlab.com/privacy/",
+      "url": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "docs",
-      "url": "https://docs.gitlab.com/",
+      "url": "https://docs.github.com/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "status",
-      "url": "https://status.gitlab.com/",
+      "url": "https://www.githubstatus.com/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "discovered",
       "source_type": "terms",
-      "url": "https://about.gitlab.com/terms",
+      "url": "https://github.com/terms",
       "status": 200,
       "outcome": "found"
     }

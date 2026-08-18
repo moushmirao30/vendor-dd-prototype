@@ -1,0 +1,76 @@
+{
+  "vendor_slug": "postman",
+  "ran_on": "2026-08-13T21:33:31",
+  "steps": [
+    {
+      "action": "curated-seed",
+      "source_type": "product",
+      "url": "https://www.postman.com/product/what-is-postman/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "pricing",
+      "url": "https://www.postman.com/pricing/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "security",
+      "url": "https://www.postman.com/trust/security/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "privacy",
+      "url": "https://www.postman.com/legal/privacy-policy/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "docs",
+      "url": "https://learning.postman.com/docs/introduction/overview/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "status",
+      "url": "https://status.postman.com/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "discovered",
+      "source_type": "terms",
+      "url": "https://www.postman.com/terms",
+      "status": 404,
+      "outcome": "HTTP 404"
+    },
+    {
+      "action": "discovered",
+      "source_type": "terms",
+      "url": "https://www.postman.com/legal/terms",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "privacy",
+      "url": "https://www.postman.com/legal/privacy-policy/",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 0 characters of readable text and 0 heading blocks from 4,727 bytes of HTML (0.00 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "docs",
+      "url": "https://learning.postman.com/docs/introduction/overview/",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 2370 characters of readable text and 2 heading blocks from 1,234,954 bytes of HTML (1.97 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
+    }
+  ]
+}

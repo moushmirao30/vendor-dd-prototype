@@ -1,0 +1,97 @@
+{
+  "vendor_slug": "jetbrains",
+  "ran_on": "2026-08-13T21:34:47",
+  "steps": [
+    {
+      "action": "curated-seed",
+      "source_type": "product",
+      "url": "https://www.jetbrains.com/idea/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "pricing",
+      "url": "https://www.jetbrains.com/idea/buy/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "security",
+      "url": "https://www.jetbrains.com/legal/docs/privacy/trust-center/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "privacy",
+      "url": "https://www.jetbrains.com/legal/docs/privacy/privacy/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "docs",
+      "url": "https://www.jetbrains.com/help/idea/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "curated-seed",
+      "source_type": "status",
+      "url": "https://status.jetbrains.com/",
+      "status": 200,
+      "outcome": "found"
+    },
+    {
+      "action": "discovered",
+      "source_type": "terms",
+      "url": "https://www.jetbrains.com/terms",
+      "status": 404,
+      "outcome": "HTTP 404"
+    },
+    {
+      "action": "discovered",
+      "source_type": "terms",
+      "url": "https://www.jetbrains.com/legal/terms",
+      "status": 404,
+      "outcome": "HTTP 404"
+    },
+    {
+      "action": "discovered",
+      "source_type": "terms",
+      "url": "https://www.jetbrains.com/terms-of-service",
+      "status": 404,
+      "outcome": "HTTP 404"
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "pricing",
+      "url": "https://www.jetbrains.com/idea/buy/",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 40 characters of readable text and 0 heading blocks from 54,569 bytes of HTML (0.75 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "docs",
+      "url": "https://www.jetbrains.com/help/idea/",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 45 characters of readable text and 0 heading blocks from 4,434 bytes of HTML (10.39 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
+    },
+    {
+      "action": "unusable-page",
+      "source_type": "status",
+      "url": "https://status.jetbrains.com/",
+      "status": 200,
+      "outcome": "collected but NOT USABLE as evidence - 333 characters of readable text and 5 heading blocks from 227,437 bytes of HTML (1.50 readable chars per KB). Almost certainly rendered by JavaScript. Any field missing for this vendor may be OUR limit, not the vendor's silence - verify this page by hand."
+    },
+    {
+      "action": "skip",
+      "source_type": "terms",
+      "url": "(no seed - discovery only)",
+      "status": 0,
+      "outcome": "NOT COLLECTED - flag for manual follow-up"
+    }
+  ]
+}

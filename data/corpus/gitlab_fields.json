@@ -1,6 +1,6 @@
 {
   "vendor_slug": "gitlab",
-  "ran_on": "2026-08-12T19:38:01",
+  "ran_on": "2026-08-13T21:28:55",
   "fields": [
     {
       "name": "security_trust",
@@ -22,21 +22,21 @@
           "evidence_of": 10
         },
         {
-          "heading": "CSA Trusted Cloud Provider",
-          "snippet": "GitLab is a Cloud Security Alliance (CSA) Trusted Cloud Provider.",
+          "heading": "Trust Center Documents",
+          "snippet": "Learn about our Security and Compliance posture.",
           "matched_terms": [
-            "cloud security alliance"
+            "trust center"
           ],
-          "match_location": "body",
+          "match_location": "heading_only",
           "source_url": "https://about.gitlab.com/security/",
           "source_type": "security",
           "evidence_of": 10
         },
         {
-          "heading": "GitLab Trust Center",
-          "snippet": "GitLab Trust Center It's our mission to be the leading example in security, innovation, and transparency.",
+          "heading": "CSA Trusted Cloud Provider",
+          "snippet": "GitLab is a Cloud Security Alliance (CSA) Trusted Cloud Provider.",
           "matched_terms": [
-            "trust center"
+            "cloud security alliance"
           ],
           "match_location": "body",
           "source_url": "https://about.gitlab.com/security/",
@@ -95,12 +95,12 @@
       "name": "support_documentation",
       "label": "Support and documentation availability",
       "status": "FOUND",
-      "value": "Customer Support information is collected through the Websites, such as the GitLab Community Forum and the GitLab Support Portal .",
+      "value": "Customer Support information is collected through the Websites, such as the GitLab Community Forum and the GitLab Support Portal.",
       "confidence": "High",
       "evidence": [
         {
           "heading": "Information You Provide Directly",
-          "snippet": "…or the services being provided. Customer Support information is collected through the Websites, such as the GitLab Community Forum and the GitLab Support Portal . For Community Programs , support will be provided through the GitLab Service Desk . Call Recordings: We may record and transcribe GitLab webinars, trainings, and online events. In addition, we may record and transcribe sales calls hosted on various videoconferencing technologies to enable our sales and support teams to share conversational insights, create training and presentations, and improve their internal processes. Other Conten…",
+          "snippet": "…or the services being provided. Customer Support information is collected through the Websites, such as the GitLab Community Forum and the GitLab Support Portal. For Community Programs, support will be provided through the GitLab Service Desk. Call Recordings: We may record and transcribe GitLab webinars, trainings, and online events. In addition, we may record and transcribe sales calls hosted on various videoconferencing technologies to enable our sales and support teams to share conversational insights, create training and presentations, and improve their internal processes. Other Content Y…",
           "matched_terms": [
             "support portal",
             "community forum"
@@ -112,7 +112,7 @@
         },
         {
           "heading": "License and Subscription",
-          "snippet": "…resell partners, please check out the GitLab Partner Locator . See Acceptable Use of User Licenses for user licensing documentation.",
+          "snippet": "…resell partners, please check out the GitLab Partner Locator. See Acceptable Use of User Licenses for user licensing documentation.",
           "matched_terms": [
             "documentation"
           ],
@@ -208,7 +208,7 @@
         },
         {
           "heading": "User Limits",
-          "snippet": "The 5-user limit is applicable only to users of the Free tier of the GitLab.com offering in a top-level group with private visibility. These changes do not apply to users of the Free tier of the GitLab.com offering in a public top-level group, paid tiers, the Free tier of the self-managed offering and community programs , including GitLab for Open Source, GitLab for Education, and GitLab for Startups users. Learn more here .",
+          "snippet": "The 5-user limit is applicable only to users of the Free tier of the GitLab.com offering in a top-level group with private visibility. These changes do not apply to users of the Free tier of the GitLab.com offering in a public top-level group, paid tiers, the Free tier of the self-managed offering and community programs, including GitLab for Open Source, GitLab for Education, and GitLab for Startups users. Learn more here.",
           "matched_terms": [
             "free tier"
           ],
@@ -256,7 +256,7 @@
       "evidence": [
         {
           "heading": "Features and Benefits",
-          "snippet": "…DevSecOps solutions on our competitive comparison pages . For paid plans, the hours in which your support request has SLA is dependent upon the Support Impact of the request itself. Something at Emergency (Severity 1) level would receive support 24/7, whereas other Support Impact levels would receive 24/5. For more information on the hours of support, please see Definitions of GitLab Global Support Hours and Effect on Support Hours if a preferred region for support is chosen . You can learn more about GitLab's success offerings on the services page .",
+          "snippet": "…DevSecOps solutions on our competitive comparison pages. For paid plans, the hours in which your support request has SLA is dependent upon the Support Impact of the request itself. Something at Emergency (Severity 1) level would receive support 24/7, whereas other Support Impact levels would receive 24/5. For more information on the hours of support, please see Definitions of GitLab Global Support Hours and Effect on Support Hours if a preferred region for support is chosen. You can learn more about GitLab's success offerings on the services page.",
           "matched_terms": [
             "sla"
           ],
@@ -439,7 +439,7 @@
       "action": "no-match",
       "field_name": "encryption",
       "source_type": "-",
-      "detail": "no match for any of 9 terms across 7 collected page(s) — reported as NOT_FOUND"
+      "detail": "no match for any of 9 terms across 7 readable page(s) — reported as NOT_FOUND"
     },
     {
       "action": "match",

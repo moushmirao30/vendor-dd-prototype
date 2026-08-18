@@ -1,53 +1,53 @@
 {
-  "vendor_slug": "gitlab",
-  "ran_on": "2026-08-13T21:28:39",
+  "vendor_slug": "sentry",
+  "ran_on": "2026-08-13T21:32:36",
   "steps": [
     {
       "action": "curated-seed",
       "source_type": "product",
-      "url": "https://about.gitlab.com/",
+      "url": "https://sentry.io/welcome/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "pricing",
-      "url": "https://about.gitlab.com/pricing/",
+      "url": "https://sentry.io/pricing/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "security",
-      "url": "https://about.gitlab.com/security/",
+      "url": "https://sentry.io/security/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "privacy",
-      "url": "https://about.gitlab.com/privacy/",
+      "url": "https://sentry.io/privacy/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "docs",
-      "url": "https://docs.gitlab.com/",
+      "url": "https://docs.sentry.io/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "curated-seed",
       "source_type": "status",
-      "url": "https://status.gitlab.com/",
+      "url": "https://status.sentry.io/",
       "status": 200,
       "outcome": "found"
     },
     {
       "action": "discovered",
       "source_type": "terms",
-      "url": "https://about.gitlab.com/terms",
+      "url": "https://sentry.io/terms",
       "status": 200,
       "outcome": "found"
     }

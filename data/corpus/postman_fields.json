@@ -1,0 +1,535 @@
+{
+  "vendor_slug": "postman",
+  "ran_on": "2026-08-13T21:33:35",
+  "fields": [
+    {
+      "name": "security_trust",
+      "label": "Security and trust information",
+      "status": "FOUND",
+      "value": "All compliance documents SOC 2 Type II reports, penetration test summaries, audit reports, and security questionnaire responses are available via the Postman Customer Trust Portal.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Compliance isn't a checkbox it's a proof point. Ours are downloadable.",
+          "snippet": "All compliance documents SOC 2 Type II reports, penetration test summaries, audit reports, and security questionnaire responses are available via the Postman Customer Trust Portal. SOC 2 Type II reports, penetration test summaries, security questionnaire responses, architecture diagrams, and more available on demand for your security review team. Privacy",
+          "matched_terms": [
+            "soc 2",
+            "soc 2 type ii",
+            "iso 27001",
+            "pci dss",
+            "hipaa",
+            "csa star",
+            "penetration test"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 7
+        },
+        {
+          "heading": "We put our security to the test with the global research community",
+          "snippet": "Postman runs a private bug bounty program through HackerOne, inviting security researchers worldwide to identify and responsibly disclose vulnerabilities in the Postman API Platform. All findings are scored with CVSS, assigned an owner, and tracked to resolution against internal SLAs. Agent Mode was subjected to internal AppSec testing and its first third-party penetration test in early 2026 results available on the Trust Portal. Our bug bounty program has paid out over $350,000 to more than 800 researchers since 2017.",
+          "matched_terms": [
+            "penetration test",
+            "bug bounty"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 7
+        },
+        {
+          "heading": "Frequently Asked Questions",
+          "snippet": "…with testing for OWASP vulnerabilities. Annually, third-party firms validate our ecosystem's security, and our bug bounty program allows anyone to report potential vulnerabilities in the Postman API Platform. Our company's automated and manual code review processes search for any code that could potentially violate corporate security policies. We also have patching mechanisms built into the operating systems to update devices automatically. What are Postman's vulnerability management processes? We monitor the security of our products and applications through various ongoing activities, includi…",
+          "matched_terms": [
+            "soc 2",
+            "bug bounty"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 7
+        }
+      ]
+    },
+    {
+      "name": "privacy_data_handling",
+      "label": "Privacy and data-handling references",
+      "status": "FOUND",
+      "value": "Postman does not sell your data for commercial purposes or share it as defined under CCPA and CPRA.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Privacy by design globally compliant",
+          "snippet": "Postman does not sell your data for commercial purposes or share it as defined under CCPA and CPRA. All third-party vendors are required to execute Postman's standard vendor DPA before any data is shared. Privacy Policy Review the Postman privacy policy → Global Data Privacy Frameworks View certification → Bug Bounty Program",
+          "matched_terms": [
+            "privacy policy",
+            "ccpa"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 5
+        },
+        {
+          "heading": "Frequently Asked Questions",
+          "snippet": "…uses AWS to manage its data centers' physical and environmental security. Our company's product data and backups are hosted on AWS servers in the EU and the U.S., which offer strong security and privacy-focused features. How does Postman secure its applications? Postman secures its applications at every layer and phase, from development to deployment and operation. Our applications run on the latest stable version of Node.js, an open-source programming language. We use containerization to isolate software, set architectural security guidelines, and perform code reviews. Industry standards and …",
+          "matched_terms": [
+            "ccpa",
+            "hosted on aws servers in the eu"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 5
+        },
+        {
+          "heading": "Every developer. Every account. One governance layer.",
+          "snippet": "Account Discovery and Control View docs → Domain Verification & Account Capture View docs → Single Sign-On (SSO) View docs → SCIM Provisioning View docs → Role-Based Access Control View docs → Postman Organizations View docs → Audit Logs View docs → Data Residency View docs →",
+          "matched_terms": [
+            "data residency"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 5
+        },
+        {
+          "heading": "The page this fact belongs on could not be read",
+          "snippet": "The privacy page was collected but contained no readable text, so this answer comes from the security page instead. Treat the confidence above as being about the quote, not about the vendor's actual privacy document, which nobody has read.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "support_documentation",
+      "label": "Support and documentation availability",
+      "status": "FOUND",
+      "value": "Premium Support delivers contractual SLAs, 24/7 global coverage, and priority channels designed for enterprise scale.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Premium Support",
+          "snippet": "Premium Support delivers contractual SLAs, 24/7 global coverage, and priority channels designed for enterprise scale. Designed for: Regulated industries, global enterprises, and platform teams running customer-facing or revenue-generating APIs. What's included: Contractual SLAs – 1-hour response for critical issues, 4-hour for major degradation. 24/7 global coverage across Americas, EMEA, and APAC. Priority queue and premium channels (phone, screen sharing, chat). Quarterly business reviews and post-incident analysis. Organization-level add-on. Must be purchased for all licensed users. Enterpr…",
+          "matched_terms": [
+            "24/7",
+            "premium support"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 10
+        },
+        {
+          "heading": "Extend Postman with add-ons",
+          "snippet": "Add advanced security and support capabilities as your team scales. Simple Security Advanced Security Administration Premium Support",
+          "matched_terms": [
+            "premium support"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 10
+        },
+        {
+          "heading": "Stop credential sprawl at the source",
+          "snippet": "…key revocable at any time. Layer 1 Local Secret Protection Keep secrets out of Postman Cloud and Git. View secrets documentation → Layer 1",
+          "matched_terms": [
+            "documentation"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 10
+        },
+        {
+          "heading": "The page this fact belongs on could not be read",
+          "snippet": "The docs page was collected but contained no readable text, so this answer comes from the pricing, security page instead. Treat the confidence above as being about the quote, not about the vendor's actual docs document, which nobody has read.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "integrations_api",
+      "label": "Integration or API availability",
+      "status": "FOUND",
+      "value": "Vault Integrations HashiCorp, AWS Secrets Manager, Azure Key Vault, 1Password.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Stop credential sprawl at the source",
+          "snippet": "…only with no secrets synced to Postman Cloud Shared Vault Per-workspace vault for secure team collaboration. Vault Integrations HashiCorp, AWS Secrets Manager, Azure Key Vault, 1Password. Bring Your Own Key Supply your own encryption key revocable at any time. Layer 1 Local Secret Protection Keep secrets out of Postman Cloud and Git. View secrets documentation → Layer 1",
+          "matched_terms": [
+            "integrations"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 6
+        },
+        {
+          "heading": "Enterprise",
+          "snippet": "…Git Test data storage IDE extension (VS Code) Unlimited cloud & local mock servers Unlimited manual Flows Postman CLI Webhooks Commenting & annotations Public NPM packages Private NPM packages Testing Testing Automated API testing (Unlimited, Collection Runner) Multi-protocol Runner Data file support in Collection Runner Performance testing (unlimited runs) Playwright integration Test result exports Automation Flows 25 credits / month 50 credits / month 100 credits / team / month 500 credits / team / month Playwright integration 25 credits / month 25 credits / month 50 credits / month 50 credi…",
+          "matched_terms": [
+            "public api",
+            "api documentation",
+            "integrations",
+            "sdk",
+            "cli"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 6
+        },
+        {
+          "heading": "Team",
+          "snippet": "For teams building and shipping APIs together $19 per user/month (billed annually) Everything in Solo, and: Team collaboration Unlimited workspace & collection viewers Basic role-based access control (RBAC) SDK generation & distribution Simple Security (add-on)",
+          "matched_terms": [
+            "sdk"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 6
+        },
+        {
+          "heading": "The page this fact belongs on could not be read",
+          "snippet": "The docs page was collected but contained no readable text, so this answer comes from the pricing, security page instead. Treat the confidence above as being about the quote, not about the vendor's actual docs document, which nobody has read.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "pricing_availability",
+      "label": "Pricing or plan availability",
+      "status": "FOUND",
+      "value": "Postman is priced per user, per month, with discounts for annual billing.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Frequently asked questions",
+          "snippet": "How is Postman priced? Postman is priced per user, per month, with discounts for annual billing. Plans are designed around how you work: Free and Solo are single-player plans. Team is for collaboration Enterprise is for organization-wide scale, governance, and control Some capabilities are usage-based, and a small number of security features are available as add-ons. What's the difference between Free and Solo? Free supports core solo API development and testing for individual developers. Solo builds on that foundation with higher limits, expanded AI usage, and automation for developers who wa…",
+          "matched_terms": [
+            "per user",
+            "per month",
+            "enterprise plan",
+            "pricing"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 12
+        },
+        {
+          "heading": "AI Credits",
+          "snippet": "…executing workflow steps. If you exceed your included credits, you can continue using Postman AI with pay-as-you-go pricing when enabled by your Billing Admin. Enterprise customers can contact Sales to discuss volume pricing options. AI credits can be used to: Generate and update collections, tests, and Flows using Agent Mode Analyze responses and troubleshoot API behavior Automate documentation and workflow steps across your API lifecycle",
+          "matched_terms": [
+            "contact sales",
+            "pricing"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 12
+        },
+        {
+          "heading": "Flows Credits",
+          "snippet": "Each plan includes a monthly allotment of Flows credits. If you exceed your included credits, usage can continue with pay-as-you-go pricing when enabled by your Billing Admin. Enterprise customers can contact sales to discuss volume pricing. Track request volume and trends over time Flows credits power API orchestration and automation steps within Postman Flows. Use Flows to design and run API-driven workflows across systems using a visual builder. Credits are consumed as flows execute and perform usage-based operations. $1 per 1000 Flows credits",
+          "matched_terms": [
+            "contact sales",
+            "pricing"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 12
+        }
+      ]
+    },
+    {
+      "name": "data_residency",
+      "label": "Data residency / storage location",
+      "status": "FOUND",
+      "value": "Our company's product data and backups are hosted on AWS servers in the EU and the U.S., which offer strong security and privacy-focused features.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Frequently Asked Questions",
+          "snippet": "…to manage its data centers' physical and environmental security. Our company's product data and backups are hosted on AWS servers in the EU and the U.S., which offer strong security and privacy-focused features. How does Postman secure its applications? Postman secures its applications at every layer and phase, from development to deployment and operation. Our applications run on the latest stable version of Node.js, an open-source programming language. We use containerization to isolate software, set architectural security guidelines, and perform code reviews. Industry standards and security …",
+          "matched_terms": [
+            "aws servers in the eu"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 4
+        },
+        {
+          "heading": "Every developer. Every account. One governance layer.",
+          "snippet": "Account Discovery and Control View docs → Domain Verification & Account Capture View docs → Single Sign-On (SSO) View docs → SCIM Provisioning View docs → Role-Based Access Control View docs → Postman Organizations View docs → Audit Logs View docs → Data Residency View docs →",
+          "matched_terms": [
+            "data residency"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 4
+        },
+        {
+          "heading": "Enterprise",
+          "snippet": "…archival Audit logs & compliance reporting Deployment control API & package library governance AI input guardrails Data residency (EU-only) Domain Verification Domain Capture Advanced Security add-on Postman Vault integrations Advanced Security add-on Advanced secret security controls Advanced Security add-on Account Discovery Advanced Security add-on Account Control Advanced Security add-on 1 user 1 user 1 user 1 user Unlimited Unlimited Unlimited Unlimited Up to 5 Up to 5 Up to 10 Up to 10 Up to 50 Up to 50 Up to 100 Up to 100 10,000 10,000 100,000 100,000 1 million 1 million 10 million 10 m…",
+          "matched_terms": [
+            "data residency"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 4
+        },
+        {
+          "heading": "The page this fact belongs on could not be read",
+          "snippet": "The privacy page was collected but contained no readable text, so this answer comes from the pricing, security page instead. Treat the confidence above as being about the quote, not about the vendor's actual privacy document, which nobody has read.",
+          "matched_terms": [],
+          "match_location": "tool_limitation",
+          "source_url": "",
+          "source_type": "-",
+          "evidence_of": 0
+        }
+      ]
+    },
+    {
+      "name": "encryption",
+      "label": "Encryption practices",
+      "status": "FOUND",
+      "value": "Postman uses strong encryption (AES-256-GCM) for data at rest and TLS for data in transit.",
+      "confidence": "High",
+      "evidence": [
+        {
+          "heading": "Frequently Asked Questions",
+          "snippet": "What are Postman's data encryption and key management practices? Postman uses strong encryption (AES-256-GCM) for data at rest and TLS for data in transit. All sensitive data, including environment variables, secrets, and access tokens, is encrypted at the application layer and managed via a key management system (KMS). Enterprise customers can also opt for Postman's Bring Your Own Key (BYOK) encryption feature, which enables them to manage and control their own encryption keys. These keys are never accessible by Postman, and all encryption events are logged for compliance and auditing. Postma…",
+          "matched_terms": [
+            "aes-256"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/trust/security/",
+          "source_type": "security",
+          "evidence_of": 1
+        }
+      ]
+    },
+    {
+      "name": "uptime_reliability",
+      "label": "Uptime, SLA and reliability",
+      "status": "FOUND",
+      "value": "…Support and Legal Support and Legal Support Community & Email Community & Email Community & Email 24x5 support (24h SLA) Premium Support Premium Support add-on Custom terms of service Community & Email Community & Email Community & Email Community & Email Community & Email Community & Email 24x5 support (24h SLA) 24x5 support (24h SLA) Premium Support Premium Support add-on Premium Support add-on Free Solo Team Enterprise Postman AI Postman AI 50 / month 50 / month Development Development Testing Testing Playwright integration 25 credits / month 25 credits / month Production Production 1,000 r…",
+      "confidence": "Medium",
+      "evidence": [
+        {
+          "heading": "Enterprise",
+          "snippet": "…Support and Legal Support and Legal Support Community & Email Community & Email Community & Email 24x5 support (24h SLA) Premium Support Premium Support add-on Custom terms of service Community & Email Community & Email Community & Email Community & Email Community & Email Community & Email 24x5 support (24h SLA) 24x5 support (24h SLA) Premium Support Premium Support add-on Premium Support add-on Free Solo Team Enterprise Postman AI Postman AI 50 / month 50 / month Development Development Testing Testing Playwright integration 25 credits / month 25 credits / month Production Production 1,000 r…",
+          "matched_terms": [
+            "sla"
+          ],
+          "match_location": "body",
+          "source_url": "https://www.postman.com/pricing/",
+          "source_type": "pricing",
+          "evidence_of": 2
+        },
+        {
+          "heading": "All Systems Operational",
+          "snippet": "All Systems Operational",
+          "matched_terms": [
+            "all systems operational"
+          ],
+          "match_location": "heading_only",
+          "source_url": "https://status.postman.com/",
+          "source_type": "status",
+          "evidence_of": 2
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "product",
+      "detail": "15 blocks from 265,728 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "pricing",
+      "detail": "24 blocks from 985,483 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "security",
+      "detail": "18 blocks from 331,514 characters of HTML"
+    },
+    {
+      "action": "unusable-page",
+      "field_name": "-",
+      "source_type": "privacy",
+      "detail": "skipped - Agent 1 recorded only 0 heading blocks on this page; it was collected but is not readable. NOT this page's fields' fault if they come back NOT_FOUND."
+    },
+    {
+      "action": "unusable-page",
+      "field_name": "-",
+      "source_type": "docs",
+      "detail": "skipped - Agent 1 recorded only 2 heading blocks on this page; it was collected but is not readable. NOT this page's fields' fault if they come back NOT_FOUND."
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "status",
+      "detail": "20 blocks from 832,216 characters of HTML"
+    },
+    {
+      "action": "parse-page",
+      "field_name": "-",
+      "source_type": "terms",
+      "detail": "3 blocks from 207,683 characters of HTML"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "pricing",
+      "detail": "2 block(s) matched on https://www.postman.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "security_trust",
+      "source_type": "security",
+      "detail": "5 block(s) matched on https://www.postman.com/trust/security/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://www.postman.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "privacy_data_handling",
+      "source_type": "security",
+      "detail": "4 block(s) matched on https://www.postman.com/trust/security/"
+    },
+    {
+      "action": "unread-home-page",
+      "field_name": "privacy_data_handling",
+      "source_type": "privacy",
+      "detail": "privacy_data_handling reported FOUND from security, but its own page type (privacy) was unreadable — caveat attached to the field"
+    },
+    {
+      "action": "match",
+      "field_name": "support_documentation",
+      "source_type": "product",
+      "detail": "3 block(s) matched on https://www.postman.com/product/what-is-postman/"
+    },
+    {
+      "action": "match",
+      "field_name": "support_documentation",
+      "source_type": "pricing",
+      "detail": "6 block(s) matched on https://www.postman.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "support_documentation",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://www.postman.com/trust/security/"
+    },
+    {
+      "action": "unread-home-page",
+      "field_name": "support_documentation",
+      "source_type": "docs",
+      "detail": "support_documentation reported FOUND from pricing, security, but its own page type (docs) was unreadable — caveat attached to the field"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "product",
+      "detail": "2 block(s) matched on https://www.postman.com/product/what-is-postman/"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "pricing",
+      "detail": "3 block(s) matched on https://www.postman.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "integrations_api",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://www.postman.com/trust/security/"
+    },
+    {
+      "action": "unread-home-page",
+      "field_name": "integrations_api",
+      "source_type": "docs",
+      "detail": "integrations_api reported FOUND from pricing, security, but its own page type (docs) was unreadable — caveat attached to the field"
+    },
+    {
+      "action": "match",
+      "field_name": "pricing_availability",
+      "source_type": "pricing",
+      "detail": "12 block(s) matched on https://www.postman.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "data_residency",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://www.postman.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "data_residency",
+      "source_type": "security",
+      "detail": "2 block(s) matched on https://www.postman.com/trust/security/"
+    },
+    {
+      "action": "match",
+      "field_name": "data_residency",
+      "source_type": "status",
+      "detail": "1 block(s) matched on https://status.postman.com/"
+    },
+    {
+      "action": "unread-home-page",
+      "field_name": "data_residency",
+      "source_type": "privacy",
+      "detail": "data_residency reported FOUND from pricing, security, but its own page type (privacy) was unreadable — caveat attached to the field"
+    },
+    {
+      "action": "match",
+      "field_name": "encryption",
+      "source_type": "security",
+      "detail": "1 block(s) matched on https://www.postman.com/trust/security/"
+    },
+    {
+      "action": "match",
+      "field_name": "uptime_reliability",
+      "source_type": "pricing",
+      "detail": "1 block(s) matched on https://www.postman.com/pricing/"
+    },
+    {
+      "action": "match",
+      "field_name": "uptime_reliability",
+      "source_type": "status",
+      "detail": "1 block(s) matched on https://status.postman.com/"
+    }
+  ]
+}
