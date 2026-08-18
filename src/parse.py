@@ -322,6 +322,51 @@ def snippet_around(text: str, terms: list[str], max_chars: int) -> str:
     return excerpt
 
 
+def strip_noise(text: str, noise_phrases: list[str] | None) -> str:
+    """
+    Remove interface furniture from text before it is quoted to a reviewer.
+
+    DEFECT 29, found 13 Aug 2026 by reading GitHub's evidence cards. Four of them
+    quoted the vendor as saying:
+
+        "There was an error while loading. Please reload this page . SOC1, SOC2,
+         type 2 reports annually GitHub offers AICPA System and Organization
+         Controls (SOC) 1 Type 2 and SOC 2 Type 2 reports…"
+
+    GitHub's pricing page renders a placeholder for panels that fail to load, and
+    the placeholder text was captured faithfully, quoted verbatim, and presented
+    as due-diligence material. It is real text on the page, so nothing upstream
+    was wrong; it is simply not something the vendor is telling us.
+
+    This is NOT `negative_terms`. A negative term suppresses the whole block, and
+    suppressing this block would have thrown away the SOC 2 sentence sitting
+    inside it — trading a cosmetic defect for a material one. Noise phrases are
+    cut out of the text and the rest of the block is kept.
+
+    It is not cosmetic either. "There was an error while loading." is a
+    41-character complete sentence, and `evidence_level` awards High to any
+    authoritative block containing a sentence of 40 characters or more. Left in,
+    a page that failed to render could earn High confidence on the strength of
+    its own error message.
+
+    Matching is case-insensitive and literal. Whitespace is re-collapsed
+    afterwards so the quote still reads as prose rather than as a gapped string.
+    """
+    if not noise_phrases or not text:
+        return text
+    cleaned = text
+    for phrase in noise_phrases:
+        if not phrase:
+            continue
+        cleaned = re.sub(re.escape(phrase), " ", cleaned, flags=re.IGNORECASE)
+    # Tidy the punctuation left stranded where a phrase was removed, then
+    # re-collapse whitespace. Without this a quote can begin with " . " or carry
+    # a double full stop where the placeholder used to be.
+    cleaned = re.sub(r"\s+([.,;:!?])", r"\1", cleaned)
+    cleaned = re.sub(r"([.,;:!?])\1+", r"\1", cleaned)
+    return _clean(cleaned)
+
+
 def term_in(term: str, text: str) -> bool:
     """
     Does `term` appear in `text` as its own word or phrase?
@@ -398,12 +443,17 @@ def find_evidence(
     snippet_max_chars: int = 600,
     source_url: str = "",
     source_type: str = "",
+    noise_phrases: list[str] | None = None,
 ) -> list[Evidence]:
     """
     Search blocks for any of `terms` and return the matching blocks as Evidence.
 
     `negative_terms` suppress a block outright (cookie banners, newsletter
     prompts, blog headlines arguing about a standard rather than claiming it).
+
+    `noise_phrases` are cut out of the quoted text but leave the block standing —
+    interface furniture such as a failed-panel placeholder. See `strip_noise`
+    for why the two mechanisms have to be different.
 
     `match_location` records WHERE the term was found, because that determines
     how much the evidence is worth:
@@ -451,10 +501,49 @@ def find_evidence(
         #
         # `heading_only` keeps the body, because the heading is displayed above
         # the snippet in its own right, so the reviewer still sees the match.
+        #
+        # DEFECT 28 (found 13 Aug 2026 by asking why GitHub's own /security page
+        # contributed nothing to its security field). GitHub publishes
+        #     <h2>GitHub's API stays secure with ISO, SOC 2, and GDPR.</h2>
+        # with NO paragraph beneath it. `b.body` was therefore "", there were no
+        # alt texts, and `quotable` fell through to the empty string — so the
+        # single most precise sentence GitHub publishes about its security became
+        # an evidence card with an EMPTY QUOTE, scored on 0 characters, and was
+        # dropped by the three-evidence cap.
+        #
+        # A heading with nothing under it is still the vendor's own words. Fall
+        # back to it rather than emitting a citation with no text in it. The
+        # `heading_only` label is kept — we are not pretending it was prose — and
+        # `evidence_level` decides what it is worth by measuring the sentence.
+        #
+        # A ROUTE NOT TAKEN, RECORDED BECAUSE IT LOOKED RIGHT AND WAS NOT.
+        # The first attempt fell back only when the heading was a complete
+        # sentence, dropping the block otherwise. Measured against the corpus,
+        # that turned Linear's pricing field and Sentry's data-residency field
+        # from a weak FOUND into a clean NOT_FOUND — a flat statement that Linear
+        # publishes no pricing information, about a vendor whose pricing page we
+        # read successfully. Trading a poor quote for a false negative is the
+        # exact failure defect 23 exists to prevent, so the fallback stays
+        # unconditional and `evidence_level` grades it instead.
         if where == "alt_text_only":
             quotable = " | ".join(b.alt_texts)
         else:
-            quotable = b.body or " | ".join(b.alt_texts)
+            quotable = b.body or " | ".join(b.alt_texts) or b.heading
+
+        # Noise is removed BEFORE the snippet window is cut, so the 600
+        # characters a reviewer sees are 600 characters of vendor text rather
+        # than 600 characters partly spent on a placeholder, and so the sentence
+        # measurement in `evidence_level` never scores the placeholder.
+        quotable = strip_noise(quotable, noise_phrases)
+        if not quotable:
+            # Nothing left to quote: the block was a bare section label, or it
+            # was nothing but interface furniture. Either way an evidence card
+            # with no quote is not evidence, and printing one invites a reviewer
+            # to trust a citation they cannot read. Before this, such blocks were
+            # emitted with `snippet=""` and still counted toward the field's
+            # confidence — a field could be FOUND on the strength of a quote that
+            # did not exist.
+            continue
 
         results.append(
             Evidence(
@@ -490,19 +579,52 @@ def evidence_level(
     quoted feature bullet that was itself only Medium, because a different,
     lower-ranked block had earned the High. A brief whose headline and its
     citation disagree is worse than one that scores conservatively.
+
+    SECOND HALF OF DEFECT 28 (13 Aug 2026). The rule used to be keyed on
+    `match_location == "body"` first and the sentence length second, so a heading
+    could never reach High no matter what it said. That is right for a heading
+    that is a LABEL — "SOC Certification", "Security" — and wrong for a heading
+    that is a complete sentence. GitHub states
+        "GitHub's API stays secure with ISO, SOC 2, and GDPR."
+    in an <h2> with no paragraph under it: 52 characters, terminal punctuation,
+    three named standards, on GitHub's own security page. Capping that at Medium
+    ranked it ninth of nine candidates and kept it out of the brief entirely.
+
+    So the test is now the SAME test for both: does this evidence contain a
+    complete sentence long enough to be a claim? `longest_sentence_length`
+    already returns 0 for text with no sentence punctuation, so a label-style
+    heading still cannot reach High — it fails on its own merits rather than on
+    where it happened to sit in the HTML. Prose that is not a sentence
+    ("Advanced CI/CD Team Project Management SLA Management") is unchanged: it
+    still scores Medium at best. Image alt-text is unchanged: never above Low,
+    because a logo is not a claim regardless of how it reads.
     """
     authoritative = e.source_type in authoritative_types
     # The measured claim, not the surrounding furniture. See
     # longest_sentence_length.
     claim_length = longest_sentence_length(e.snippet)
 
-    if e.match_location == "body" and claim_length >= min_body_chars_for_high:
+    if e.match_location == "alt_text_only":
+        return "Low"  # a logo is never a claim
+    if claim_length >= min_body_chars_for_high:
         return "High" if authoritative else "Medium"
-    if e.match_location == "body":
-        return "Medium" if authoritative else "Low"
     if e.match_location == "heading_only":
-        return "Medium" if authoritative else "Low"
-    return "Low"  # alt_text_only — never more than a hint
+        # A HEADING WITH NO STATEMENT UNDER IT IS A LABEL, AND A LABEL IS A
+        # SIGNAL TO GO AND LOOK — WHICH IS WHAT `Low` -> `PARTIAL` IS FOR.
+        #
+        # This used to return Medium on an authoritative page, which made
+        # `PARTIAL` unreachable: across seven vendors and 56 field results,
+        # PARTIAL was produced exactly zero times, and a three-state vocabulary
+        # with a dead state is a vocabulary that is lying about its precision.
+        #
+        # Linear's pricing page carries <h2>Pricing</h2> with no paragraph under
+        # it. Sentry's carries <h2>Data Residency</h2>. Reporting either as
+        # FOUND/Medium overstates it — nothing was quoted that a reviewer could
+        # act on. Reporting NOT_FOUND understates it and is worse, because both
+        # vendors plainly do publish the thing. PARTIAL is the honest middle:
+        # "we saw the label, nobody wrote the claim, go and read the page."
+        return "Low"
+    return "Medium" if authoritative else "Low"
 
 
 def score_field_confidence(
@@ -515,14 +637,25 @@ def score_field_confidence(
 
     The rule, in plain English (see docs/confidence_rules.md):
       High    - the vendor states it in a SENTENCE, on one of its own
-                authoritative pages (security / privacy / pricing / status /
-                terms), and that sentence is substantial
-                (>= min_body_chars_for_high characters).
+                authoritative pages (security / trust / privacy / pricing /
+                status / terms), and that sentence is substantial
+                (>= min_body_chars_for_high characters). The sentence may be
+                set as a heading — see evidence_level, defect 28.
       Medium  - stated in a sentence but on a secondary page (docs, blog,
-                product), OR named only in a heading or a bullet list on an
-                authoritative page.
-      Low     - only an image alt-text match, or a list item on a secondary page.
+                product), OR prose on an authoritative page that never forms a
+                sentence, such as a bullet list.
+      Low     - an image alt-text match, or a BARE HEADING with nothing written
+                under it, or a fragment on a secondary page.
       NOT_FOUND - nothing matched. This is a legitimate, useful answer.
+
+    THE BARE-HEADING LINE CHANGED ON 13 AUG 2026. It used to read "named only in
+    a heading ... on an authoritative page" under Medium, which contradicted
+    `agent2_extract.status_from_confidence`, whose own docstring assigns "only a
+    heading" to PARTIAL. The code followed this docstring, so PARTIAL was
+    unreachable and never once occurred across seven vendors and 56 fields. Two
+    docstrings describing one rule differently is how a codebase stops being
+    auditable; the PARTIAL reading won because a label is a reason to go and
+    look, which is exactly what PARTIAL means.
 
     "Sentence", not "block": see parse.longest_sentence_length. A bullet list of
     certifications is long, and it is still a label rather than a claim.

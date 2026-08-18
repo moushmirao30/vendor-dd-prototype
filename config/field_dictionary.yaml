@@ -27,7 +27,30 @@ security_trust:
   label: "Security and trust information"
   # Where this fact BELONGS. Evidence from one of these page types outranks an
   # equally-strong match found anywhere else. See docs/confidence_rules.md step 3b.
-  preferred_source_types: ["security", "terms"]
+  #
+  # DEFECT 27, found 13 Aug 2026 by reading GitHub's extracted brief.
+  # This list used to read ["security", "terms"], and the consequence was that
+  # GitHub's security field quoted its TERMS OF SERVICE:
+  #     "We offer tools such as two-factor authentication to help you maintain
+  #      your Account's security, but the content of your Account and its
+  #      security are up to you."
+  # — one matched term (`two-factor`) — while
+  #     "GitHub offers AICPA System and Organization Controls (SOC) 1 Type 2 and
+  #      SOC 2 Type 2 reports with IAASB International Standards on Assurance
+  #      Engagements, ISAE 3000, and ISAE 3402."
+  # — four matched terms — ranked second and never became the field's value.
+  #
+  # rank_evidence was NOT broken. It applies preferred-source before term count,
+  # exactly as documented, and this file told it a terms-of-service page was a
+  # preferred home for security evidence. It is not. A ToS is where a vendor
+  # LIMITS its security obligations; a security page or trust centre is where it
+  # STATES its posture. Ranking order is policy, and this policy was wrong.
+  #
+  # `trust` replaces it because the project brief lists the two together as one
+  # source category — "security or trust center pages" — and GitHub publishes at
+  # github.com/trust-center. `terms` is not removed from the dictionary: a ToS
+  # match still appears as evidence, just below the pages that actually claim.
+  preferred_source_types: ["security", "trust"]
   terms:
     - "soc 2"                          # observed: Linear, Sentry, Postman, GitHub
     - "soc2"

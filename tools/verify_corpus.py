@@ -45,7 +45,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.agent2_extract import resolve_html_path                    # noqa: E402
-from src.parse import term_in, visible_text                         # noqa: E402
+from src.parse import (longest_sentence_length, split_sentences,     # noqa: E402
+                       term_in, visible_text)
 
 CORPUS = ROOT / "data" / "corpus"
 
@@ -94,7 +95,16 @@ class Report:
 # Collection checks — Agent 1's output
 # ---------------------------------------------------------------------------
 
-def check_collection(rep: Report, records: list[dict], trail: dict, vendor: dict) -> None:
+def check_collection(rep: Report, records: list[dict], trail: dict, vendor: dict,
+                     settings: dict) -> None:
+    # `settings` added 13 Aug 2026 with defect 32 so this report can print the
+    # thresholds it is judging against instead of a bare number the reader has
+    # to go and look up. `.get` throughout: an older settings.yaml should make
+    # the tool print less, never crash.
+    fetch_cfg = settings.get("fetch", {})
+    min_chars = fetch_cfg.get("min_usable_text_chars", 600)
+    min_density = fetch_cfg.get("min_readable_chars_per_kb", 2.0)
+
     if not records:
         rep.fail("corpus-empty", "the corpus file contains no records at all")
         return
@@ -176,11 +186,22 @@ def check_collection(rep: Report, records: list[dict], trail: dict, vendor: dict
         # --- usable at all? (defect 23) -------------------------------------
         readable = len(visible_text(html))
         blocks = r.get("block_count")
-        if r.get("content_usable") is False:
+        density = readable / max(len(html) / 1024, 0.001)
+        unusable_page = r.get("content_usable") is False
+        if unusable_page:
+            # DEFECT 32 (13 Aug 2026), second half: this line used to print the
+            # density to one decimal place. Postman's docs page is 2,370 readable
+            # characters from 1,234,954 bytes — 1.965 chars/KB against a 2.0
+            # threshold — and printed as "2.0 readable chars per KB", a number
+            # that appears to contradict the rejection it is explaining. A
+            # reviewer reading "2.0, threshold 2.0, rejected" concludes the tool
+            # is broken. Two decimals and the threshold alongside.
             rep.warn("unusable-page",
                      f"{stype}: {readable} readable chars, {blocks} blocks from "
-                     f"{len(html):,} bytes — JavaScript-rendered. Correctly recorded "
-                     f"as unusable; any NOT_FOUND here is OUR limit, not the vendor's")
+                     f"{len(html):,} bytes ({density:.2f} chars/KB, floor "
+                     f"{min_chars}, min density {min_density}) — JavaScript-"
+                     f"rendered. Correctly recorded as unusable; any NOT_FOUND "
+                     f"here is OUR limit, not the vendor's")
         elif blocks is None:
             rep.fail("stale-corpus",
                      f"{stype}: no block_count — this corpus predates the usability "
@@ -195,7 +216,16 @@ def check_collection(rep: Report, records: list[dict], trail: dict, vendor: dict
         # cleared the usability threshold on character count, so Agent 1 called
         # it usable, and it is - barely. Two blocks from a megabyte still means
         # most of that page was never read.
-        if blocks is not None and blocks <= 3 and len(html) > 300_000:
+        #
+        # DEFECT 32 (13 Aug 2026), first half: `not unusable_page` was missing,
+        # so this fired for pages already declared unusable and printed
+        # "Passed the usability threshold" two lines under "recorded as
+        # unusable". Atlassian's product and pricing pages and Postman's docs
+        # page each produced that contradiction. This check is for pages that
+        # PASSED and still look thin; a page that already failed is reported by
+        # the branch above and does not need a second, opposite verdict.
+        if (not unusable_page
+                and blocks is not None and blocks <= 3 and len(html) > 300_000):
             rep.warn("thin-density",
                      f"{stype}: only {blocks} heading block(s) from {len(html):,} "
                      f"bytes of HTML. Passed the usability threshold, but most of "
@@ -231,6 +261,7 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
 
     unusable = [r["source_type"] for r in records if r.get("content_usable") is False]
     scores = settings["confidence"]["field_score"]
+    min_body_high = settings["extraction"]["min_body_chars_for_high"]
     core = settings["confidence"]["core_fields"]
     total = 0
 
@@ -249,6 +280,44 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
                 rep.fail("orphan-citation",
                          f"{name}: card cites {e['matched_terms']} but the quoted "
                          f"text does not contain it — {e.get('snippet','')[:50]!r}")
+
+        # --- DEFECT 37: the label was earned by a sentence that does not
+        #     contain the matched term ---------------------------------------
+        #
+        # `evidence_level` measures the longest sentence anywhere in the block.
+        # In 9 of 122 blocks (13 Aug 2026) that sentence does not carry the
+        # matched term at all. Atlassian's security field is the clearest case:
+        # the term `hipaa` occurs only in a 39-character section title,
+        # "Sensitive Health Information and HIPAA.", while the block's High came
+        # from a 322-character sentence about something else in the same
+        # terms-of-service section.
+        #
+        # NOT FIXED IN CODE, DELIBERATELY. The obvious fix — score only the
+        # longest sentence that carries the term — would also demote Sentry's
+        # "High Availability" heading with a full paragraph under it, and
+        # GitLab's "Trust Center Documents". Those are genuine, well-evidenced
+        # claims; vendors do not repeat a heading inside its own paragraph.
+        # Tightening the rule would trade a cosmetic over-score for a false
+        # negative, which is the mistake the defect 28 route-not-taken already
+        # taught us. Whether the block coheres is a judgement, not a rule — so
+        # measure it, report it, and let a human decide.
+        for e in real_ev:
+            terms = [t.lower() for t in (e.get("matched_terms") or [])]
+            if not terms:
+                continue
+            snippet, head = e.get("snippet", ""), e.get("heading", "")
+            if longest_sentence_length(snippet) < min_body_high:
+                continue
+            pool = split_sentences(snippet) + split_sentences(head) + [head]
+            carrying = max((len(s) for s in pool
+                            if any(term_in(t, s.lower()) for t in terms)), default=0)
+            if carrying < min_body_high:
+                rep.warn("claim-not-in-matched-sentence",
+                         f"{name}: scored on a {longest_sentence_length(snippet)}-char "
+                         f"sentence, but the longest sentence actually containing "
+                         f"{terms} is {carrying} chars. The block matched; the "
+                         f"sentence that earned the label may be about something "
+                         f"else. Verify by hand")
 
         # --- a logo is never a claim (the Atlassian guard) ------------------
         if real_ev and real_ev[0].get("match_location") == "alt_text_only" \
@@ -303,15 +372,62 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
                      f"never from {'/'.join(home)}. The match is real; the finding is "
                      f"weak. Agent 3 must flag this")
 
+    # --- DEFECT 31: the score counts what was found, never what was unread ----
+    #
+    # Postman scores 10/10 → High with four of its eight fields carrying a
+    # tool_limitation caveat, its privacy policy at 0 readable characters and
+    # its docs page 98% JavaScript. Sentry scores 10/10 → High with no caveats
+    # and every page readable. Identical labels, entirely different evidence.
+    # Read without the caveats, those two vendors are indistinguishable — which
+    # is the exact failure this project exists to report, reproduced by our own
+    # scoring.
+    #
+    # The real fix — discounting caveated fields, or refusing to band a vendor
+    # below a coverage floor — is a scoring policy and belongs to Agent 3, which
+    # does not exist yet. What this tool can do today is refuse to let the score
+    # be read alone. Agent 3 must IMPORT this calculation rather than write its
+    # own; a build-time tool and a shipped brief that compute coverage
+    # differently is defect 15 with new names.
+    caveated = {f["name"] for f in fields
+                if any(e.get("match_location") == "tool_limitation"
+                       for e in f.get("evidence", []))}
+    core_fields = [f for f in fields if f["name"] in core]
+    core_caveated = [f["name"] for f in core_fields if f["name"] in caveated]
+    verified_core = len(core_fields) - len(core_caveated)
+
     thresholds = settings["confidence"]["vendor_thresholds"]
     band = ("High" if total >= thresholds["High"]
             else "Medium" if total >= thresholds["Medium"] else "Low")
-    rep.info("vendor-score", f"{total}/10 core → {band}")
+    rep.info("vendor-score",
+             f"{total}/10 core → {band}  "
+             f"(coverage {verified_core}/{len(core_fields)} core fields verified "
+             f"without a caveat)")
+
+    if core_caveated and band == "High":
+        rep.warn("score-without-coverage",
+                 f"scored {total}/10 → High while {len(core_caveated)} core "
+                 f"field(s) ({', '.join(sorted(core_caveated))}) rest on a page "
+                 f"nobody could read. The score measures what was found, not "
+                 f"what was checked — do not compare this vendor against a "
+                 f"fully-read one on the number alone. Agent 3 owes a coverage-"
+                 f"aware score here")
 
     found = sum(1 for f in fields if f["status"] == "FOUND")
     partial = sum(1 for f in fields if f["status"] == "PARTIAL")
     nf = sum(1 for f in fields if f["status"] == "NOT_FOUND")
     rep.info("field-status", f"{found} FOUND, {partial} PARTIAL, {nf} NOT_FOUND")
+
+    # PARTIAL has never once been produced across seven vendors and 56 field
+    # results (13 Aug 2026). Either the middle case does not occur on real
+    # vendor pages, or the branch is unreachable. An unused value in a
+    # three-state vocabulary is a defect until it is proven otherwise, so say so
+    # rather than let a reader assume the state is exercised.
+    if partial == 0:
+        rep.info("no-partials",
+                 "no field scored PARTIAL. Low confidence is the only route to "
+                 "PARTIAL, and nothing reached it here — worth confirming the "
+                 "state is reachable before the vocabulary is documented as "
+                 "three-valued")
 
 
 # ---------------------------------------------------------------------------
@@ -337,7 +453,7 @@ def verify(slug: str, vendors: dict, field_dictionary: dict, settings: dict) -> 
     if not vendor:
         rep.fail("unknown-vendor", f"'{slug}' is not in config/vendors.yaml")
 
-    check_collection(rep, records, trail, vendor)
+    check_collection(rep, records, trail, vendor, settings)
 
     fields_path = CORPUS / f"{slug}_fields.json"
     fields: list[dict] = []

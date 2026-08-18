@@ -98,10 +98,52 @@ def test_postman_shape_is_the_only_source_of_an_uptime_figure():
 # --------------------------------------------------------------------------
 # SHAPE 4 — a heading names the standard, nothing explains it
 # --------------------------------------------------------------------------
-def test_heading_only_match_scores_medium_not_high():
+def test_heading_only_match_scores_low_so_the_field_reads_partial():
+    """
+    A heading that names a standard and explains nothing is a HINT, and a hint
+    must reach the reviewer as PARTIAL, not FOUND.
+
+    THIS TEST ASSERTED Medium UNTIL 13 Aug 2026, AND THE CODE CARRIED TWO
+    DOCSTRINGS THAT DISAGREED WITH EACH OTHER ABOUT IT:
+
+      agent2_extract.status_from_confidence:
+          "PARTIAL  Low — something matched, but only a heading, a logo, or a
+           fragment. A reviewer must open the page themselves."
+      parse.score_field_confidence:
+          "Medium - ... OR named only in a heading or a bullet list on an
+           authoritative page."
+
+    The first says a bare heading is PARTIAL. The second says Medium, which
+    `status_from_confidence` then reports as FOUND. The code implemented the
+    second, so PARTIAL became unreachable: across seven real vendors and 56
+    field results it was produced exactly ZERO times.
+
+    Resolved in favour of the PARTIAL reading, because that is the distinction
+    the Atlassian case exists to make — "we saw a hint" must never carry the
+    same weight as "the vendor said so". A bullet list on an authoritative page
+    still scores Medium; only a bare heading changed.
+    """
     _, ev = evidence_for("headingonly_style.html", "security_trust")
     assert ev and ev[0].match_location == "heading_only"
-    assert score_field_confidence(ev, AUTHORITATIVE) == "Medium"
+    assert score_field_confidence(ev, AUTHORITATIVE) == "Low"
+
+
+def test_a_heading_that_is_a_whole_sentence_is_a_claim_not_a_label():
+    """
+    Defect 28. GitHub publishes
+        <h2>GitHub's API stays secure with ISO, SOC 2, and GDPR.</h2>
+    with no paragraph under it. Treated as a bare label it produced an EMPTY
+    quote, scored Medium, ranked ninth of nine and never reached the brief.
+    The dividing line is not the HTML tag — it is whether the vendor wrote a
+    sentence.
+    """
+    from src.parse import find_evidence, page_to_blocks
+    html = ("<html><body><h2>GitHub's API stays secure with ISO, SOC 2, "
+            "and GDPR.</h2></body></html>")
+    ev = find_evidence(page_to_blocks(html), ["soc 2"], source_type="security")
+    assert ev, "a heading with no body must still produce quotable evidence"
+    assert "SOC 2" in ev[0].snippet, "the quote must not be empty"
+    assert score_field_confidence(ev, AUTHORITATIVE) == "High"
 
 
 # --------------------------------------------------------------------------

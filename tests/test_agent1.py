@@ -121,12 +121,40 @@ def test_seeds_reach_hosts_no_url_pattern_could_ever_guess():
 
 
 def test_unresolvable_page_types_are_flagged_not_dropped():
+    """
+    Every page type we ATTEMPTED and did not resolve must be reported — not just
+    the ones that happened to have a hand-written seed.
+
+    THIS TEST USED TO ASSERT THE DEFECT (34, corrected 13 Aug 2026). It read
+    `len(skipped) == len(GITLAB["seeds"])`, which is satisfied by an agent that
+    reports only seeded page types and silently forgets anything reached through
+    url_patterns alone. GitLab has no `terms` seed; JetBrains has no `terms` seed
+    either, and JetBrains' terms page 404'd three times and vanished without a
+    `skip` step. Because app.py builds Agent 2's `never_collected` list from these
+    steps, the defect-26 caveat never fired on any vendor in the real corpus.
+
+    A test that encodes the bug is worse than no test: it converts a defect into
+    a guarantee and makes the next person's correct fix look like a regression.
+    """
     fetcher = FakeFetcher(works=set())          # nothing resolves at all
     records, steps = collect_for_vendor(GITLAB, PATTERNS, fetcher)
     assert records == []
-    skipped = [s for s in steps if s.action == "skip"]
-    assert len(skipped) == len(GITLAB["seeds"]), "every missing page type must be reported"
-    assert all("manual follow-up" in s.outcome for s in skipped)
+    skipped = {s.source_type for s in steps if s.action == "skip"}
+    attempted = set(GITLAB["seeds"]) | set(PATTERNS)
+    assert skipped == attempted, "every page type we tried and missed must be reported"
+    assert all("manual follow-up" in s.outcome
+               for s in steps if s.action == "skip")
+
+
+def test_a_page_type_with_no_seed_is_still_reported_missing():
+    """
+    The specific shape of defect 34: `terms` is reachable only through
+    url_patterns for GitLab, so a seeds-only loop drops it entirely.
+    """
+    assert "terms" not in GITLAB["seeds"], "fixture must keep terms seed-less"
+    assert "terms" in PATTERNS, "fixture must reach terms via url_patterns"
+    _, steps = collect_for_vendor(GITLAB, PATTERNS, FakeFetcher(works=set()))
+    assert any(s.action == "skip" and s.source_type == "terms" for s in steps)
 
 
 def test_robots_disallow_is_honoured_and_recorded():

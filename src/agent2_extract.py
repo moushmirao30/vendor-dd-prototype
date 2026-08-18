@@ -38,7 +38,9 @@ from dataclasses import dataclass, field as dc_field
 from pathlib import Path
 
 from .parse import (LEVEL_ORDER, Block, Evidence, evidence_level, find_evidence,
-                    page_to_blocks, score_field_confidence, split_sentences)
+                    longest_sentence_length,
+                    page_to_blocks, score_field_confidence, split_sentences,
+                    term_in)
 from .schema import ExtractedField
 
 # Below this, a "sentence" is a list item or a label rather than a claim, and we
@@ -94,20 +96,59 @@ def resolve_html_path(raw_html_path: str, root: Path) -> Path | None:
 
 def best_sentence(snippet: str, matched_terms: list[str]) -> str:
     """
-    Return the one sentence in `snippet` that contains a matched term.
+    Return the sentence in `snippet` that carries the MOST of the matched terms.
 
     This is the `value` shown in the brief. It is chosen, not written: every
     character is copied from the vendor's page. If no single sentence is long
     enough to stand on its own — a bullet list of certifications, for example —
     we return the whole block, because "SOC 2 and 3" alone tells a reviewer
     nothing about what the vendor actually claimed.
+
+    DEFECT 30 (found 13 Aug 2026 by reading JetBrains' brief). This used to
+    return the FIRST sentence containing ANY matched term. JetBrains' security
+    block is one paragraph containing three sentences, and the field's headline
+    came out as:
+
+        "Please visit our Trust Center to learn more about JetBrains' security
+         practices, compliance certifications, and data protection measures."
+
+    That sentence matched exactly one term — `trust center` — and it is a
+    signpost: it names no certification, no standard and no commitment. Two
+    sentences later, in the same quoted block, JetBrains writes "You can also
+    find details on our SOC 2 Type II and GDPR compliance…", which matches two
+    terms and is the actual claim. First-match ordering meant the reviewer's
+    headline was the sentence that said nothing.
+
+    Counting matched terms fixes it without inventing a relevance score: a
+    sentence that mentions more of what we were looking for is more likely to be
+    the claim, and every candidate is still a verbatim sentence from the page.
+    Ties go to the earliest sentence, which preserves the old behaviour whenever
+    the term counts are equal — so this is strictly a tie-break improvement, not
+    a new policy.
+
+    `term_in` is used rather than a bare `in` so the same whole-token rule that
+    selected the block also selects the sentence. The old code used `t in low`,
+    which would let "sla" inside "Slack" pick the headline sentence even though
+    whole-token matching had rejected it everywhere else — defect 13, still
+    alive in this one function.
     """
-    sentences = split_sentences(snippet)
-    for sentence in sentences:
+    candidates = [s.strip() for s in split_sentences(snippet)
+                  if len(s.strip()) >= MIN_SENTENCE_CHARS]
+    if not candidates:
+        return snippet.strip()
+
+    def term_hits(sentence: str) -> int:
         low = sentence.lower()
-        if any(t in low for t in matched_terms) and len(sentence) >= MIN_SENTENCE_CHARS:
-            return sentence.strip()
-    return snippet.strip()
+        return sum(1 for t in matched_terms if term_in(t.lower(), low))
+
+    scored = [(term_hits(s), -i, s) for i, s in enumerate(candidates)]
+    best_hits, _, best = max(scored)
+    if best_hits == 0:
+        # No sentence long enough also carries a term. Returning the whole
+        # snippet is honest: it shows the reviewer everything the block said
+        # rather than promoting an arbitrary sentence to a headline.
+        return snippet.strip()
+    return best
 
 
 def rank_evidence(
@@ -156,15 +197,39 @@ def rank_evidence(
     GitLab really does state its FedRAMP position on the pricing page, and
     hiding that because it was "the wrong page" would be the extractor
     overruling the vendor.
+
+    RULE 2 MEASURES THE STATEMENT, NOT THE TAG (second half of defect 28,
+    13 Aug 2026). It used to be a flat lookup on `match_location`, so anything
+    found in a heading sorted below everything found in a paragraph. Raising a
+    full-sentence heading to High in `evidence_level` therefore changed its
+    score and nothing else: GitHub's
+        "GitHub's API stays secure with ISO, SOC 2, and GDPR."
+    still lost to three pricing-page blocks and still never reached the brief,
+    because it happened to be published inside an <h2>.
+
+    A heading that is a complete sentence is prose that a designer set in larger
+    type. What the tier is really trying to separate is a CLAIM from a LABEL, so
+    it now applies the same test the confidence rule applies — is there a
+    sentence here long enough to stand on its own? "SOC Certification" is a
+    label and still sorts below prose. Image alt-text is untouched: a logo is
+    never a claim, however it reads.
     """
     preferred_types = preferred_types or []
-    location_rank = {"body": 0, "heading_only": 1, "alt_text_only": 2}
+
+    def statement_rank(e: Evidence) -> int:
+        if e.match_location == "alt_text_only":
+            return 2
+        if e.match_location == "body":
+            return 0
+        # heading_only: prose if the heading is itself a complete sentence.
+        return 0 if longest_sentence_length(e.snippet) >= min_body_chars_for_high else 1
+
     return sorted(
         evidence,
         key=lambda e: (
             -LEVEL_ORDER.index(
                 evidence_level(e, authoritative_types, min_body_chars_for_high)),
-            location_rank.get(e.match_location, 3),
+            statement_rank(e),
             0 if e.source_type in preferred_types else 1,
             0 if e.source_type in authoritative_types else 1,
             -len(e.matched_terms),
@@ -246,6 +311,10 @@ def extract_for_vendor(
     max_evidence = extraction["max_evidence_per_field"]
     snippet_max = extraction["snippet_max_chars"]
     min_body_high = extraction["min_body_chars_for_high"]
+    # Defect 29. `.get` rather than `[...]` so an older settings.yaml without
+    # this key still runs instead of dying with a KeyError on a reviewer's
+    # machine — the same reason resolve_html_path tolerates an older corpus.
+    noise_phrases = extraction.get("noise_phrases") or []
 
     steps: list[ExtractionStep] = []
 
@@ -305,6 +374,7 @@ def extract_for_vendor(
                 snippet_max_chars=snippet_max,
                 source_url=record["source_url"],
                 source_type=record["source_type"],
+                noise_phrases=noise_phrases,
             )
             if found:
                 steps.append(ExtractionStep(

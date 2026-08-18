@@ -31,10 +31,28 @@ fetch:
   # ships a megabyte to say 1,500 words is mostly JavaScript we never ran.
   # Measured: unreadable pages 0.1-1.4 ch/KB; the lowest genuine pages were
   # Sentry's and Linear's pricing at 2.6. Set at 2.0 with that margin.
-  # BOTH checks are needed and neither is sufficient: Postman's privacy shell is
-  # only 5 KB, so its density is high (27 ch/KB) and only the character floor
-  # catches it, while JetBrains' status page clears any sane floor on density
-  # alone. Two cheap orthogonal tests beat one clever one.
+  #
+  # BOTH CHECKS ARE NEEDED AND NEITHER IS SUFFICIENT. The worked examples below
+  # were re-derived from the corpus on 13 Aug 2026 (defect 33). The previous
+  # pair — "Postman's privacy shell has high density (27 ch/KB)" and "JetBrains'
+  # status page clears any sane floor" — were FALSE against the current data:
+  # Postman's privacy page is 0 chars at 0.0 ch/KB and JetBrains' status page is
+  # 333 chars at 1.5 ch/KB, so both are caught by both tests and neither
+  # demonstrates anything. A worked example decays the moment the data moves;
+  # check the documentation against the corpus, not only the code.
+  #
+  #   CAUGHT ONLY BY THE FLOOR   JetBrains docs: 45 readable chars from 4,434
+  #                              bytes = 10.4 ch/KB. Density is HIGH — a density
+  #                              test alone passes this empty page.
+  #   CAUGHT ONLY BY THE DENSITY Postman docs: 2,370 readable chars from
+  #                              1,234,954 chars = 1.97 ch/KB. Clears the 600
+  #                              floor by 4x. Linear docs is the same shape:
+  #                              1,034 chars from 540,090 chars = 1.96 ch/KB.
+  # NOTE: Agent 1 counts CHARACTERS of decoded HTML and calls them "bytes" in
+  # its audit trail. The difference is under 0.01% on ASCII-dominant pages, but
+  # the label is wrong; correct it the next time agent1_collect.py is touched.
+  #
+  # Two cheap orthogonal tests beat one clever one.
   min_readable_chars_per_kb: 2.0
 
 cache:
@@ -48,12 +66,29 @@ cache:
 extraction:
   backend: "rules"                # "rules" (default, free) | "llm" (optional, off)
   snippet_max_chars: 600          # how much of a matched block to keep as evidence
-  min_body_chars_for_high: 40     # below this, a match is heading-only -> Low
+  min_body_chars_for_high: 40     # a claim must be a sentence at least this long
   max_evidence_per_field: 3       # keep briefs readable; don't dump every match
+  # INTERFACE FURNITURE, CUT OUT OF QUOTES BUT NOT USED TO SUPPRESS BLOCKS.
+  # Added with defect 29 (13 Aug 2026): GitHub's pricing page renders a
+  # placeholder where a panel fails to load, and four of GitHub's evidence cards
+  # quoted it back as vendor evidence. These are NOT negative_terms — a negative
+  # term drops the whole block, and that block also contained GitHub's SOC 2
+  # statement. Cut the furniture, keep the claim.
+  # It also matters for scoring: "There was an error while loading." is a
+  # 41-character sentence, and 40 characters is the threshold for High.
+  noise_phrases:
+    - "Uh oh! There was an error while loading."
+    - "There was an error while loading."
+    - "Please reload this page ."
+    - "Please reload this page."
 
 confidence:
   # See docs/confidence_rules.md for the plain-English version of this.
-  authoritative_source_types: ["security", "privacy", "pricing", "status", "terms"]
+  # `trust` added 13 Aug 2026 with defect 27. The project brief names the source
+  # category as "security or trust center pages" — one category, two URLs — so a
+  # vendor's trust centre is exactly as authoritative as its security page.
+  # GitHub is the only vendor in this corpus that publishes both.
+  authoritative_source_types: ["security", "trust", "privacy", "pricing", "status", "terms"]
   secondary_source_types:     ["product", "docs", "integrations", "blog"]
   field_score:  { High: 2, Medium: 1, Low: 0, NOT_FOUND: 0 }
   core_fields:  ["security_trust", "privacy_data_handling", "support_documentation",

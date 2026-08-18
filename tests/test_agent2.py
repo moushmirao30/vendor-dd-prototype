@@ -469,3 +469,59 @@ def test_a_clean_not_found_stays_clean_when_every_page_was_readable(
     for f in fields:
         if f.status == "NOT_FOUND":
             assert not f.evidence, f"{f.name} was hedged when it should be a clean negative"
+
+
+# ---------------------------------------------------------------------------
+# DEFECT 34 — the defect-26 caveat was wired to a step Agent 1 never emitted.
+#
+# Agent 2's `home-page-never-found` caveat is fed by app.py from Agent 1's
+# `skip` steps. Agent 1 only emitted `skip` for page types that had a seed URL
+# in vendors.yaml, so a page type reachable ONLY through url_patterns — like
+# JetBrains' `terms`, which 404'd three times — was never reported missing.
+# `skip` occurred ZERO times across all seven vendors' run trails, so the
+# caveat had never fired once since the day it was written.
+#
+# Nothing tested the wiring, which is exactly why it could die silently. These
+# two tests cover the whole path: the caveat itself, and the shape of the list
+# that reaches it.
+# ---------------------------------------------------------------------------
+
+def test_never_collected_page_type_produces_its_own_caveat(tmp_path, settings,
+                                                           field_dictionary):
+    """
+    A 404 proves our URL guess was wrong, not that the vendor is silent — and
+    the brief has to say which of the two it is.
+    """
+    home = field_dictionary["security_trust"]["preferred_source_types"][0]
+    fields, steps = extract_for_vendor(
+        [], field_dictionary, settings, tmp_path, never_collected=[home])
+
+    security = next(f for f in fields if f.name == "security_trust")
+    assert security.status == "NOT_FOUND"
+    caveats = [e for e in security.evidence
+               if e["match_location"] == "tool_limitation"]
+    assert caveats, "a never-located home page must be caveated in the brief"
+    assert "was ever located" in caveats[0]["heading"].lower(), (
+        f"expected the never-found wording, got {caveats[0]['heading']!r}")
+    assert "404" in caveats[0]["snippet"], \
+        "the caveat must explain that a failed guess is not vendor silence"
+    assert any(s.action == "home-page-never-found" for s in steps)
+
+
+def test_a_never_collected_type_is_not_confused_with_an_unreadable_one(
+        tmp_path, settings, field_dictionary):
+    """
+    Two different findings: 'we could not read the page' and 'we never found the
+    page'. Only the second one means our URL was wrong.
+    """
+    home = field_dictionary["security_trust"]["preferred_source_types"][0]
+    fields, _ = extract_for_vendor([_unreadable_record("product")],
+                                   field_dictionary, settings, tmp_path,
+                                   never_collected=[home])
+    security = next(f for f in fields if f.name == "security_trust")
+    heading = next(e["heading"] for e in security.evidence
+                   if e["match_location"] == "tool_limitation")
+    assert "was ever located" in heading.lower(), (
+        "when a page type was never located at all, that is the finding to "
+        "report — not the milder 'some pages were unreadable'"
+    )

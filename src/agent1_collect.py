@@ -188,7 +188,12 @@ def collect_for_vendor(
                          f"{readable_chars} characters of readable text and "
                          f"{len(blocks)} heading blocks from "
                          f"{len(result.html):,} bytes of HTML "
-                         f"({density:.1f} readable chars per KB). Almost certainly "
+                         # Two decimals, not one (defect 32). At one decimal,
+                         # Postman's docs page — rejected at 1.965 against a 2.0
+                         # threshold — printed "2.0 readable chars per KB", a
+                         # number that reads as a contradiction of the rejection
+                         # it is explaining.
+                         f"({density:.2f} readable chars per KB). Almost certainly "
                          f"rendered by JavaScript. Any field missing for this "
                          f"vendor may be OUR limit, not the vendor's silence - "
                          f"verify this page by hand."),
@@ -224,11 +229,32 @@ def collect_for_vendor(
         ))
 
     # Page types we wanted but never resolved. Recorded explicitly so the brief
-    # can say "no privacy page found" rather than silently omitting it.
-    for stype in vendor["seeds"]:
+    # can say "no terms page found" rather than silently omitting it.
+    #
+    # DEFECT 34, found 13 Aug 2026 while re-running Agent 2 over the whole corpus
+    # and noticing that `never_collected` came back EMPTY for every vendor.
+    #
+    # This loop used to read `for stype in vendor["seeds"]`, so it only reported
+    # a page type as missing if that type had a hand-written seed URL. JetBrains
+    # has six seeds and no `terms` seed: its terms page was only ever attempted
+    # through url_patterns, 404'd three times, and was never resolved — and
+    # because `terms` is not a key in vendor["seeds"], no `skip` step was ever
+    # emitted for it.
+    #
+    # The consequence is worse than a missing log line. app.py builds Agent 2's
+    # `never_collected` list from exactly these `skip` steps, so Agent 2's
+    # `home-page-never-found` caveat — the entire fix for defect 26 — has never
+    # fired on any vendor in this corpus. `skip` appears zero times across all
+    # seven run trails. A fix nobody exercised is a fix nobody verified.
+    #
+    # We attempted every page type in `candidates` as well as every seed, so the
+    # honest set of "wanted but not found" is the union of the two.
+    attempted = list(dict.fromkeys(list(vendor["seeds"]) + list(candidates)))
+    for stype in attempted:
         if stype not in resolved:
             steps.append(CollectionStep(
-                action="skip", source_type=stype, url=vendor["seeds"][stype],
+                action="skip", source_type=stype,
+                url=vendor["seeds"].get(stype, "(no seed - discovery only)"),
                 status=0, outcome="NOT COLLECTED - flag for manual follow-up",
             ))
 
