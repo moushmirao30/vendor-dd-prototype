@@ -249,3 +249,57 @@ def test_the_ui_download_and_the_file_on_disk_are_the_same_bytes(tmp_path):
     from_ui = brief_to_csv(brief).encode("utf-8-sig")
     assert from_ui == on_disk, (
         "the CSV offered by the download button diverged from the exported file")
+
+
+def test_the_csv_export_carries_the_disclaimer_and_the_vendor_numbers():
+    """
+    A spreadsheet is the format most likely to be pasted into an email and read on
+    its own. Until 19 Aug the CSV was the ONE export that dropped the disclaimer,
+    the review flags, the missing-or-unclear list and all three vendor-level
+    numbers — so a reviewer who chose CSV received a clean table of security claims
+    about seven real companies with every caveat stripped off.
+
+    The brief's scope boundaries require that "the output should clearly show that
+    it is a first-pass internal research aid and that final review must remain
+    manual". Every row now carries it.
+    """
+    from src.export import brief_to_csv
+
+    csv_text = brief_to_csv(_brief())
+    header, *rows = csv_text.strip().splitlines()
+
+    for column in ("disclaimer", "vendor_confidence", "vendor_coverage",
+                   "vendor_evidence_score", "vendor_missing_or_unclear"):
+        assert column in header, f"{column} missing from the CSV export"
+
+    assert rows, "the fixture brief must produce at least one row"
+    for row in rows:
+        assert "FIRST-PASS" in row, (
+            "every row must carry the disclaimer — a reader who copies one row out "
+            "of the sheet takes it with them")
+
+
+def test_evidence_tags_name_the_topics_actually_found_on_a_page():
+    """
+    The brief names `key tags` as a corpus field. `SourceRecord.tags` restates the
+    page type; this column carries what was actually FOUND there, derived from
+    Agent 2 at export time so the linear flow and the frozen corpus both survive.
+    """
+    from src.export import evidence_tags
+
+    record = {"source_url": "https://x/security", "vendor_slug": "x"}
+    fields = [
+        {"name": "security_trust",
+         "evidence": [{"source_url": "https://x/security", "match_location": "body"}]},
+        {"name": "pricing_availability",
+         "evidence": [{"source_url": "https://x/pricing", "match_location": "body"}]},
+        {"name": "encryption",
+         "evidence": [{"source_url": "https://x/security",
+                       "match_location": "tool_limitation"}]},
+    ]
+
+    tags = evidence_tags(record, fields)
+
+    assert tags == "security_trust", (
+        "only fields with real evidence ON THIS PAGE count; a caveat is our note, "
+        "not the vendor's, and a match on another page belongs to that page")

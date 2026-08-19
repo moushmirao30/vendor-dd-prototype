@@ -9,6 +9,9 @@ from.
 > not assign vendor risk scores, grant security or compliance approval, or make
 > procurement decisions. Every field requires human review.
 
+> **Working on this project rather than reviewing it?** Read `START_HERE.md`, then
+> `HANDOFF.md`. This README is written for a reviewer.
+
 ---
 
 ## Start here — the submitted archive runs offline, with one caveat
@@ -18,7 +21,7 @@ python -m venv .venv
 .venv\Scripts\activate          # Windows;  source .venv/bin/activate on macOS/Linux
 pip install -r requirements.txt
 
-pytest -q                       # 150 tests, all offline
+pytest -q                       # 152 tests, all offline
 python tools/run_workflow.py    # Agent 1 -> 2 -> 3 for every vendor. No network needed.
 streamlit run app.py            # the review interface, then http://localhost:8501
 ```
@@ -70,7 +73,7 @@ sentence was recorded three days earlier. **The corpus in `data/corpus/`, dated
 ## Current status
 
 **All three agents, the orchestrator, the export layer and the full interface are
-built.** 150 offline tests; `python tools/verify_corpus.py` reports 0 FAIL across
+built.** 152 offline tests; `python tools/verify_corpus.py` reports 0 FAIL across
 all seven vendors.
 
 | Deliverable | State |
@@ -81,12 +84,13 @@ all seven vendors.
 | Sample outputs for ≥5 vendors | **Complete** — 7 briefs × JSON/CSV/Markdown |
 | Source manifest (client-requested) | **Complete** — 54 attempts, 5 never collected, 8 unreadable |
 | README · architecture note · evaluation summary · screenshots | **Complete** |
-| Assumptions & limitations · test cases | In progress |
+| Assumptions and limitations note | **Complete** — `docs/assumptions_limitations.md` |
+| Sample test cases (document) | In progress — 152 automated tests exist; the reviewer-facing note is being written |
 
 ## Running it
 
 ```bash
-pytest -q                                    # 150 tests, all offline
+pytest -q                                    # 152 tests, all offline
 python tools/run_workflow.py                 # 1 -> 2 -> 3, review mode (default)
 python tools/run_workflow.py --mode replay   # re-extract from the cached HTML
 python tools/run_workflow.py --mode collect  # re-fetch from the vendors
@@ -165,8 +169,9 @@ config/      vendors.yaml · field_dictionary.yaml · settings.yaml   <- all pol
 src/         agent1..3 · orchestrator · review_rules · fetch · parse · schema · export
 tools/       run_workflow.py · verify_corpus.py · review_all.py · export_all.py
 data/        corpus/ (canonical JSON) · briefs/ · exports/ · cache/html/ (local only)
-docs/        architecture · confidence_rules · evaluation · assumptions_limitations · test_cases
-tests/       150 offline tests + five HTML fixtures modelled on real vendor pages
+docs/        architecture · confidence_rules · evaluation · assumptions_limitations · client_guidance
+brief.txt    the project brief, extracted verbatim from the PDF
+tests/       152 offline tests + five HTML fixtures modelled on real vendor pages
 screenshots/ the interface, tab by tab, for GitLab and JetBrains
 ```
 

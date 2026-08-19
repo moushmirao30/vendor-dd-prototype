@@ -64,7 +64,17 @@ cache:
   reuse_existing: true
 
 extraction:
-  backend: "rules"                # "rules" (default, free) | "llm" (optional, off)
+  # NO `backend` KEY. Removed 19 Aug 2026 after an audit found it.
+  #
+  # This line used to read `backend: "rules"  # "rules" (default, free) | "llm"
+  # (optional, off)`. Nothing in src/, tools/ or app.py ever read it. It advertised
+  # a switchable language-model path that does not exist, in the one file a
+  # reviewer opens to find out what the system does.
+  #
+  # A dead config key is the same defect as a dead UI control: it describes a
+  # capability the code does not have, and it is read as a promise. Extraction is
+  # rule-based, full stop; if an LLM path is ever added, the key comes back at the
+  # same moment the code that reads it does.
   snippet_max_chars: 600          # how much of a matched block to keep as evidence
   min_body_chars_for_high: 40     # a claim must be a sentence at least this long
   max_evidence_per_field: 3       # keep briefs readable; don't dump every match

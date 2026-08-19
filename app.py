@@ -42,6 +42,25 @@ CONFIG = ROOT / "config"
 
 st.set_page_config(page_title="Vendor Due-Diligence Research Prototype", layout="wide")
 
+# THE BRIEF'S RESEARCH-CATEGORY VOCABULARY, MAPPED TO OUR FIELD NAMES.
+#
+# The brief offers the reviewer "security, privacy, support, pricing, or product
+# capability". Those are the words an operations lead uses; the field dictionary
+# uses ours. Keeping the mapping here, in one visible dict, means the UI speaks
+# the client's language without the extractor having to.
+#
+# "product capability" covers integrations and API availability: it is the only
+# one of the five that is about what the product DOES rather than how it is
+# governed. Data residency, encryption and uptime ride with the governance
+# category they belong to, so no field is unreachable through the filter.
+FOCUS_TO_FIELDS = {
+    "security": ["security_trust", "encryption", "uptime_reliability"],
+    "privacy": ["privacy_data_handling", "data_residency"],
+    "support": ["support_documentation"],
+    "pricing": ["pricing_availability"],
+    "product capability": ["integrations_api"],
+}
+
 # Row height used to give tables an explicit pixel height.
 # WHY THIS EXISTS: st.dataframe draws its cells into an HTML <canvas>. Inside a
 # st.tabs panel the canvas can mount before the browser has resolved the panel's
@@ -179,11 +198,32 @@ with st.sidebar:
     selected_name = st.selectbox("Vendor", [v["name"] for v in vendors])
     vendor = next(v for v in vendors if v["name"] == selected_name)
 
-    st.multiselect(
+    # THE BRIEF'S THIRD EXPECTED INPUT: "optional research category filter, such as
+    # security, privacy, support, pricing, or product capability".
+    #
+    # WIRED 19 Aug. Until then this control existed and its return value was
+    # DISCARDED — a dropdown that changed nothing, under a help line promising it
+    # narrowed extraction. A dead control is worse than a missing feature: a
+    # missing feature is visible, and a dead one silently misrepresents the system
+    # to the non-technical reviewer this interface is built for.
+    #
+    # It filters the BRIEF, not the collection. Agent 1 still collects every page
+    # and Agent 2 still extracts every field, because throwing evidence away at
+    # collection time would make the corpus depend on a UI setting and quietly
+    # break replay. The filter is a reading lens over a complete extraction, which
+    # is also the only version that can be switched off without re-running anything.
+    focus = st.multiselect(
         "Research focus (optional filter)",
-        ["security", "privacy", "support", "pricing", "product capability"],
-        help="Leave empty to extract every field.",
+        list(FOCUS_TO_FIELDS),
+        help=("Narrows the Evidence and Vendor brief tabs to the fields you care "
+              "about. Collection and extraction are unaffected — nothing is "
+              "discarded, so clearing this shows everything again."),
     )
+    focus_fields = {f for choice in focus for f in FOCUS_TO_FIELDS[choice]}
+    if focus_fields:
+        st.caption(f":material/filter_alt: Showing {len(focus_fields)} of 8 fields. "
+                   f"The brief still reports the others — this is a view, not a "
+                   f"re-run.")
 
     st.divider()
     st.subheader("Run the workflow")
@@ -521,7 +561,44 @@ with tab_steps:
 
     st.markdown("**Step 3 — Brief Review Agent** · checks usability, flags gaps, "
                 "writes the brief")
-    st.progress(0.0, text="not built yet")
+    # THIS PANEL SAID "not built yet" FOR A DAY AFTER AGENT 3 WAS BUILT (19 Aug).
+    #
+    # Agent 3 shipped, its steps were saved into every brief, and tabs 4 and 5 were
+    # wired to show them — but this hardcoded `st.progress(0.0, "not built yet")`
+    # was never touched, so the one tab whose entire job is "see each agent step"
+    # told the reviewer that a working agent did not exist. The brief names that
+    # capability explicitly.
+    #
+    # It is the same class as defect 18b, and the rule from it applies here: decide
+    # what is true, then draw it. Never hardcode a state you are also computing.
+    if not reviewed:
+        st.progress(0.0, text="not run yet — press 'Agent 3' in the sidebar")
+    else:
+        rsteps = reviewed.get("brief", {}).get("steps") or []
+        b = reviewed["brief"]
+        origin = ("replayed from disk" if reviewed.get("from_disk")
+                  else "run in this session")
+        st.progress(1.0, text=(
+            f"complete — {len(b.get('missing_or_unclear', []))} field(s) missing or "
+            f"unclear, {len(b.get('review_flags', []))} review flag(s) — {origin}"))
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Evidence", f"{b.get('evidence_score', 0)}/10 {b.get('evidence_band','')}")
+        m2.metric("Confidence", b.get("confidence_band", "-"))
+        m3.metric("Coverage", f"{b.get('coverage_verified',0)}/{b.get('coverage_total',0)}")
+
+        if rsteps:
+            st.caption(
+                "`coverage` = how many core fields rest on evidence we could actually "
+                "read · `weak-evidence` = the match is real but the finding is thin · "
+                "`missing` = the field is empty, and the line says whether that is the "
+                "vendor's silence or our limit · `conflict` = two sources disagree."
+            )
+            st.dataframe(pd.DataFrame(rsteps), width="stretch", hide_index=True,
+                         height=table_height(len(rsteps)))
+        else:
+            st.caption("This brief was saved before review steps were persisted. "
+                       "Press Agent 3 again to record one.")
 
 with tab_evidence:
     st.subheader("Extracted evidence")
@@ -531,7 +608,15 @@ with tab_evidence:
                 "heading it came from, the snippet, the terms that matched and "
                 "the source URL.")
     else:
-        fields = extracted["fields"]
+        # The research-focus filter from the sidebar. Applied here rather than in
+        # Agent 2 so that nothing is discarded: this is a lens over a complete
+        # extraction, and clearing it restores everything without a re-run.
+        fields = [f for f in extracted["fields"]
+                  if not focus_fields or f["name"] in focus_fields]
+        if focus_fields and len(fields) < len(extracted["fields"]):
+            st.info(f"Filtered to **{', '.join(focus)}** — showing {len(fields)} of "
+                    f"{len(extracted['fields'])} fields. Clear the filter in the "
+                    f"sidebar to see the rest.", icon=":material/filter_alt:")
         summary = pd.DataFrame([
             {"Field": f["label"], "Status": f["status"],
              "Confidence": f["confidence"],
@@ -656,7 +741,17 @@ with tab_brief:
         flags = brief.get("review_flags", [])
         missing = brief.get("missing_or_unclear", [])
 
-        for name, f in brief.get("fields", {}).items():
+        shown = {n: f for n, f in brief.get("fields", {}).items()
+                 if not focus_fields or n in focus_fields}
+        if focus_fields and len(shown) < len(brief.get("fields", {})):
+            st.info(f"Filtered to **{', '.join(focus)}** — {len(shown)} of "
+                    f"{len(brief.get('fields', {}))} fields below. The three numbers "
+                    f"above and the flags at the bottom still describe the WHOLE "
+                    f"brief, because a coverage figure computed over a filtered "
+                    f"subset would be a different measurement wearing the same name.",
+                    icon=":material/filter_alt:")
+
+        for name, f in shown.items():
             icon = {"FOUND": "🟢", "PARTIAL": "🟡", "NOT_FOUND": "⚪"}.get(f["status"], "⚪")
             label = f.get("label", name)
             # A flag or a missing-note is matched to its field by the label it was

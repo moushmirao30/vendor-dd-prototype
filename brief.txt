@@ -1,0 +1,148 @@
+Project Title: Vendor Due-Diligence Research Workflow Prototype
+Project Overview:Build a controlled internal experiment that uses a small multi-agent workflow to
+collect, structure, and summarize public vendor due-diligence information. The prototype should
+help the operations team prepare consistent first-pass vendor research briefs from public sources,
+while keeping all outputs source-grounded and reviewable.
+The vendor onboarding team currently performs early due-diligence information gathering manually.
+When a new SaaS, AI, data, analytics, productivity, or developer tool is shortlisted, team members
+search across public websites and documents to collect basic business, product, security, privacy,
+support, and operational information.
+The current workflow is slow because:
+• Relevant information is spread across multiple public pages.
+• Different team members summarize vendors in different formats.
+• Security, privacy, and support details are often missed during first-pass research.
+• Review notes are not always linked back to the original public source.
+• The team wants to test whether a lightweight agentic workflow can make this research step more
+consistent.
+In this 20-day cycle, you are expected to build a bounded multi-agent workflow prototype for public-
+source vendor research. This should feel like a controlled internal experiment, not a full procurement
+automation system.
+The prototype should use a simple agent structure with a maximum of 3 working roles:
+• Source Collection Agent: identifies and stores relevant public URLs for each vendor.
+• Evidence Extraction Agent: extracts key details from selected pages and organizes them into
+structured fields.
+• Brief Review Agent: checks whether the extracted information is usable, highlights missing areas,
+and prepares a concise vendor brief.
+You should avoid building an over-complex hierarchy with unnecessary manager agents, memory
+layers, or autonomous browsing loops. The workflow should remain explainable, easy to debug, and
+suitable for review by a non-technical operations lead.
+Data Mode: Public-Source Research
+You will collect public information for a bounded set of vendors. Select 5–8 vendors from one
+practical category, such as:
+• SaaS productivity tools
+• AI writing or automation tools
+• data analytics platforms
+• developer productivity tools
+• customer support platforms
+• cloud or DevOps utilities
+For each vendor, collect only publicly available material from official or credible sources, such as:
+• official product pages
+• pricing or plan pages, where available
+• security or trust center pages
+• privacy policy pages
+• terms of service pages
+• help center or documentation pages
+• integration pages
+• public status pages
+• official blog or release-note pages, only where useful
+Do not use private databases, scraped contact lists, paid intelligence tools, or confidential
+procurement information.
+Prepare the collected data in a structured format such as CSV, JSON, or SQLite with fields like:
+• vendor name
+• source URL
+• source type
+• page title
+• collected text or extracted section
+• date collected
+• key tags, such as security, privacy, pricing, support, integrations, uptime, documentation
+• short evidence note
+Expected Input
+The prototype should accept:
+• a vendor name or vendor list
+• collected public URLs or a pre-prepared vendor source file
+• optional research category filter, such as security, privacy, support, pricing, or product capability
+Expected Output
+For each vendor, the workflow should generate a structured first-pass research brief containing:
+• Vendor overview
+• Product or service category
+• Key public sources used
+• Security and trust information found
+• Privacy and data-handling references found
+• Support and documentation availability
+• Integration or API availability, if visible
+• Pricing or plan availability, if public
+• Missing or unclear information
+• Review flags for manual follow-up
+• Source-backed evidence snippets
+• Confidence level: High / Medium / Low
+The Streamlit interface should allow the reviewer to:
+• select a vendor
+• view collected sources
+• run or replay the workflow
+• see each agent step
+• inspect extracted evidence
+• view the final vendor brief
+• export the result as JSON, CSV, or Markdown
+Recommended Build Approach
+Use a low-cost Python-based implementation. Suggested stack:
+• Python
+• Streamlit for the review interface
+• pandas for structured data handling
+• requests / BeautifulSoup for basic page collection
+• trafilatura or readability-style parsing for cleaner page text
+• SQLite or CSV/JSON for local storage
+• sentence-transformers for local embeddings, if retrieval is used
+• FAISS or Chroma if you decide to add lightweight retrieval
+• LangGraph, CrewAI, or simple custom Python orchestration for the agent flow
+You may use OpenAI API lightly for summarization or structured extraction only if required. Keep it
+optional and cost-conscious. Lower-cost alternatives such as Ollama, local models, rule-based
+extraction, and template-based summaries should be mentioned and supported where practical.
+Scope Boundaries
+This project is limited to public-source vendor research support. The prototype should not:
+• make final procurement decisions
+• assign official vendor risk scores
+• claim legal, compliance, or security approval
+• access private vendor portals
+• scrape aggressively or bypass access restrictions
+• build a production procurement platform
+• require paid databases or enterprise tools
+The output should clearly show that it is a first-pass internal research aid and that final review must
+remain manual.
+Deliverables
+Submit the following:
+• working Streamlit prototype
+• Python orchestration code for the agent workflow
+• structured public-source vendor corpus in CSV/JSON/SQLite format
+• sample outputs for at least 5 vendors
+• README with setup and run instructions
+• brief architecture note explaining the agent roles
+• assumptions and limitations note
+• sample test queries or test cases
+• short evaluation summary covering:
+o whether sources were collected correctly
+o whether extracted fields are useful
+o whether summaries are source-grounded
+o where manual review is still required
+• screenshots or short demo notes
+Success Criteria
+Your submission will be reviewed based on whether:
+• the workflow runs locally on a standard laptop
+• the agent structure is simple, controlled, and understandable
+• public-source data is collected from credible sources
+• outputs are structured and easy to review
+• vendor briefs include source references
+• missing or unclear information is flagged instead of guessed
+• the Streamlit interface is usable for a non-technical reviewer
+• the project remains low-cost and does not depend on heavy infrastructure
+• assumptions, limitations, and manual-review boundaries are clearly documented
+Submission and Communication Note
+Submit the complete project by the assigned deadline in a structured zip folder or repository format.
+Include all code, data files, README, screenshots, and sample outputs.
+All queries, blockers, and clarification requests should be sent only through the official project email.
+Please consolidate doubts clearly in one email wherever possible. Do not assume access to
+confidential systems, private procurement tools, or internal vendor records unless they are explicitly
+shared.
+Submission Deadline: 29th August, 2026
+Please ensure to follow the project guidelines. Submit your completed work to
+projects@firstquadrantlabs.com. Don’t forget to upload your project to your LMS account for record-
+keeping.

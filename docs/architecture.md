@@ -20,7 +20,7 @@ says so on every screen and in every export.
 |---|---|
 | **Discovery & Assessment** | One category was chosen (developer productivity tools) and seven vendors within it, at three deliberate difficulty tiers. Each vendor's pages were opened by hand before any code ran, and what was actually found is recorded in `config/vendors.yaml` under `observed_2026_08_10`. The field set was derived from those pages, not from a wish list. |
 | **Strategy & Solution Design** | Three agents, strictly linear, no loops. A rule-based extractor rather than a language model. A written confidence rule (`docs/confidence_rules.md`) that a human can apply by hand to any page and get the same answer the code gets. All policy in YAML, all behaviour in Python. |
-| **Development & Deployment** | Python, Streamlit, `requests`, BeautifulSoup, `trafilatura`, pandas. JSON as the canonical store. 150 offline tests. One command to run: `streamlit run app.py`. |
+| **Development & Deployment** | Python, Streamlit, `requests`, BeautifulSoup, `trafilatura`, pandas. JSON as the canonical store. 152 offline tests. One command to run: `streamlit run app.py`. |
 | **Monitoring & Optimization** | Every agent emits an audit trail that persists to disk and replays. Every page's content is hashed so a later run can detect the vendor changed it. The confidence of every field is visible next to the quote that produced it, so the system's own weaknesses are legible to the person using it rather than buried. |
 
 The explainability requirement is not a section of this document. It is the reason the system is

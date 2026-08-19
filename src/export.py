@@ -54,6 +54,10 @@ CORPUS_COLUMNS = [
     # --- auditability, beyond the brief ---
     "http_status", "fetch_ok", "robots_allowed", "content_usable", "block_count",
     "content_sha256", "text_extractor",
+    # Derived at export time from Agent 2's results — see `evidence_tags`. MUST
+    # stay last: export_corpus_csv builds every other cell from the record and
+    # appends this one.
+    "evidence_tags",
 ]
 
 MANIFEST_COLUMNS = [
@@ -93,9 +97,54 @@ def _write_csv(path: Path, columns: list[str], rows: list[list]) -> Path:
 # 1. The corpus
 # ---------------------------------------------------------------------------
 
-def export_corpus_csv(records: list[dict], out_path: Path) -> Path:
-    """One row per collected page, carrying the brief's named fields."""
-    return _write_csv(out_path, CORPUS_COLUMNS, [_row(r, CORPUS_COLUMNS) for r in records])
+def evidence_tags(record: dict, fields: list[dict]) -> str:
+    """
+    Which due-diligence topics were actually FOUND on this page.
+
+    WHY THIS EXISTS (19 Aug 2026). The brief names `key tags` as a corpus field —
+    *"security, privacy, pricing, support, integrations, uptime, documentation"*.
+    `SourceRecord.tags` carries the page TYPE plus a `human-verified` marker, which
+    is honest but is a restatement of the `source_type` column sitting next to it:
+    39 of 49 rows have `tags == [source_type]` exactly, and four of the brief's
+    seven example words never appear at all.
+
+    The information the brief is asking for exists — it is just held by Agent 2,
+    not Agent 1, and Agent 1 cannot know it without doing Agent 2's job. Deriving
+    it here keeps the linear flow intact and needs no re-collection, which matters
+    because the corpus is frozen at 13 August.
+
+    A page tagged `security_trust, encryption` is one where those fields found
+    quotable evidence. An empty value means the page was collected and searched and
+    contributed nothing — which is itself worth seeing in a spreadsheet.
+    """
+    url = record.get("source_url", "")
+    found = []
+    for f in fields:
+        for e in f.get("evidence", []):
+            if e.get("match_location") == "tool_limitation":
+                continue
+            if e.get("source_url") == url:
+                found.append(f["name"])
+                break
+    return ", ".join(sorted(set(found)))
+
+
+def export_corpus_csv(records: list[dict], out_path: Path,
+                      fields_by_vendor: dict[str, list[dict]] | None = None) -> Path:
+    """
+    One row per collected page, carrying the brief's named fields.
+
+    `fields_by_vendor` maps a vendor slug to Agent 2's extracted fields. Passing it
+    adds the `evidence_tags` column; omitting it leaves that column blank rather
+    than failing, so an older caller still works.
+    """
+    fields_by_vendor = fields_by_vendor or {}
+    rows = []
+    for r in records:
+        row = _row(r, CORPUS_COLUMNS[:-1])
+        row.append(evidence_tags(r, fields_by_vendor.get(r.get("vendor_slug", ""), [])))
+        rows.append(row)
+    return _write_csv(out_path, CORPUS_COLUMNS, rows)
 
 
 # ---------------------------------------------------------------------------
@@ -166,9 +215,28 @@ def export_source_manifest(rows: list[list], out_path: Path) -> Path:
 # 3. The brief — JSON, CSV, Markdown
 # ---------------------------------------------------------------------------
 
+# ONE ROW PER FIELD, AND EVERY ROW CARRIES THE VENDOR-LEVEL CONTEXT.
+#
+# Until 19 Aug this was field columns only, and the CSV was therefore the one
+# export that dropped the disclaimer, the review flags, the missing-or-unclear
+# list and all three vendor-level numbers. A reviewer who chose CSV — a format the
+# interface offers on equal footing with the other two — received a clean table of
+# security claims about seven real companies with every caveat stripped off.
+#
+# That is not a formatting gap. The brief's scope boundaries require that "the
+# output should clearly show that it is a first-pass internal research aid and
+# that final review must remain manual", and a spreadsheet is the format most
+# likely to be pasted into an email and read on its own.
+#
+# The vendor columns repeat identically down the file. That is the correct
+# redundancy for a flat format: a reader who sorts, filters or copies a single row
+# out of the sheet still takes the disclaimer with them.
 BRIEF_COLUMNS = [
     "vendor_name", "field", "label", "status", "confidence", "extraction_quality",
     "confidence_reason", "value", "source_type", "source_url", "matched_terms",
+    # --- vendor-level context, repeated on every row ---
+    "vendor_evidence_score", "vendor_confidence", "vendor_coverage",
+    "review_flags_for_this_field", "vendor_missing_or_unclear", "disclaimer",
 ]
 
 
@@ -185,16 +253,33 @@ def brief_csv_rows(brief: dict) -> list[list]:
     the original public source" the brief names as a problem with the manual
     process this prototype replaces.
     """
+    counts = brief.get("confidence_counts") or {}
+    total = brief.get("coverage_total", 0)
+    vendor_conf = (f"{brief.get('confidence_band','')} "
+                   f"({counts.get('High', 0)} of {total} core fields High)")
+    vendor_ev = f"{brief.get('evidence_score', 0)}/10 {brief.get('evidence_band','')}"
+    vendor_cov = f"{brief.get('coverage_verified', 0)}/{total} verified"
+    missing = " | ".join(brief.get("missing_or_unclear", []) or [])
+    flags = brief.get("review_flags", []) or []
+
     rows = []
     for name, f in brief.get("fields", {}).items():
         top = next((e for e in f.get("evidence", [])
                     if e.get("match_location") != "tool_limitation"), {})
+        # Agent 3 composes every flag as "<label>: <reason>", so a flag belongs to
+        # the field whose label it starts with. Matching on the label rather than
+        # the field name keeps the CSV readable by someone who never sees the
+        # internal names.
+        label = f.get("label", "")
+        mine = [x for x in flags if label and x.startswith(label)]
         rows.append([
-            brief.get("vendor_name", ""), name, f.get("label", ""), f.get("status", ""),
+            brief.get("vendor_name", ""), name, label, f.get("status", ""),
             f.get("confidence", ""), f.get("extraction_quality", ""),
             f.get("confidence_reason", ""), f.get("value", ""),
             top.get("source_type", ""), top.get("source_url", ""),
             ", ".join(top.get("matched_terms", []) or []),
+            vendor_ev, vendor_conf, vendor_cov,
+            " | ".join(mine), missing, brief.get("disclaimer", ""),
         ])
     return rows
 

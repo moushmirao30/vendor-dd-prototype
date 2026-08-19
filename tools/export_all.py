@@ -54,6 +54,7 @@ def main() -> int:
 
     print(f"\n{'=' * 78}\n  EXPORT\n{'=' * 78}")
     all_records: list[dict] = []
+    fields_by_vendor: dict[str, list[dict]] = {}
     manifest: list[list] = []
     briefs_written = 0
 
@@ -67,6 +68,11 @@ def main() -> int:
         corpus = json.loads(corpus_path.read_text(encoding="utf-8"))
         records = corpus["records"] if isinstance(corpus, dict) and "records" in corpus else corpus
         all_records += records
+
+        fields_path = CORPUS / f"{slug}_fields.json"
+        if fields_path.exists():
+            fields_by_vendor[slug] = json.loads(
+                fields_path.read_text(encoding="utf-8"))["fields"]
 
         trail_path = CORPUS / f"{slug}_run.json"
         steps = (json.loads(trail_path.read_text(encoding="utf-8"))["steps"]
@@ -90,7 +96,7 @@ def main() -> int:
         print(f"  {slug:10s} {attempted:2d} attempted, {collected:2d} collected "
               f"({unreadable} unreadable)   brief: {written}")
 
-    export_corpus_csv(all_records, EXPORTS / "corpus.csv")
+    export_corpus_csv(all_records, EXPORTS / "corpus.csv", fields_by_vendor)
     export_source_manifest(manifest, EXPORTS / "source_manifest.csv")
 
     failed = sum(1 for r in manifest if r[3] in ("FAILED", "NOT COLLECTED", "NOT ATTEMPTED"))

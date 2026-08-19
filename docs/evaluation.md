@@ -2,8 +2,8 @@
 
 **Vendor Due-Diligence Research Workflow Prototype — First Quadrant Labs**
 Moushmi Rao · corpus collected 13 August 2026 · analysis and revision 18 August 2026
-**Status: all three agents complete. Figures below describe Agents 1 and 2; Agent 3's own output
-is not yet folded in.**
+**Status: complete. Three agents, orchestrator, export layer and interface all built and running.
+Figures below cover the full pipeline, Agent 3 included.**
 
 This document answers the four questions the project brief asks of the evaluation summary:
 whether sources were collected correctly, whether the extracted fields are useful, whether the
@@ -11,6 +11,101 @@ summaries are source-grounded, and where manual review is still required.
 
 Every number below was produced by running the workflow over seven real vendors and reading the
 artifacts it wrote. Nothing here is estimated. Where a claim could not be verified, it says so.
+
+---
+
+## Executive summary — read this page, then stop if you have five minutes
+
+**Seven developer-productivity vendors. 49 public pages from official domains. 8 fields per
+vendor. No LLM, no browser automation, no paid service — every claim in every brief is a verbatim
+quote with the URL it came from.**
+
+### The finding
+
+> **The dangerous failure is not a missing answer. It is a confident answer about a company that
+> nobody checked.**
+
+A missing field is visible: a reviewer sees the gap and fills it. A **wrong** field that arrives
+labelled *High confidence*, with a real quote and a working URL beneath it, is invisible — it
+recruits the reviewer's trust and then spends it. **Five distinct mechanisms produced exactly that
+on real vendor pages** (§0): JavaScript-rendered pages that return 898 KB of HTML and 52 readable
+characters; a privacy policy that is a redirect shell with zero readable characters, silently
+answered from a different page; a security page whose URL could not be guessed in six attempts
+while the vendor did publish one; a technically-correct quote from a terms-of-service liability
+clause standing in for a security posture; and a safeguard that had never once executed since the
+day it was written. All five are closed, each by a named defect, each measured on the corpus.
+
+### The three numbers, and why one was never enough
+
+The system reports **three axes side by side and never one alone**. Reporting only the first was
+itself a defect (42) — it made a vendor whose documents were largely unreadable indistinguishable
+from one that was fully read.
+
+| Vendor | Evidence found | Confidence | Coverage checked | Flags |
+|---|---|---|---|---|
+| GitLab | 10/10 | Medium — 2 of 5 core fields High | **5/5** | 6 |
+| Sentry | 10/10 | Medium — 2 of 5 core fields High | **5/5** | 5 |
+| GitHub | 10/10 | Medium — 2 of 5 core fields High | **5/5** | 4 |
+| Postman | 10/10 | Medium — **0** of 5 core fields High | **2/5** | 6 |
+| Atlassian | 10/10 | Medium — **0** of 5 core fields High | **2/5** | 8 |
+| Linear | 6/10 | Low — 1 High, 3 Medium, 1 Low | 3/5 | 3 |
+| JetBrains | 5/10 | Low — 1 High, 2 Medium, 2 Low | 2/5 | 5 |
+
+- **Evidence found** — how much quotable material the extractor located. It counts what was found.
+- **Confidence** — how good that material is, on the client's definition rather than sentence
+  length. Reported as counts per level, not a score, because averaging three levels hides the
+  weakest link.
+- **Coverage checked** — how many core fields rest on pages we could actually read. **This is the
+  column that stops the dangerous failure.** Postman and Sentry both score 10/10; one of them was
+  read and the other largely was not, and only this column says so. A brief whose coverage is
+  short also carries a `SCORE OVERSTATES COVERAGE` flag naming every unread field.
+
+**The score is not a comparative measure and the system says so in the brief itself, not only in
+the audit trail.**
+
+### What the tool could not read, stated as a number
+
+**8 of 49 pages — 16.3%, across four of seven vendors — returned a URL and no document.** They
+returned HTTP 200 and either JavaScript shells or empty bodies. Extraction succeeded on **84%** of
+pages and populated **46 of 56 fields (82%)**.
+
+**23 of those 56 results — 41% — need a human before anyone relies on them.** That is not a
+failure figure. It is the figure that makes a first-pass research aid safe to use, and it is
+printed on the vendor's own brief rather than buried here.
+
+### Where manual review remains necessary — the brief's fourth question
+
+1. **Any vendor with an unreadable primary page.** Where a field's home page could not be read and
+   the answer came from elsewhere, a caveat is written into the brief a human reads, not just the
+   log. **18 such caveats across seven vendors — each one a page somebody must open by hand.**
+2. **Any field evidenced only from outside its expected home.** The match is real; the finding is
+   weak. On GitLab three of five core fields draw their best evidence from the privacy policy —
+   which is authoritative and also the longest, best-punctuated document any vendor publishes. The
+   rule as written rewards a good writer.
+3. **Any vendor that scores well because nothing contradicted it.** Conflict detection returns
+   **zero** on this corpus, and that is reported as a finding rather than presented as agreement.
+   Absence of contradiction is not corroboration.
+4. **Every vendor, on every export.** Each brief states in its own text that it is a first-pass
+   internal research aid and that final review remains manual.
+
+### How the defects were found — the method, not the tooling
+
+**Forty-seven defects have been found in this project. The automated test suite caught one of
+them.** The rest came from reading the output against the source page, from re-running the
+workflow end to end, and — for the last four — from reading the client's brief line by line
+instead of a summary of it. Every one of those four was on the client-facing surface and none was
+in the engineering: a dropdown that changed nothing, a tab denying a working agent existed, an
+export stripping its own disclaimer, and a config key advertising a feature never built.
+
+**The code was more honest than the interface describing it.** For a tool whose entire purpose is
+to stop unchecked claims reaching a reader, that inversion is the most useful thing this
+evaluation has to report — and it is why the interface, not the documents, is where the honesty
+guarantees are now enforced.
+
+### Where to look next
+
+§1 collection · §2 extraction and the cross-vendor table · §3 source-grounding · §4 manual review
+in detail · §5 what actually found the defects · §6 the limits of this evaluation itself.
 
 ---
 
@@ -40,8 +135,11 @@ contains words. A 404 means our URL guess was wrong, not that the vendor is sile
 survives every automated check can still be the wrong sentence. And a safeguard nobody exercised
 is a safeguard nobody has.**
 
-All five are now closed. A sixth is open and belongs to Agent 3: a vendor can still score
-10/10 High while half its primary documents were never read — see §4.3.
+All five are now closed. **A sixth was open until 19 August and belongs to Agent 3: a vendor
+could still score 10/10 High while half its primary documents were never read.** It is closed by
+defect 42. Verified on the shipped artifact rather than asserted: `data/briefs/postman_brief.json`
+now reads `evidence_score` 10, `confidence_band` **Medium**, `coverage_verified` **2** of **5**,
+and a `SCORE OVERSTATES COVERAGE` review flag naming all three unread fields by name — see §4.3.
 
 ---
 
@@ -360,29 +458,43 @@ Medium. The sentence a reviewer would want is on the page; we cannot read it.
 
 ### 4.3 Vendors that score well because nothing contradicted them
 
-The most important open defect in the system, and the thing Agent 3 exists to fix:
+This was the most important open defect in the system, and the thing Agent 3 was built to fix.
+The table shows what the same two vendors looked like before and after that fix.
 
 | | Postman | Sentry |
 |---|---|---|
-| Core score | **10/10** | **10/10** |
-| Confidence | **High** | **High** |
-| **Coverage** | **2 of 5** | **5 of 5** |
+| Evidence found | **10/10** | **10/10** |
+| Confidence — *as reported until 19 Aug* | ~~**High**~~ | ~~**High**~~ |
+| Confidence — *as reported now* | **Medium** — 0 of 5 core fields High | **Medium** — 2 of 5 core fields High |
+| **Coverage checked** | **2 of 5** | **5 of 5** |
 | Fields carrying caveats | **4** | **0** |
+| `SCORE OVERSTATES COVERAGE` flag | **raised** | not raised |
 | Privacy policy | **0 readable characters** | fully readable |
 | Docs page | **2,370 chars from 1.2 MB (98% JavaScript)** | fully readable |
 
-**Postman and Sentry receive identical scores and identical confidence labels. One of them was
-read. The other largely was not.** The score counts what was found; it does not count what was
-never looked at. Presented to an operations lead without the caveats visible, these two vendors
-are indistinguishable — which is precisely the failure named at the top of this document,
-reproduced by the system's own scoring. Atlassian is the same shape: 10/10 High on 2 of 5.
+The two rows that changed are the point. Coverage and the flag were always computable; until
+19 August neither reached the reader.
 
-Two things now stand between that score and a reader. `verify_corpus` prints the coverage figure
-beside every score and raises `score-without-coverage` when a High rests on unread pages. Neither
-changes the number. **Agent 3 must either discount caveated fields when scoring or print coverage
-beside the score in the brief itself, and it must import that calculation rather than write its
-own — a build-time tool and a shipped brief computing coverage differently is how the two begin to
-disagree. Until then, the vendor score must not be presented as a comparative measure.**
+**Until 19 August, Postman and Sentry received identical scores and identical confidence labels.
+One of them was read. The other largely was not.** The score counts what was found; it cannot
+count what was never looked at. Presented to an operations lead without the caveats visible, the
+two vendors were indistinguishable — precisely the failure named at the top of this document,
+reproduced by the system's own scoring. Atlassian is the same shape: 10/10 on 2 of 5.
+
+**Closed 19 August by defect 42, and the fix is a reporting change rather than a scoring change.**
+Three measures now carry three names and travel together: `evidence_score` (what was found),
+`confidence_band` with per-level counts (how good it is, on the client's definition), and
+`coverage_verified` / `coverage_total` (how much could be checked). No exporter, template or UI
+panel can render the score without them. Postman's shipped brief now reads 10/10 evidence,
+**Medium** confidence with **0** core fields High, coverage **2 of 5**, and a `SCORE OVERSTATES
+COVERAGE` flag naming `integrations_api`, `privacy_data_handling` and `support_documentation`.
+Sentry reads 10/10, Medium, **5 of 5**, no such flag. The two are now distinguishable at a glance.
+
+The calculation lives in `src/review_rules.py` and is **imported** by both `agent3_review.py` and
+`tools/verify_corpus.py`, because a build-time checker and a shipped brief computing coverage
+separately is how the two begin to disagree — the mechanism behind four earlier defects.
+**The vendor score is still not a comparative measure on its own, and the brief now says so in
+its own text.**
 
 ### 4.4 The case for keeping JetBrains
 
@@ -395,7 +507,7 @@ vendor would have improved every number in this document and destroyed its point
 
 ## 5. What found the defects
 
-**Thirty-seven defects have been found in this project. The automated test suite caught one.**
+**Forty-seven defects have been found in this project. The automated test suite caught one.**
 
 The other thirty-six were found by opening the artifact and reading what it actually said — the
 screen first, then the JSON, then the raw HTML. The 101 offline tests are worth having: they hold

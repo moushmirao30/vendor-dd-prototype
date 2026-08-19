@@ -2,10 +2,24 @@
 
 **Purpose:** everything a fresh chat session needs to pick this project up cold.
 Read it top to bottom before touching anything.
-**Last updated: 19 August 2026 — DAY 12 of 20. 20 commits (`68ff6ee`), pushed.
+
+> **If you are a NEW session, read `START_HERE.md` first** — it is one screen and it
+> orders the reading. Then this file.
+>
+> **The two files that outrank this one:**
+> * `docs/client_guidance.md` — the client's written reply of 18 Aug, IN FULL. It
+>   outranks every decision in this repository. §1.1 below is a condensed version.
+> * `brief.txt` — the brief extracted verbatim from the PDF. **Check compliance
+>   against it, never against a summary** — four requirements were quietly unmet for
+>   nine days because nobody did.
+>
+> Both were added to the repo on 19 Aug after the assistant's project memory was
+> lost. **Project memory is convenient and it is not durable. The repo is.**
+**Last updated: 20 August 2026 — DAY 13 of 20. 22 commits (`07228a1`), pushed.
 All three agents, the orchestrator, the export layer, the source manifest and the full Streamlit
-interface are built and committed. 150 tests, confirmed on Windows. `verify_corpus.py` 0 FAIL
-across all seven vendors. 8 days to the 27 Aug submission target.**
+interface are built and committed. 152 tests. `verify_corpus.py` 0 FAIL
+across all seven vendors. NINE of ten brief deliverables complete; `docs/test_cases.md` is the
+only one outstanding. 7 days to the 27 Aug submission target.**
 
 > ### ⚠ THE DATES IN THIS FILE HAVE BEEN WRONG THREE TIMES. READ ALL THREE.
 > * **Error 1** — everything below was first written as "13 August" because the assistant's clock
@@ -25,7 +39,7 @@ across all seven vendors. 8 days to the 27 Aug submission target.**
 > | **13 Aug** | Agent 1 + Agent 2 re-run over all seven vendors | `ran_on 2026-08-13T21:34` |
 > | **14–17 Aug** | **no commits, no work. Four days lost.** | git log gap |
 > | **18 Aug** | client reply; defects 27–39; docs rewritten; Agent 3; export layer | `e39ffd2` `64fca64` `fe3f686` `3cb4455` |
-> | **18–19 Aug** | orchestrator; defects 40–43; tabs 4 and 5; 150 tests | `6759ea6` `68ff6ee` |
+> | **18–19 Aug** | orchestrator; defects 40–47; tabs 4 and 5; the brief-PDF audit; the architecture note and README rewritten; 152 tests | `6759ea6` `68ff6ee` `537074f` `07228a1` |
 
 > ### ⚠ READ §1.1 BEFORE ANY DESIGN DECISION
 > First Quadrant Labs replied to the clarification email in writing on 18 August. **That reply
@@ -104,9 +118,12 @@ research briefs, where every statement traces back to the page it came from. The
 "a controlled internal experiment, not a full procurement automation system" — it is a
 **restraint test**. Roughly half the marks live in the prose deliverables.
 
-- **Deadline: Saturday 29 August 2026. 10 days left. Submission target 27 Aug — 8 days.**
+- **Deadline: Saturday 29 August 2026. 9 days left. Submission target 27 Aug — 7 days.**
 - The brief describes a **20-day cycle**. Day 1 = 8 Aug 2026, so **day N = 7 Aug + N**.
-  Today, 19 Aug, is **day 12**. Day 20 = 27 Aug, two days before the deadline.
+  Today, 20 Aug, is **day 13**. Day 20 = 27 Aug, two days before the deadline.
+  *This entry read "19 Aug, day 12" until 20 Aug 00:10 IST, when a session that began on the 19th
+  was still running past midnight. Re-derive the day from the machine's clock at the start of every
+  session; do not copy it forward from this file.*
 - **4 days were lost (14–17 Aug, no commits).** The plan below absorbs that; it has no further
   slack before the 27 Aug target.
 - Submit to **projects@firstquadrantlabs.com** AND upload to the LMS.
@@ -295,9 +312,9 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 
 ## 3. What exists right now
 
-**20 commits, `68ff6ee`, pushed. Everything below is built and committed: three agents, the
+**22 commits, `07228a1`, pushed. Everything below is built and committed: three agents, the
 orchestrator, the export layer, the source manifest, and all five UI tabs.**
-**150 tests, confirmed on Windows. `verify_corpus.py` 0 FAIL across all seven vendors.**
+**152 tests. `verify_corpus.py` 0 FAIL across all seven vendors.**
 **7 vendors · 49 pages · 55 cached files · 7 briefs · 23 export artifacts · 12 screenshots.**
 
 ```
@@ -332,7 +349,7 @@ vendor-dd-prototype/
 │   ├─ confidence_rules.md    the written confidence rule + worked examples
 │   ├─ architecture.md        DRAFT — see §8
 │   └─ evaluation.md          rewritten 18 Aug, figures fact-checked by script
-└─ tests/                     150 tests, all offline
+└─ tests/                     152 tests, all offline
     ├─ test_parse.py · test_agent1.py · test_agent2.py · test_agent3.py (21) · test_export.py (15)
     ├─ test_orchestrator.py (9) — handoffs and refusals, not what happens inside an agent
     ├─ test_fetch_robots.py · test_app_smoke.py · test_text_quality.py
@@ -385,7 +402,7 @@ while half its primary documents were never read. See defect 31.**
 
 ---
 
-## 5. Forty-three defects, and the headline they add up to
+## 5. Forty-seven defects, and the headline they add up to
 
 **The automated test suite caught one of them. Every other one was found by opening the artifact
 and reading what it actually said — the screen, then the JSON, then the raw HTML.**
@@ -449,6 +466,41 @@ Defect 42 came from reading a WARN row the tool had been printing for days. Defe
 re-deriving a worked example for `docs/confidence_rules.md` and noticing that a security field
 justified its High by naming the pricing page. **Re-deriving a stale document against live data is
 not housekeeping; it is a defect-finding technique** — the same one that produced defect 33.
+
+### 44–47 — FOUND 19 Aug BY AUDITING AGAINST THE BRIEF PDF ITSELF. All fixed.
+
+**How they were found, and why it took until day 12.** Every compliance check before this one was
+made against a *summary* of the brief held in project memory. On 19 Aug the actual
+`Project_Brief_1.pdf` was extracted to text and read line by line against the repo. Four
+requirements turned out to be unmet, and **all four were on the client-facing surface** — the
+engineering underneath audited clean, including the robots layer, which is the strongest part of
+the project.
+
+| # | Defect | Fix |
+|---|---|---|
+| **44** | **THE RESEARCH-CATEGORY FILTER WAS A DEAD CONTROL, FOR NINE DAYS.** The brief's *Expected Input* names three things, the third being *"optional research category filter, such as security, privacy, support, pricing, or product capability"*. `app.py` rendered `st.multiselect(...)` and **discarded its return value** — under a help line reading *"Leave empty to extract every field"*, which promises the opposite. Selecting "security" changed nothing. **A dead control is worse than a missing feature: a missing feature is visible, and a dead one silently misrepresents the system to the non-technical operations lead this interface exists for.** | Wired as a **reading lens**, not a collection filter. `FOCUS_TO_FIELDS` in `app.py` maps the brief's five category words to our eight field names, and tabs 3 and 4 filter on it. Collection and extraction are untouched: filtering at extraction time would make the corpus depend on a UI setting and quietly break replay, and nothing is discarded, so clearing the filter restores everything with **no re-run**. |
+| **45** | **THE AGENT-STEPS TAB DENIED THAT A WORKING AGENT EXISTED.** `app.py` carried a hardcoded `st.progress(0.0, text="not built yet")` under *"Step 3 — Brief Review Agent"*. Agent 3 had shipped the day before; its steps were being computed, saved into every brief and rendered in tabs 4 and 5 — while the one tab whose entire purpose is the brief's *"see each agent step"* requirement told the reviewer it did not exist. | The panel now renders Agent 3's real step trail plus evidence / confidence / coverage. **Same class as defect 18b, and the rule from it applies verbatim: decide what is true, then draw it. Never hardcode a state you are also computing.** |
+| **46** | **THE CSV EXPORT DROPPED ITS OWN DISCLAIMER.** `BRIEF_COLUMNS` was field-level only, so the CSV was the single export carrying no disclaimer, no review flags, no missing-or-unclear list and none of the three vendor-level numbers. A reviewer choosing CSV — offered on equal footing with JSON and Markdown — received a clean table of security claims about seven real companies with every caveat stripped off. **Not a formatting gap:** the brief's scope boundaries require the output to show it is a first-pass aid, and a spreadsheet is the format most likely to be pasted into an email and read alone. | Six vendor-level columns now repeat on **every row**, including the disclaimer. That redundancy is correct for a flat format: a reader who sorts, filters or copies one row out of the sheet takes the caveat with them. A test asserts it. |
+| **47** | **`config/settings.yaml` ADVERTISED A LANGUAGE-MODEL BACKEND THAT DOES NOT EXIST.** `backend: "rules"  # "rules" (default, free) \| "llm" (optional, off)`. `grep` across `src/`, `tools/` and `app.py` finds **zero** readers. A dead config key in the one file a reviewer opens to find out what the system does — the same defect as a dead UI control, in a different costume. | Removed, with the reason left in its place. If an LLM path is ever added, the key returns at the same moment the code that reads it does. |
+
+**Also closed, not a defect but a brief field left thin:** `SourceRecord.tags` restates
+`source_type` — **39 of 49 rows are exactly `[source_type]`**, and four of the brief's seven example
+tag words never appear. The information the brief wants belongs to Agent 2, and having Agent 1
+compute it would break the linear flow the brief mandates. Resolved at export time: `corpus.csv`
+carries **`evidence_tags`**, the topics that actually found evidence on that page, populated on
+**26 of 49 pages**. Recorded in `docs/assumptions_limitations.md` §3.7.
+
+### ONE AUDIT FINDING WAS FALSE. THE LESSON IS WORTH MORE THAN THE FOUR REAL ONES.
+
+The same audit reported `screenshots/` as **empty — only `.gitkeep`**. It was auditing a **copy of
+the repo in a cloud container**, which had never received the screenshots. All twelve are committed
+in `68ff6ee`; git's own `create mode 100644 screenshots/04_vendor_brief.png` output is the proof.
+
+**An audit of a copy is an audit of the copy.** Findings about code CONTENT transfer between a
+working tree and a copy; findings about a file being ABSENT do not. Before accepting any
+"X is missing" finding, check it against the real working tree. This is the fifth time in this
+project that a plausible finding has been wrong on checking, and the count is the point: **three of
+four candidate findings on 18 Aug were false, and one of nine here.** Checking is not overhead.
 
 ### A ROUTE NOT TAKEN — keep this, it is the best thing in the evaluation
 The first version of defect 28's fix dropped blocks whose heading was not a complete sentence.
@@ -527,7 +579,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 
 ### State at 19 Aug — every number below was produced by running it, not recalled
 
-- **150 pytest passing, confirmed on Windows** (134 → +9 orchestrator, +4 UI/export, +2 defect 43).
+- **152 pytest passing** (134 → +9 orchestrator, +4 UI/export, +2 defect 43).
 - `python tools/verify_corpus.py` → **0 FAIL across all seven vendors.**
 - Field totals **43 FOUND / 3 PARTIAL / 10 NOT_FOUND**. PARTIAL became reachable on 18 Aug
   (defect 36) and stayed reachable through every change since.
@@ -555,7 +607,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 
 ### Commits
 
-**HEAD = `origin/master` = `68ff6ee`, 20 commits, pushed.**
+**HEAD = `origin/master` = `07228a1`, 22 commits, pushed. Level with origin, nothing ahead.**
 
 | Commit | When | What |
 |---|---|---|
@@ -567,33 +619,73 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 | `3cb4455` | 18 Aug | **export layer + source manifest** + 23 export artifacts |
 | `6759ea6` | 19 Aug | **orchestrator** + defects 40, 41, 42 |
 | `68ff6ee` | 19 Aug | **UI tabs 4 and 5** + 12 screenshots |
+| `537074f` | 19 Aug | **defect 43**, `confidence_rules.md` rewritten, 9 brief/corpus artifacts re-exported |
+| `07228a1` | 19 Aug | **`docs/architecture.md` and `README.md` rewritten against the code that exists** — 312 insertions, 77 deletions |
+
+**This table was stale by two commits within four hours of being written.** Regenerate it from
+`git log`, never from memory. Same class of error as §8 and §11 below, and the reason this
+section is now the only place in the repository that states commit state.
 
 ### STILL OUTSTANDING, in this order
 
-- [ ] **Commit the document pass** — this file, `docs/confidence_rules.md` (defects 42–43),
-      and the defect-43 code change in `src/review_rules.py` + `tests/test_agent3.py`.
-- [ ] `docs/architecture.md` §3, §6, §10, §11 — see §8. §6 still marks Agent 3 "NOT BUILT YET"
-      and §3 still says "94 offline tests".
-- [ ] `README.md` submission section — the client withdrew the cache-in-zip plan (§1.1 item 3) and
-      the README still describes it. It must explain how a reviewer **re-collects** the sources,
-      and state plainly that a fresh clone replays `review` mode but not `replay` mode until they do.
-- [ ] **`docs/assumptions_limitations.md`** — not written. It owes the brief's "mention lower-cost
-      alternatives" line (Ollama, local models, template summaries) and the STILL OPEN list below.
-- [ ] **`docs/test_cases.md`** and **`docs/code_walkthrough.md`** — not written.
-- [ ] Add defects 40–43 to `docs/evaluation.md`. The rest of that file was fact-checked on 18 Aug
-      and should be re-read against the final code rather than rewritten.
-- [ ] Delete `_to_delete/` before packaging — it now also holds two staging tarballs and the two
-      commit-message files. It is gitignored, so git will never remind you.
+- [ ] **COMMIT AND PUSH. This is the only item with a single point of failure.**
+      Four files are **untracked** — they exist on one laptop and nowhere else:
+      `docs/client_guidance.md` (the document this repo says outranks every other decision),
+      `brief.txt` (the file compliance must be checked against), `docs/assumptions_limitations.md`
+      (21 KB, written 19 Aug), and `START_HERE.md`. Nine tracked files are modified:
+      `app.py`, `src/export.py`, `tools/export_all.py`, `config/settings.yaml`,
+      `tests/test_export.py`, `README.md`, `docs/architecture.md`, `docs/confidence_rules.md`,
+      this file. Message prepared in `_to_delete/commit5.txt`.
+      **The project's own lesson is that memory is not durable and the repo is. Four of the
+      files that carry that lesson are not yet in the repo.**
+- [ ] **CLICK THE RESEARCH-FOCUS FILTER ONCE BY HAND.** Its wiring is proven by AppTest —
+      selecting "security" yields 3 of 8 fields with no exceptions — but Streamlit's multiselect
+      dropdown could not be driven in headless Chromium, so **no browser has confirmed it visually.**
+      This project's own rule is that AppTest verifies data and not rendering.
+- [ ] **`docs/test_cases.md`** — a brief deliverable. Keep it SHORT; see the warning below.
+- [ ] **A one-page executive summary at the top of `docs/evaluation.md`** — the three-axis table,
+      the 16.3% unreadable-pages figure, the four failure modes. This is now the highest-value
+      remaining item, above any further depth.
+- [ ] Add defects 40–47 to `docs/evaluation.md`. Re-read the rest against the final code rather
+      than rewriting it; it was fact-checked by script on 18 Aug.
+- [ ] **`docs/code_walkthrough.md`** — **NOT a brief deliverable.** Checked verbatim against
+      `brief.txt` on 20 Aug: the ten listed items are prototype, orchestration code, corpus,
+      sample outputs, README, architecture note, assumptions & limitations, **test cases**,
+      evaluation summary, screenshots. `code_walkthrough.md` is our own addition. It is still the
+      document that lets you defend the code line by line in a review, so it is worth writing —
+      but it is optional, it must not be counted against the ten, and it is the first thing to
+      drop if the clock tightens.
+- [ ] Delete `_to_delete/` before packaging. It now holds two staging tarballs and five
+      commit-message files. Gitignored, so git will never remind you.
+
+### ⚠ THE STANDING RISK IS NO LONGER MISSING WORK. IT IS VOLUME.
+
+`HANDOFF.md` ~72 KB · `docs/evaluation.md` ~31 KB · `docs/architecture.md` ~30 KB ·
+`docs/confidence_rules.md` ~25 KB · `docs/assumptions_limitations.md` ~21 KB.
+**Roughly 180 KB of prose.** Every page is defensible. Nobody will read them all.
+
+The brief requires the **Streamlit interface** to be usable by a non-technical operations lead —
+not the documents — and the interface is genuinely good: plain-language captions, three numbers each
+with a tooltip naming the question it answers, the six-link chain, flags in prose rather than codes.
+**The documents are for a technical reviewer, and that is legitimate.** But a reviewer's realistic
+path is: README → open the app → skim one brief → sample one document.
+
+**So: write nothing longer. `test_cases.md` should be short, and the next most valuable thing in the
+repository is a ONE-PAGE entry point at the top of the evaluation, not more depth anywhere.**
 
 **Where the time went.** 13 Aug re-ran the agents. **14–17 Aug produced nothing — no commits.**
 18 Aug produced thirteen defects found and twelve fixed, three documents rewritten against verified
 data, a client reply that fixed the scope in writing, Agent 3, and the export layer. 18–19 Aug
 produced the orchestrator, defects 40–43, both UI tabs, twelve screenshots and two commits.
 
-**Day 12 of 20. Eight of ten brief deliverables complete** — prototype, orchestration code, corpus,
-sample outputs, README (needs its submission section), architecture note (draft, 4 wrong sections),
-evaluation summary, screenshots. **Missing: assumptions & limitations, test cases.** Feature freeze
-21 Aug; everything after it is prose.
+**Day 13 of 20 — it is 20 August.** (Recounted 20 Aug 00:10 IST. The 19 Aug session crossed a
+real midnight and every "day 12" written in it was wrong by morning. Rule 3, committed by the
+session that wrote Rule 3.)
+
+**Nine of ten brief deliverables complete**, counted against `brief.txt` itself rather than a
+summary of it: prototype, orchestration code, corpus, sample outputs, README, architecture note,
+assumptions & limitations, evaluation summary, screenshots. **Missing: sample test cases — one
+item.** Feature freeze 21 Aug; everything after it is prose.
 
 ### The per-vendor loop
 ```
@@ -605,17 +697,19 @@ git commit -m "<what this vendor taught>"   # the finding, not "add <slug>.json"
 
 ### Remaining build — REPLANNED 19 Aug, evening
 
-**Position: day 12 of 20. Eight of ten brief deliverables complete. 8 days to the 27 Aug target.**
-The 19 Aug plan expected `export.py`, the orchestrator and two UI tabs to take until 20 Aug. All
-three are done and committed, plus four defects. **Feature freeze holds at 21 Aug; everything from
-here is prose, and prose is where roughly half the marks live.**
+**Position: day 13 of 20. NINE of ten brief deliverables complete. 7 days to the 27 Aug target,
+9 to the 29 Aug deadline.** The 19 Aug plan expected `export.py`, the orchestrator and two UI tabs
+to take until 20 Aug; all three are done, committed and pushed, plus eight defects, plus the
+architecture note and README rewritten. **You are a day ahead of the plan, not behind it.** Feature
+freeze holds at 21 Aug; everything from here is prose, and prose is where roughly half the marks
+live.
 
 | Date | Day | Work |
 |---|---|---|
-| **19 Aug** | 12 | ✅ orchestrator + CLI + 9 tests · defects 40, 41, 42, 43 · **UI tabs 4 and 5** · 12 screenshots · `docs/confidence_rules.md` rewritten · this file rewritten. Two commits pushed (`6759ea6`, `68ff6ee`). **Left today: commit the document pass.** |
-| **20 Aug** | 13 | `docs/architecture.md` §3/§6/§10/§11 and the `README.md` submission section — both listed in §8 with the exact wording that is wrong. Then start **`docs/assumptions_limitations.md`**, which is the highest-value unwritten document: it carries the STILL OPEN list, the brief's "lower-cost alternatives" line, and the cache-exclusion consequence stated as a client instruction rather than an oversight. |
-| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. Finish `assumptions_limitations.md`. |
-| **22–24 Aug** | 15–17 | **`docs/test_cases.md`** and **`docs/code_walkthrough.md`**. Add defects 40–43 to `docs/evaluation.md` and re-read the rest of it against the final code rather than rewriting it. |
+| **19 Aug** | 12 | ✅ orchestrator + CLI · defects 40–47 · **UI tabs 4 and 5** · 12 screenshots · **`assumptions_limitations.md` written** · the brief-PDF compliance audit (§12) · `confidence_rules.md`, `architecture.md`, `README.md` and this file rewritten. **Four commits pushed** (`6759ea6`, `68ff6ee`, `537074f`, `07228a1`). The audit pass — `app.py`, `src/export.py`, the four untracked documents — is still uncommitted. |
+| **20 Aug** | 13 | **① COMMIT AND PUSH FIRST** — four untracked files exist on one laptop only. **② The one-page executive summary at the top of `docs/evaluation.md`**, and the three stale claims inside it that the summary would otherwise contradict: §0 *"a sixth is open"*, §4.3 *"the most important open defect"*, §5 *"thirty-seven defects"*. All three were closed by defect 42 and the 19 Aug audit. **③ Start `docs/test_cases.md` — the last outstanding brief deliverable.** `architecture.md` §3/§6/§10/§11 and the README submission section are **DONE** in `07228a1`; this row used to assign them and was wrong. |
+| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. Finish `docs/test_cases.md`. Click the research-focus filter by hand in a real browser — the last unverified piece of behaviour in the project. |
+| **22–24 Aug** | 15–17 | Add defects 40–47 to `docs/evaluation.md` and re-read the rest of it against the final code rather than rewriting it. Then `docs/code_walkthrough.md` **if the clock allows** — it is not a brief deliverable (see the outstanding list above) and it is the first thing to drop. |
 | **25 Aug** | 18 | **Fresh-clone test.** Delete the venv, follow the README exactly, confirm it runs first try — and confirm `python tools/run_workflow.py` works in a clone with no cache, because that is what a reviewer does first. Remove `_to_delete/`. Package per §1.1 item 3 — structured corpus + code + source manifest, **HTML cache EXCLUDED** — then unpack the archive somewhere clean and confirm nothing in it is a verbatim third-party page. |
 | **26 Aug** | 19 | Buffer. Use it for whatever slipped, or for the optional LLM summarisation toggle **only if everything else is finished** (§1.1 item 1 — must work with no API key, must link back to evidence). |
 | **27 Aug** | 20 | **Submit.** Email projects@firstquadrantlabs.com and upload to the LMS. 28–29 Aug is buffer, not schedule. |
@@ -642,23 +736,23 @@ sentence when the reader can see the corpus is dated.
 Recorded honestly rather than quietly patched, because a document that describes behaviour the
 code does not have is worse than no document.
 
-- **`docs/architecture.md` §10 claims "JavaScript rendering is unnecessary, not merely excluded".**
-  **False.** True for Statuspage-hosted status pages; false for Atlassian's marketing pages,
-  Postman's privacy policy and docs, JetBrains' pricing and docs, and Linear's docs. Rewrite as:
-  *rendering is excluded by scope, and the cost of that exclusion is measured and reported.*
-- **`docs/architecture.md` §11** asserts GitHub's *"GitHub's API stays secure with ISO, SOC 2, and
-  GDPR"* scores **High**. It was false when written and is true now, for a reason worth telling:
-  the sentence is a bare `<h2>` with no paragraph under it, so it scored `heading_only` → Medium,
-  ranked 9th of 9 and never reached the brief at all — until defect 28 made scoring and ranking
-  ask "is this a sentence?" instead of "which tag was it in". **Rewrite the paragraph around what
-  actually happened.** A claim that was accidentally right is worth less than a defect explained.
-- **`docs/architecture.md` §3** says "94 offline tests" and "43 seed URLs". It is now
-  **150 tests**; recount the seeds.
-- **`docs/architecture.md` §6** marks Agent 3 "NOT BUILT YET". It is built, and so is
-  `src/orchestrator.py`, which §6 does not mention at all. Describe the shared predicate module,
-  the three reporting axes, and the orchestrator's three modes — the last of these is how the
-  client's "do not ship the cache" and "demonstrate offline replay" instructions are reconciled,
-  which is an architecture decision, not a UI detail.
+- ~~**`docs/architecture.md` §10 claims "JavaScript rendering is unnecessary, not merely excluded".**~~
+  **CLOSED 19 Aug in `07228a1`.** Verified by reading the file, not the commit message: §10 now
+  states the narrower claim — *"no-JavaScript costs nothing on trust, legal and status pages, and
+  costs everything on modern marketing pages… it is a trade, not a free choice"* — and carries the
+  Atlassian measurements (52 characters from 898 KB; 66 from 1.21 MB).
+- ~~**`docs/architecture.md` §11** asserts GitHub's *"GitHub's API stays secure with ISO, SOC 2, and
+  GDPR"* scores **High** without explaining why that became true.~~ **CLOSED 19 Aug in `07228a1`.**
+  §11 now tells the mechanism — bare `<h2>`, empty quote, `heading_only`, ranked 9th of 9, the value
+  falling through to GitHub's terms of service, and the three changes it took to fix — and closes
+  with *"a claim that turns out to be accidentally right is worth less than a defect explained"*.
+- ~~**`docs/architecture.md` §3** says "94 offline tests" and "43 seed URLs".~~ **CLOSED 19 Aug.**
+  Corrected to 152 tests and 44 seeds, and §3 now documents the orchestrator's three modes.
+- ~~**`docs/architecture.md` §6** marks Agent 3 "NOT BUILT YET".~~ **CLOSED 19 Aug in `07228a1`.**
+  The string "NOT BUILT" no longer appears in the file. §6 now carries *"Every judgement lives in
+  one module, imported twice"*, *"Three axes, because one number hid the thing that mattered"*,
+  *"What it flags"* and *"What it does not flag, and why that is reported rather than hidden"*;
+  §3 documents the orchestrator's three modes.
 - **`config/settings.yaml`** — worked examples CORRECTED 18 Aug (defect 33). Nothing owed.
 - **`docs/confidence_rules.md` — CORRECTED 18 Aug** for defects 27, 28 and 36, and its worked
   examples re-derived from the corpus. Three of its six rows had gone stale exactly as
@@ -673,9 +767,11 @@ code does not have is worse than no document.
   **CLOSED 19 Aug.** Windows confirmed 134, then 143, then **150**. The commit message was
   accurate; the concern was still worth raising, because a number nobody checked on the target
   platform is exactly the class of claim this project keeps finding wrong.
-- **`README.md` is now wrong about the submission** — it describes shipping the cache for offline
-  replay. §1.1 item 3 withdrew that. It must instead explain **how a reviewer re-collects the
-  public sources**, and state that a fresh clone cannot replay until they do.
+- ~~**`README.md` is now wrong about the submission**.~~ **CLOSED 19 Aug in `07228a1`.** It opens
+  with *"the submitted archive runs offline, with one caveat"*, states the 22 MB cache is excluded
+  at the client's instruction, carries a **Re-collecting the public sources** section, and names the
+  mode that works without a cache. Its deliverables table is the one place still worth re-reading
+  before submission — it lists eight rows, not the brief's ten.
 - ~~**`docs/confidence_rules.md` §"Client guidance"** must converge with the code.~~
   **CLOSED 19 Aug.** They had NOT converged: the box claimed the change made Postman's 10/10 High
   impossible, and it had not (defect 42). The file now carries that correction in its own words,
@@ -689,9 +785,21 @@ code does not have is worse than no document.
   keep adding to it — it is the single most persuasive page in the repo, because it demonstrates
   the discipline the deliverable is arguing for rather than asserting it.
 
-- **NEW, 19 Aug: `docs/evaluation.md` does not yet contain defects 40–43**, the three-axis table,
-  or the offline-replay reconciliation. Everything else in it was fact-checked by script on 18 Aug
-  and should be re-read rather than rewritten.
+- **`docs/evaluation.md` carries three claims that defect 42 made false**, all verified against
+  `data/briefs/postman_brief.json` on 20 Aug rather than against a document:
+  **§0** ends *"A sixth is open and belongs to Agent 3: a vendor can still score 10/10 High while
+  half its primary documents were never read"* — closed; Postman now reads `evidence_score` 10,
+  `confidence_band` **Medium**, `coverage_verified` **2** of **5**, and a `SCORE OVERSTATES
+  COVERAGE` review flag naming all three unread fields.
+  **§4.3** still says *"Postman and Sentry receive identical scores and identical confidence
+  labels"* and calls this *"the most important open defect"* — they are no longer identical, and it
+  is no longer open.
+  **§5** says *"Thirty-seven defects"*; the count is now **47**.
+  The one-page executive summary added 20 Aug states the current position. Everything else in the
+  file was fact-checked by script on 18 Aug and should be re-read rather than rewritten.
+- **`docs/evaluation.md` does not yet contain defects 40–47** individually, nor the offline-replay
+  reconciliation. Lower priority than the three corrections above: a wrong sentence outranks a
+  missing one.
 
 ---
 
@@ -701,7 +809,7 @@ code does not have is worse than no document.
 cd "C:\Users\Moushmi Rao\GEN-AGENTIC_AI\Projects\Research Project_1\vendor-dd-prototype"
 .venv\Scripts\activate
 pip install -r requirements.txt
-pytest -q                                    # expect 150 passed. Re-run after every
+pytest -q                                    # expect 152 passed. Re-run after every
                                              # extraction, not just after code changes
 python tools/run_workflow.py --mode replay   # 1->2->3 over every vendor, offline from the cache
 python tools/verify_corpus.py                # expect 0 FAIL before any commit
@@ -757,14 +865,14 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 | Only public, official/credible sources | Met | seeds are official vendor domains; robots honoured |
 | Source types: product, pricing, security/trust, privacy, terms, docs, integrations, status | Met | 6–8 per vendor collected. `trust` became a first-class authoritative type on 18 Aug because the brief pairs it with `security` in one bullet |
 | Structured store with vendor name, source URL, source type, page title, collected text, date collected, tags, evidence note | Met — `SourceRecord` maps 1:1 | `src/schema.py` |
-| Input: vendor name/list, collected URLs or pre-prepared source file, optional category filter | Partial — **optional research-category filter not implemented** | `app.py` |
+| Input: vendor name/list, collected URLs or pre-prepared source file, optional category filter | **Met 19 Aug.** The filter existed as a control whose return value was DISCARDED for nine days — a dropdown that changed nothing under a help line promising it narrowed extraction. Now wired as a reading lens over tabs 3 and 4: `FOCUS_TO_FIELDS` maps the brief's five category words to field names; nothing is discarded, so clearing it restores everything with no re-run | `app.py` |
 | Output: overview, category, key sources, security, privacy, support, integrations, pricing, missing/unclear, review flags, evidence snippets, confidence | **Met** — populated by Agent 3, exported in three formats | `src/agent3_review.py`, `src/export.py` |
 | Streamlit: select vendor · view sources · run or replay · see agent steps · inspect evidence · view brief · export JSON/CSV/Markdown | **7 of 7, built 19 Aug.** Rendered and screenshotted in headless Chromium, not only AppTest | `app.py`, `src/export.py` |
 | Runs locally on a standard laptop, low cost, no heavy infrastructure | Met | no LLM, no GPU, no paid service |
 | Missing or unclear information flagged instead of guessed | **Met end to end.** Agent 3 raises 3–8 flags per vendor and separates "not found" from "could not be evaluated" per field | caveats + `verify_corpus` + `agent3_review`. `PARTIAL` became reachable on 18 Aug (defect 36) |
 | Confidence level: High / Medium / Low | **Met on two axes.** `docs/confidence_rules.md` rewritten 19 Aug for defects 42 and 43 and now documents both | `docs/confidence_rules.md` §Step 6 |
 | Lower-cost alternatives (Ollama, local models, rule-based, template summaries) mentioned and supported | **Rule-based is built; the alternatives are not yet written down anywhere.** The brief asks that they be *mentioned* | owed by `assumptions_limitations.md` |
-| Deliverables: prototype · orchestration code · corpus · ≥5 sample outputs · README · architecture note · assumptions & limitations · test cases · evaluation summary · screenshots | **5 of 10 complete.** Done: corpus, sample outputs (7 briefs × 3 formats), evaluation summary, README (needs its submission section rewritten), architecture note (draft, 4 wrong sections). Missing: orchestration code, assumptions & limitations, test cases, screenshots; prototype partial | see §7 |
+| Deliverables: prototype · orchestration code · corpus · ≥5 sample outputs · README · architecture note · assumptions & limitations · test cases · evaluation summary · screenshots | **9 of 10 complete** (recounted 20 Aug against `brief.txt` verbatim). Done: prototype, orchestration code, corpus, sample outputs (7 briefs × 3 formats), README, architecture note, assumptions & limitations, evaluation summary, screenshots. **Missing: sample test queries or test cases — one item.** `code_walkthrough.md` is NOT on the brief's list and must not be counted against the ten | see §7 |
 | Zip or repository, all code, data, README, screenshots, sample outputs | Planned — **packaging rewritten by client instruction** | structured corpus + code + source manifest; HTML cache EXCLUDED; README explains re-collection (§1.1 item 3) |
 | Queries only via projects@firstquadrantlabs.com, consolidated | **Sent and answered 18 Aug** | §1.1 |
 
@@ -787,3 +895,56 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 | Offline replay demonstrated in the submission | **BUILT AND RECONCILED 19 Aug.** `orchestrator` names three modes; `review` needs neither network nor cache and is what the submitted archive runs. Verified: with `data/cache/` deleted, `tools/run_workflow.py` still produces every brief | `src/orchestrator.py`, README |
 | UI shows Source → Evidence → Field → Confidence → Flag → Brief | **BUILT 19 Aug.** Labelled literally, one numbered link per field, in tab 4 | `app.py`, screenshots `04_vendor_brief.png` / `tab4_chain.png` |
 | Cross-vendor comparison table in the evaluation | **Met** | `docs/evaluation.md` §2 |
+
+---
+
+## 12. THE 19 AUGUST COMPLIANCE AUDIT — method and verdict
+
+Recorded because the METHOD is reusable and the result is the thing a marker will check.
+
+### What was done
+`Project_Brief_1.pdf` was extracted to text and read line by line against the repository — every
+requirement in *Expected Input*, *structured format fields*, *Expected Output*, *Streamlit
+interface*, *Deliverables*, *Scope Boundaries*, *Success Criteria* and the *suggested stack*. Every
+verdict was reached by running code or reading data. **No verdict rests on a document's description
+of itself**, which matters in a repository this heavily documented: the docs are the thing most
+likely to be believed and least likely to be true.
+
+**This should have happened on day 2.** Until 19 Aug every compliance check was made against a
+summary of the brief, not the brief. Four requirements had been quietly unmet for over a week.
+
+### Verdict
+
+| Group | Result |
+|---|---|
+| **Scope Boundaries (7)** | **NONE VIOLATED.** The collection layer is the strongest part of the project: RFC 9309 robots semantics, honest User-Agent, 2s per-domain delay, 10-page/20-request caps, and **zero credential-handling code anywhere in `src/`** |
+| **Success Criteria (9)** | 8 clean before the fixes; the ninth — *"usable for a non-technical reviewer"* — was compromised by defects 44 and 45 and is now clean |
+| **Expected Input (3)** | Was 2 of 3 (defect 44). Now 3 of 3 |
+| **Corpus fields (8)** | 8 of 8 present; `tags` was thin and is answered by `evidence_tags` in `corpus.csv` |
+| **Expected Output (12)** | JSON and Markdown carried all 12 throughout. CSV carried 6 (defect 46). Now all three do |
+| **Streamlit capabilities (7)** | Was 5 clean (defects 44, 45). Now 7 |
+| **Deliverables (10)** | **9 complete.** Missing: `test_cases.md` — one item. *Corrected 20 Aug: this row originally read "8 complete, missing `test_cases.md` and `code_walkthrough.md`". `code_walkthrough.md` appears nowhere in `brief.txt`; it is our own idea, counted against a list it was never on.* |
+| **Suggested stack** | Every decline documented in `docs/assumptions_limitations.md` §6 — SQLite, LangGraph/CrewAI, hosted LLM, Playwright/Selenium, and (added 19 Aug) sentence-transformers/FAISS/Chroma |
+
+### The audit itself imported an error, and that is the more useful finding
+
+The 19 August audit was built to stop compliance being judged against a summary of the brief. It
+still counted `code_walkthrough.md` — an item we invented — as one of the brief's ten deliverables,
+and reported 8 of 10 where the brief's own list gives **9 of 10**. Nothing was missing that we
+thought was missing; we had added a requirement to the client's list and then failed it.
+
+**Reading the source document is not the same as counting from it.** The audit re-read the brief
+and then scored against a remembered list. That is the identical failure one level up — and it
+cost a day of perceived debt in the last week of a twenty-day project.
+
+### The pattern worth quoting in the evaluation
+**Every one of the four gaps was on the client-facing surface, and none was in the engineering.**
+A dead dropdown, a tab denying a working agent existed, an export stripping its own disclaimer, and
+a config key advertising a feature that was never built. The code was more honest than the interface
+describing it — which is the exact inversion of what this project spent twelve days warning about,
+committed by the project itself.
+
+### And one finding was false
+See §5. `screenshots/` was reported empty by an audit running against a **container copy** of the
+repo. All twelve are committed. **Findings about code content transfer between a working tree and a
+copy; findings about a file being absent do not.**
