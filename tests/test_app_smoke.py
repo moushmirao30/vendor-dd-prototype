@@ -125,3 +125,95 @@ def test_app_calls_agent1_with_arguments_it_actually_accepts():
             assert name in params, f"app.py passes {name}= which collect_for_vendor lacks"
 
     assert "max_requests" in params and "max_pages" in params
+
+
+# ---------------------------------------------------------------------------
+# TABS 4 AND 5 — added 18 Aug 2026 when they stopped being stubs
+#
+# The client's guidance of 18 Aug requires the interface to show one chain:
+#   Source -> Extracted Evidence -> Structured Field -> Confidence
+#        -> Review Flag -> Final Brief
+# A requirement stated in a client email and satisfied by code nobody tested is
+# one refactor away from silently disappearing — which is defect 34 exactly, and
+# defect 34 was a fix that shipped and then executed zero times for a day.
+# ---------------------------------------------------------------------------
+
+CHAIN_LINKS = ["1 · Source", "2 · Extracted evidence", "3 · Structured field",
+               "4 · Confidence", "5 · Review flag", "6 · Final brief"]
+
+
+def _all_text(at) -> str:
+    """Every string the app handed Streamlit, whatever element type carried it."""
+    parts = []
+    for group in (at.markdown, at.caption, at.warning, at.info, at.success,
+                  at.subheader, at.metric):
+        for el in group:
+            v = getattr(el, "value", None) or getattr(el, "label", None)
+            if isinstance(v, str):
+                parts.append(v)
+    return " ".join(parts)
+
+
+def test_the_brief_tab_shows_the_client_s_six_link_chain():
+    at = AppTest.from_file(APP, default_timeout=90).run()
+    text = _all_text(at)
+    for link in CHAIN_LINKS:
+        assert link in text, (
+            f"the brief tab must label '{link}' — the client asked for the whole "
+            f"chain from source to final brief, in writing, on 18 Aug 2026")
+
+
+def test_the_brief_tab_never_shows_one_axis_alone():
+    """
+    Defect 42. A header reading only "10/10 High" is how Postman came to be
+    indistinguishable from Sentry while resting on pages nobody could read.
+    Evidence, confidence and coverage are drawn together or not at all.
+    """
+    at = AppTest.from_file(APP, default_timeout=90).run()
+    labels = {m.label for m in at.metric}
+    assert {"Evidence", "Confidence", "Coverage"} <= labels, (
+        f"all three axes must be on screen together; found {labels}")
+
+
+def test_agent_3_is_wired_through_the_orchestrator_not_around_it():
+    """
+    The wiring between agents lived in four places before src/orchestrator.py.
+    app.py is the file that gets demonstrated, so it is the worst possible place
+    for a fifth copy. Assert the import, not the behaviour: this is a structural
+    rule, and a structural rule is cheapest to check structurally.
+    """
+    import ast
+
+    source = Path(APP).read_text(encoding="utf-8")
+    assert "from src.orchestrator import" in source
+    assert "run_workflow(" in source
+
+    # PARSED, NOT GREPPED. The first version of this test searched the raw text
+    # for "review_vendor" and failed on the COMMENT that explains why the call is
+    # absent — a test that cannot tell code from prose about code. Walking the
+    # AST asks the only question that matters: is the function actually called?
+    called = {
+        node.func.id if isinstance(node.func, ast.Name) else
+        getattr(node.func, "attr", "")
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.Call)
+    }
+    assert "review_vendor" not in called, (
+        "app.py must not call Agent 3 directly — go through run_workflow so every "
+        "handoff between agents has exactly one owner")
+    assert "extract_for_vendor" in called, (
+        "Agents 1 and 2 are still called directly on purpose: each has its own "
+        "button and its own spinner, and a reviewer is meant to watch them run "
+        "one at a time. If this ever fails, the split was changed — decide "
+        "deliberately rather than letting it drift")
+
+
+def test_the_export_tab_builds_its_csv_from_the_shared_row_builder():
+    """
+    The file a reviewer downloads from the screen and the file in data/exports/
+    must be the same bytes. Two builders would drift, which is defects 15, 36,
+    41 and 42 in this project already.
+    """
+    source = Path(APP).read_text(encoding="utf-8")
+    assert "brief_to_csv" in source, "the download button must reuse src/export.py"
+    assert "csv.writer" not in source, "app.py must not build a CSV of its own"
