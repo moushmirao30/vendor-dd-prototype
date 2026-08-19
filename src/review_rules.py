@@ -103,17 +103,73 @@ def field_coverage(fields: list[dict], core_field_names: list[str]) -> dict:
 def vendor_score(fields: list[dict], core_field_names: list[str],
                  field_score: dict, thresholds: dict) -> dict:
     """
-    The 0-10 core score and its band, exactly as docs/confidence_rules.md states.
+    The 0-10 EVIDENCE score and its band — how much quotable material was found.
 
-    Returned with the coverage figure attached, deliberately: the two are only
-    safe to read together. `verify_corpus` and Agent 3 both print them as a pair
-    so that no caller can accidentally show the score alone.
+    DEFECT 42, 18 Aug 2026: THIS IS NOT THE CLIENT'S CONFIDENCE MEASURE, AND IT
+    USED TO BE CALLED ONE.
+
+    It sums `f["confidence"]`, which is Agent 2's extraction axis — the sentence
+    measure the client asked us on 18 Aug not to base confidence on. The two-axis
+    change that day landed on the FIELD CARD and never reached the vendor header,
+    so one brief carried both answers at once:
+
+        header:  Confidence 10/10 -> High        (this function)
+        fields:  confidence: Medium              (the client's rule)
+
+    and HANDOFF's claim that "Postman can no longer tie Sentry" was false —
+    both still read 10/10 High while Postman's coverage was 2/5 and Sentry's 5/5.
+
+    The function is unchanged and correct at what it does. Only the NAME was
+    wrong, and a number named after a question it does not answer is how defects
+    15, 36 and 41 all started. Callers now report it as `evidence_score`, beside
+    `vendor_confidence` and coverage — three numbers, three questions.
+
+    Coverage still travels with it, for the reason it always did: neither is safe
+    to read alone.
     """
     total = sum(field_score.get(f["confidence"], 0)
                 for f in fields if f["name"] in core_field_names)
     band = ("High" if total >= thresholds["High"]
             else "Medium" if total >= thresholds["Medium"] else "Low")
     return {"score": total, "band": band, "coverage": field_coverage(fields, core_field_names)}
+
+
+def vendor_confidence(fields: list[dict], core_field_names: list[str],
+                      dictionary: dict, unusable_types: list[str]) -> dict:
+    """
+    The vendor-level view of the CLIENT'S confidence axis. Defect 42's other half.
+
+    WHY THIS RETURNS COUNTS AND NOT A 0-10 SCORE
+    --------------------------------------------
+    Compressing three levels into a score needs two thresholds, and we would be
+    choosing them while looking at our own seven vendors. Any cut-off that made
+    the table read well would be fitted to the answer — the same mistake the
+    locked decisions already forbid for the field dictionary ("avoids over-fitting
+    to one vendor"). A count needs no threshold and cannot be tuned.
+
+    The counts are also the figure that does the work the client's rule was for.
+    Measured on the real corpus, 18 Aug: Sentry, GitLab and GitHub each have TWO
+    core fields at High; Postman and Atlassian have ZERO. The 0-10 evidence score
+    calls all five of those vendors 10/10 High. This is the separation that was
+    missing.
+
+    `band` is the weakest link — a first-pass brief is only as trustworthy as the
+    weakest core field a reviewer will act on. That is a stated principle, not a
+    tuned cut-off, which is the whole point. Read it as a floor, and read the
+    counts for the shape.
+    """
+    core = [f for f in fields if f["name"] in core_field_names]
+    levels = [confidence(f, dictionary, unusable_types)[0] for f in core]
+    counts = {
+        "High": levels.count("High"),
+        "Medium": levels.count("Medium"),
+        "Low": levels.count("Low") + levels.count("NOT_FOUND"),
+    }
+    band = ("Low" if counts["Low"] else
+            "Medium" if counts["Medium"] else
+            "High" if counts["High"] else "NOT_FOUND")
+    return {"counts": counts, "band": band, "total": len(core),
+            "high": counts["High"]}
 
 
 # ---------------------------------------------------------------------------
@@ -340,6 +396,23 @@ def confidence(field: dict, dictionary: dict, unusable_types: list[str]) -> tupl
     """
     ev = real_evidence(field)
     if not ev:
+        # DEFECT 40, 18 Aug 2026. The old single line said "nothing matched on
+        # any page we could read" for EVERY empty field — which asserts the pages
+        # were read. Delete the HTML cache, as the submitted archive does at the
+        # client's request, and that sentence appeared under all eight fields of
+        # all seven vendors about pages nobody opened.
+        #
+        # When a caveat is attached, the pages were NOT read, and the caveat
+        # already says why. Leading with the client's own phrase keeps their
+        # two-way distinction visible in the brief itself (guidance of 18 Aug,
+        # item 2): information NOT FOUND on the vendor's public sources, versus
+        # information that COULD NOT BE EVALUATED because the page could not be
+        # reached or reliably extracted.
+        notes = caveats(field)
+        if notes:
+            return "NOT_FOUND", ("could not be evaluated — "
+                                 + notes[0].get("heading", "a collection "
+                                                "limitation applies"))
         return "NOT_FOUND", "nothing matched on any page we could read"
 
     quality = extraction_quality(field)

@@ -1,7 +1,7 @@
 {
   "vendor_name": "Atlassian",
   "vendor_slug": "atlassian",
-  "generated_on": "2026-08-18",
+  "generated_on": "2026-08-19",
   "vendor_overview": "Jira | Project Management for the AI Era | Atlassian",
   "product_category": "developer productivity tools",
   "key_sources": [
@@ -272,17 +272,7 @@
       "status": "NOT_FOUND",
       "value": "",
       "confidence": "NOT_FOUND",
-      "evidence": [
-        {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "2 page(s) for this vendor (product, pricing) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
-          "matched_terms": [],
-          "match_location": "tool_limitation",
-          "source_url": "",
-          "source_type": "-",
-          "evidence_of": 0
-        }
-      ],
+      "evidence": [],
       "extraction_quality": "NOT_FOUND",
       "confidence_reason": "nothing matched on any page we could read"
     },
@@ -292,17 +282,7 @@
       "status": "NOT_FOUND",
       "value": "",
       "confidence": "NOT_FOUND",
-      "evidence": [
-        {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "2 page(s) for this vendor (product, pricing) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
-          "matched_terms": [],
-          "match_location": "tool_limitation",
-          "source_url": "",
-          "source_type": "-",
-          "evidence_of": 0
-        }
-      ],
+      "evidence": [],
       "extraction_quality": "NOT_FOUND",
       "confidence_reason": "nothing matched on any page we could read"
     },
@@ -369,8 +349,14 @@
     "Pricing or plan availability: evidence came only from privacy, never from pricing. The match is real; the finding is weak.",
     "the vendor overview is the product page's title. That page's BODY could not be read (JavaScript-rendered), so the title is all we have from it — the description is the vendor's own, but nothing else on that page was searched."
   ],
-  "overall_confidence": "High",
-  "confidence_score": 10,
+  "evidence_band": "High",
+  "evidence_score": 10,
+  "confidence_band": "Medium",
+  "confidence_counts": {
+    "High": 0,
+    "Medium": 5,
+    "Low": 0
+  },
   "coverage_verified": 2,
   "coverage_total": 5,
   "coverage_caveated": [

@@ -54,7 +54,8 @@ from src.parse import term_in, visible_text                          # noqa: E40
 # wearing a third hat. One definition, two callers.
 from src.review_rules import (claim_not_in_matched_sentence,        # noqa: E402
                               gated_evidence, off_home_evidence,
-                              real_evidence, vendor_score)
+                              real_evidence, unread_home_page, vendor_confidence,
+                              vendor_score)
 
 CORPUS = ROOT / "data" / "corpus"
 
@@ -268,6 +269,9 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
         return
 
     unusable = [r["source_type"] for r in records if r.get("content_usable") is False]
+    # Pages Agent 2 could actually search. Zero of them is a different world from
+    # "some page failed" — see the defect-41 note in the NOT_FOUND checks below.
+    usable_pages = [r["source_type"] for r in records if r.get("content_usable") is not False]
     scores = settings["confidence"]["field_score"]
     min_body_high = settings["extraction"]["min_body_chars_for_high"]
     core = settings["confidence"]["core_fields"]
@@ -334,16 +338,35 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
                      f"{name}: status {f['status']} with no evidence behind it")
 
         # --- NOT_FOUND must be honest about which kind it is (defect 23) ----
+        #
+        # DEFECT 41, 18 Aug 2026. Both tests below used the vendor-wide
+        # `unusable` list: ANY unreadable page anywhere demanded a hedge on EVERY
+        # empty field. That is the pre-defect-39 rule, still alive here — a THIRD
+        # copy of a rule that `src/review_rules.py` exists to hold exactly once.
+        # It made this checker fail the very briefs Agent 3 was writing correctly:
+        # JetBrains' data-residency page reads cleanly and JetBrains genuinely
+        # does not publish it, so hedging it hides a real finding behind our own
+        # excuse — the mirror image of defect 23, not a second helping of it.
+        #
+        # The test is the field's OWN home page, via the shared predicate rather
+        # than a fourth hand-written copy of it. `not usable_pages` keeps the
+        # defect-23 half honest: when NOTHING was readable, no field has a
+        # readable home page, `unread_home_page` is empty for all of them, and an
+        # unhedged NOT_FOUND would be a clean negative about a site we never read
+        # a word of.
         if f["status"] == "NOT_FOUND":
             hedged = any(e.get("match_location") == "tool_limitation" for e in ev)
-            if unusable and not hedged:
+            blocked = unread_home_page(f, unusable, field_dictionary) or (
+                unusable if not usable_pages else [])
+            if blocked and not hedged:
                 rep.fail("unhedged-not-found",
-                         f"{name}: reported as a clean negative while "
-                         f"{len(unusable)} page(s) were unreadable")
-            if not unusable and hedged:
+                         f"{name}: reported as a clean negative while its own "
+                         f"{', '.join(blocked)} page(s) could not be read")
+            if not blocked and hedged:
                 rep.fail("over-hedged",
-                         f"{name}: hedged although every page was readable — this is "
-                         f"a genuine finding and must not be softened")
+                         f"{name}: hedged although the pages this fact belongs on "
+                         f"were readable — this is a genuine finding about the "
+                         f"vendor and must not be softened")
 
         # --- FOUND, but its primary document was never read (defect 24) -----
         home_types = field_dictionary.get(name, {}).get("preferred_source_types", [])
@@ -401,19 +424,32 @@ def check_extraction(rep: Report, fields: list[dict], records: list[dict],
     total, band = scored["score"], scored["band"]
     cov = scored["coverage"]
     core_caveated = cov["caveated"]
-    rep.info("vendor-score",
-             f"{total}/10 core → {band}  "
-             f"(coverage {cov['verified']}/{cov['core_total']} core fields verified "
-             f"without a caveat)")
+    # DEFECT 42, closed 18 Aug 2026. The line above used to print this figure as
+    # "vendor-score … → High" with no other axis beside it, and Agent 3 shipped it
+    # into the brief header under the word CONFIDENCE — while every field card
+    # below carried the client's confidence rule and disagreed. Postman and Sentry
+    # both read 10/10 High on coverage 2/5 and 5/5. Three numbers now, computed
+    # from the same predicates Agent 3 uses, so the checker and the brief cannot
+    # drift apart.
+    vconf = vendor_confidence(fields, core, field_dictionary, unusable)
+    rep.info("evidence-score",
+             f"{total}/10 core → {band}   (how much quotable evidence was found)")
+    rep.info("vendor-confidence",
+             f"{vconf['band']} — {vconf['counts']['High']} of {vconf['total']} core "
+             f"field(s) High, {vconf['counts']['Medium']} Medium, "
+             f"{vconf['counts']['Low']} Low   (the client's definition; weakest link)")
+    rep.info("coverage",
+             f"{cov['verified']}/{cov['core_total']} core fields verified without a "
+             f"caveat   (how much could actually be checked)")
 
     if core_caveated and band == "High":
         rep.warn("score-without-coverage",
-                 f"scored {total}/10 → High while {len(core_caveated)} core "
+                 f"evidence {total}/10 → High while {len(core_caveated)} core "
                  f"field(s) ({', '.join(sorted(core_caveated))}) rest on a page "
-                 f"nobody could read. The score measures what was found, not "
-                 f"what was checked — do not compare this vendor against a "
-                 f"fully-read one on the number alone. Agent 3 owes a coverage-"
-                 f"aware score here")
+                 f"nobody could read. The evidence score measures what was found, "
+                 f"not what was checked — do not compare this vendor against a "
+                 f"fully-read one on that number alone. Read the confidence and "
+                 f"coverage rows above it")
 
     found = sum(1 for f in fields if f["status"] == "FOUND")
     partial = sum(1 for f in fields if f["status"] == "PARTIAL")

@@ -1,6 +1,6 @@
 {
   "vendor_slug": "jetbrains",
-  "ran_on": "2026-08-13T21:34:50",
+  "ran_on": "2026-08-19T18:41:48",
   "fields": [
     {
       "name": "security_trust",
@@ -103,8 +103,8 @@
       "confidence": "NOT_FOUND",
       "evidence": [
         {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "heading": "NOT_FOUND may be our limit — the docs page could not be read",
+          "snippet": "This field's own page type (docs) was collected but contained no readable text — almost certainly JavaScript-rendered. Nothing was searched where this fact belongs, so this NOT_FOUND is about our reach, not the vendor's silence. Verify by hand before recording it as not published.",
           "matched_terms": [],
           "match_location": "tool_limitation",
           "source_url": "",
@@ -121,8 +121,8 @@
       "confidence": "NOT_FOUND",
       "evidence": [
         {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "heading": "NOT_FOUND may be our limit — the docs page could not be read",
+          "snippet": "This field's own page type (docs) was collected but contained no readable text — almost certainly JavaScript-rendered. Nothing was searched where this fact belongs, so this NOT_FOUND is about our reach, not the vendor's silence. Verify by hand before recording it as not published.",
           "matched_terms": [],
           "match_location": "tool_limitation",
           "source_url": "",
@@ -166,17 +166,7 @@
       "status": "NOT_FOUND",
       "value": "",
       "confidence": "NOT_FOUND",
-      "evidence": [
-        {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
-          "matched_terms": [],
-          "match_location": "tool_limitation",
-          "source_url": "",
-          "source_type": "-",
-          "evidence_of": 0
-        }
-      ]
+      "evidence": []
     },
     {
       "name": "encryption",
@@ -206,8 +196,8 @@
       "confidence": "NOT_FOUND",
       "evidence": [
         {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "3 page(s) for this vendor (pricing, docs, status) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
+          "heading": "NOT_FOUND may be our limit — the status page could not be read",
+          "snippet": "This field's own page type (status) was collected but contained no readable text — almost certainly JavaScript-rendered. Nothing was searched where this fact belongs, so this NOT_FOUND is about our reach, not the vendor's silence. Verify by hand before recording it as not published.",
           "matched_terms": [],
           "match_location": "tool_limitation",
           "source_url": "",

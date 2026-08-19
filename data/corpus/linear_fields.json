@@ -1,6 +1,6 @@
 {
   "vendor_slug": "linear",
-  "ran_on": "2026-08-13T21:31:33",
+  "ran_on": "2026-08-19T18:26:26",
   "fields": [
     {
       "name": "security_trust",
@@ -263,17 +263,7 @@
       "status": "NOT_FOUND",
       "value": "",
       "confidence": "NOT_FOUND",
-      "evidence": [
-        {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "1 page(s) for this vendor (docs) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
-          "matched_terms": [],
-          "match_location": "tool_limitation",
-          "source_url": "",
-          "source_type": "-",
-          "evidence_of": 0
-        }
-      ]
+      "evidence": []
     },
     {
       "name": "uptime_reliability",
@@ -281,17 +271,7 @@
       "status": "NOT_FOUND",
       "value": "",
       "confidence": "NOT_FOUND",
-      "evidence": [
-        {
-          "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-          "snippet": "1 page(s) for this vendor (docs) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.",
-          "matched_terms": [],
-          "match_location": "tool_limitation",
-          "source_url": "",
-          "source_type": "-",
-          "evidence_of": 0
-        }
-      ]
+      "evidence": []
     }
   ],
   "steps": [

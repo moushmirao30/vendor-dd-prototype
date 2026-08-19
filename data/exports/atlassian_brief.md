@@ -6,11 +6,19 @@
 
 **Category:** developer productivity tools _(curated, not extracted)_
 
-**Generated:** 2026-08-18
+**Generated:** 2026-08-19
 
-## Confidence: 10/10 → High  ·  Coverage: 2/5 core fields verified
+## How to read this brief
 
-> **Read both numbers.** integrations_api, pricing_availability, support_documentation rest on pages that could not be read. The score counts what was found; it cannot count what was never looked at.
+| Measure | Value | What it answers |
+|---|---|---|
+| **Evidence** | 10/10 → High | how much quotable material was found |
+| **Confidence** | Medium — 0 of 5 core fields High, 5 Medium, 0 Low | how good that evidence is, on the client's definition |
+| **Coverage** | 2/5 core fields verified | how much we could actually check |
+
+> **Read all three.** A vendor can score 10/10 on evidence while most of its primary documents were never readable. Confidence is the WEAKEST core field, not an average — a first-pass brief is only as trustworthy as the weakest field a reviewer will act on.
+
+> integrations_api, pricing_availability, support_documentation rest on pages that could not be read. The evidence score counts what was found; it cannot count what was never looked at.
 
 ## Fields
 
@@ -75,13 +83,11 @@
 
 - **Status:** NOT_FOUND · **Confidence:** NOT_FOUND · **Extraction quality:** NOT_FOUND
 - **Why:** nothing matched on any page we could read
-- ⚠ *NOT_FOUND may be our limit, not the vendor's silence* — 2 page(s) for this vendor (product, pricing) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.
 
 ### Encryption practices
 
 - **Status:** NOT_FOUND · **Confidence:** NOT_FOUND · **Extraction quality:** NOT_FOUND
 - **Why:** nothing matched on any page we could read
-- ⚠ *NOT_FOUND may be our limit, not the vendor's silence* — 2 page(s) for this vendor (product, pricing) were collected but contained no readable text — almost certainly JavaScript-rendered. Verify this field by hand before recording it as not published.
 
 ### Uptime, SLA and reliability
 

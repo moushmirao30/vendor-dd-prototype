@@ -321,6 +321,17 @@ def extract_for_vendor(
     # --- pass 1: parse each page once ---------------------------------------
     pages: list[tuple[dict, list[Block]]] = []
     unusable: list[str] = []
+    # DEFECT 40, 18 Aug 2026. Pages Agent 1 collected and read successfully whose
+    # cached HTML is not on THIS machine. Tracked separately from `unusable`
+    # because the finding and the remedy are both different: an unusable page is
+    # a fact about the vendor's site that a human must go and read; an uncached
+    # page is a fact about our own archive, and the fix is to re-collect.
+    uncached: list[str] = []
+    # The date Agent 1 wrote this corpus, quoted back in the defect-40 caveat so
+    # a reviewer can see the pages WERE read once, on a stated day, and that only
+    # this copy of the archive lacks them.
+    collected_dates = sorted({r.get("date_collected", "") for r in records} - {""})
+    corpus_date = collected_dates[-1] if collected_dates else ""
     for record in records:
         # A PAGE THAT CARRIES NO WORDS IS NOT EVIDENCE OF ANYTHING (defect 23).
         #
@@ -343,12 +354,24 @@ def extract_for_vendor(
 
         html_path = resolve_html_path(record.get("raw_html_path", ""), root)
         if html_path is None:
+            # DEFECT 40. Until 18 Aug this recorded a step and moved on, and the
+            # step was the ONLY place it was recorded. Delete the HTML cache and
+            # every field of every vendor came back NOT_FOUND with no caveat,
+            # under the printed sentence "nothing matched on any page we could
+            # read" — about pages that were never opened. That is defect 23
+            # exactly, inside our own deliverable.
+            #
+            # It matters now because the client asked on 18 Aug that the 22 MB
+            # cache NOT be shipped. The archive a reviewer receives is therefore
+            # the precise configuration that produced the lie.
+            uncached.append(record.get("source_type", "?"))
             steps.append(ExtractionStep(
                 action="missing-html", field_name="-",
                 source_type=record.get("source_type", "?"),
                 detail=(f"cached HTML not found at "
                         f"{record.get('raw_html_path', '(no path recorded)')} — "
-                        "page skipped; re-run Agent 1 to refetch"),
+                        "page NOT searched; re-collect before reading any "
+                        "NOT_FOUND on this page as a statement about the vendor"),
             ))
             continue
 
@@ -427,9 +450,48 @@ def extract_for_vendor(
         home = spec.get("preferred_source_types", [])
         unread_home = [s for s in unusable if s in home]
         absent_home = [s for s in never_collected if s in home]
+        uncached_home = [s for s in uncached if s in home]
         caveats: list[dict] = []
 
-        if not kept and absent_home:
+        # DEFECT 40 — THIS BRANCH IS FIRST ON PURPOSE.
+        #
+        # It outranks every caveat below it because it is the only one that means
+        # "this run did not look at the page at all". The others describe pages we
+        # read and found wanting. A reviewer must not be told which page our
+        # answer came from instead, or that the vendor's site is JavaScript-heavy,
+        # while the real story is that this machine has no copy of the page.
+        #
+        # It fires whenever the field's own home page is uncached, and also
+        # whenever nothing was kept and ANY page is uncached — because with an
+        # empty evidence list there is no way for the reviewer to tell an
+        # unsearched corpus from a silent vendor.
+        if uncached_home or (not kept and uncached):
+            missing = uncached_home or uncached
+            caveats.append({
+                "heading": ("NOT SEARCHED — the cached copy of the "
+                            f"{', '.join(sorted(set(missing)))} page is not on "
+                            "this machine"),
+                "snippet": (f"Agent 1 collected and read the "
+                            f"{', '.join(sorted(set(missing)))} page successfully "
+                            f"on {corpus_date or 'an earlier run'}, but its cached "
+                            f"HTML is absent here, so Agent 2 could not re-read it. "
+                            f"This is a limitation of THIS COPY OF THE ARCHIVE, not "
+                            f"a finding about the vendor. The submitted archive "
+                            f"deliberately excludes the HTML cache at the client's "
+                            f"request (18 Aug 2026), so re-collect the public "
+                            f"sources — see the README — before treating anything "
+                            f"on this page as absent."),
+                "matched_terms": [], "match_location": "tool_limitation",
+                "source_url": "", "source_type": "-", "evidence_of": 0,
+            })
+            steps.append(ExtractionStep(
+                action="uncached-page", field_name=name,
+                source_type=", ".join(sorted(set(missing))),
+                detail=("the page this field belongs on was never opened in this "
+                        "run — its cached HTML is missing. Any NOT_FOUND here is "
+                        "about our archive, not about the vendor"),
+            ))
+        elif not kept and absent_home:
             caveats.append({
                 "heading": ("No " + ", ".join(absent_home) + " page was ever "
                             "located - this is not evidence the vendor is silent"),
@@ -448,13 +510,39 @@ def extract_for_vendor(
                 detail=("no page of this type was collected at all - NOT_FOUND "
                         "here says nothing about the vendor"),
             ))
-        elif not kept and unusable:
+        # DEFECT 41, 18 Aug 2026. This branch used to read `elif not kept and
+        # unusable` — ANY unreadable page anywhere on the vendor's site earned a
+        # "this may be our limit" caveat on EVERY empty field. That is precisely
+        # the over-hedging defect 39 removed from Agent 3, left alive one layer
+        # down in Agent 2, so the same brief contained both sentences at once:
+        #
+        #   Agent 3: "not found on the vendor's public sources (its own pages
+        #             read cleanly; 2 other page(s) did not, so this is a
+        #             finding about the vendor)"
+        #   Agent 2: "NOT_FOUND may be our limit, not the vendor's silence"
+        #
+        # It fired on eight fields across Linear, Atlassian and JetBrains. The
+        # test is the field's OWN home page, exactly as in Agent 3. Verified
+        # against the corpus: coverage is unchanged on all seven vendors,
+        # because every field this un-caveats is a non-core one.
+        # `or not pages` IS NOT PADDING — a test caught its absence. Narrowing to
+        # the field's own home page is right only while SOME page read cleanly.
+        # When nothing did, no field has a home page to be readable, `unread_home`
+        # is empty for all of them, and every field would report a bare NOT_FOUND
+        # about a vendor whose site we never read a word of. That is defect 23
+        # again. Agent 3's defect-39 fix carries the same hole; it stays hidden
+        # there only because all seven real vendors have at least one good page.
+        elif not kept and unusable and (unread_home or not pages):
+            blocked = unread_home or unusable
             caveats.append({
-                "heading": "NOT_FOUND may be our limit, not the vendor's silence",
-                "snippet": (f"{len(unusable)} page(s) for this vendor "
-                            f"({', '.join(unusable)}) were collected but contained "
-                            f"no readable text — almost certainly "
-                            f"JavaScript-rendered. Verify this field by hand before "
+                "heading": (f"NOT_FOUND may be our limit — the "
+                            f"{', '.join(blocked)} page could not be read"),
+                "snippet": (f"This field's own page type "
+                            f"({', '.join(blocked)}) was collected but "
+                            f"contained no readable text — almost certainly "
+                            f"JavaScript-rendered. Nothing was searched where this "
+                            f"fact belongs, so this NOT_FOUND is about our reach, "
+                            f"not the vendor's silence. Verify by hand before "
                             f"recording it as not published."),
                 "matched_terms": [], "match_location": "tool_limitation",
                 "source_url": "", "source_type": "-", "evidence_of": 0,

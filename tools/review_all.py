@@ -64,8 +64,10 @@ def review(slug: str, vendor: dict, field_dictionary: dict, settings: dict,
                                         field_dictionary, settings, category)
     save_brief(brief, BRIEFS, review_steps)
 
-    # The score is never printed alone. See src/schema.py, defect 31.
-    print(f"  {slug:10s} {brief.confidence_score:2d}/10 {brief.overall_confidence:6s} "
+    # The score is never printed alone. See src/schema.py, defects 31 and 42:
+    # evidence, confidence and coverage answer three different questions.
+    print(f"  {slug:10s} ev {brief.evidence_score:2d}/10 {brief.evidence_band:6s} "
+          f"conf {brief.confidence_band:6s} ({brief.confidence_counts.get('High',0)} High)   "
           f"coverage {brief.coverage_verified}/{brief.coverage_total}   "
           f"{len(brief.missing_or_unclear)} missing   "
           f"{len(brief.review_flags)} flag(s)")

@@ -178,7 +178,7 @@ def export_brief_json(brief: dict, out_path: Path) -> Path:
     return out_path
 
 
-def export_brief_csv(brief: dict, out_path: Path) -> Path:
+def brief_csv_rows(brief: dict) -> list[list]:
     """
     One row per field. The top evidence card's URL travels with it, because a
     CSV row without its source is exactly the "review note not linked back to
@@ -196,7 +196,33 @@ def export_brief_csv(brief: dict, out_path: Path) -> Path:
             top.get("source_type", ""), top.get("source_url", ""),
             ", ".join(top.get("matched_terms", []) or []),
         ])
-    return _write_csv(out_path, BRIEF_COLUMNS, rows)
+    return rows
+
+
+def brief_to_csv(brief: dict) -> str:
+    """
+    The same CSV as `export_brief_csv`, returned as text.
+
+    ADDED 18 Aug 2026 FOR THE UI DOWNLOAD BUTTON, AND FACTORED RATHER THAN
+    RE-WRITTEN. Streamlit's `st.download_button` wants bytes, not a file on
+    disk. Building the CSV a second time inside `app.py` would mean the file a
+    reviewer downloads from the screen and the file in `data/exports/` could
+    drift — and "two things that are supposed to agree, drifting apart because
+    nobody made them share code" is defects 15, 36, 41 and 42 in this project
+    already. One row builder, two destinations.
+
+    utf-8-sig is applied by the caller writing bytes; this returns str.
+    """
+    buf = io.StringIO(newline="")
+    w = csv.writer(buf, quoting=csv.QUOTE_MINIMAL, lineterminator="\r\n")
+    w.writerow(BRIEF_COLUMNS)
+    w.writerows(brief_csv_rows(brief))
+    return buf.getvalue()
+
+
+def export_brief_csv(brief: dict, out_path: Path) -> Path:
+    """One row per field, written to disk. See `brief_csv_rows` for the shape."""
+    return _write_csv(out_path, BRIEF_COLUMNS, brief_csv_rows(brief))
 
 
 def brief_to_markdown(brief: dict) -> str:
@@ -224,12 +250,30 @@ def brief_to_markdown(brief: dict) -> str:
     w(f"**Category:** {brief.get('product_category','')} _(curated, not extracted)_\n\n")
     w(f"**Generated:** {brief.get('generated_on','')}\n\n")
 
-    score, band = brief.get("confidence_score", 0), brief.get("overall_confidence", "")
+    # THREE NUMBERS, THREE QUESTIONS (defect 42). This header used to print a
+    # single figure called "Confidence" that measured evidence VOLUME, sitting
+    # above fields that each carried the client's confidence rule and frequently
+    # disagreed with it — Postman's header said High while all five of its core
+    # fields said Medium.
+    score, band = brief.get("evidence_score", 0), brief.get("evidence_band", "")
+    counts = brief.get("confidence_counts") or {}
+    cband = brief.get("confidence_band", "")
     ver, tot = brief.get("coverage_verified", 0), brief.get("coverage_total", 0)
-    w(f"## Confidence: {score}/10 → {band}  ·  Coverage: {ver}/{tot} core fields verified\n\n")
+    w("## How to read this brief\n\n")
+    w("| Measure | Value | What it answers |\n|---|---|---|\n")
+    w(f"| **Evidence** | {score}/10 → {band} | how much quotable material was found |\n")
+    w(f"| **Confidence** | {cband} — {counts.get('High', 0)} of {tot} core fields High, "
+      f"{counts.get('Medium', 0)} Medium, {counts.get('Low', 0)} Low | how good that "
+      f"evidence is, on the client's definition |\n")
+    w(f"| **Coverage** | {ver}/{tot} core fields verified | how much we could actually "
+      f"check |\n\n")
+    w(f"> **Read all three.** A vendor can score {score}/10 on evidence while most of its "
+      f"primary documents were never readable. Confidence is the WEAKEST core field, not an "
+      f"average — a first-pass brief is only as trustworthy as the weakest field a reviewer "
+      f"will act on.\n\n")
     if brief.get("coverage_caveated"):
-        w(f"> **Read both numbers.** {', '.join(brief['coverage_caveated'])} rest on pages that "
-          f"could not be read. The score counts what was found; it cannot count what was never "
+        w(f"> {', '.join(brief['coverage_caveated'])} rest on pages that could not be read. "
+          f"The evidence score counts what was found; it cannot count what was never "
           f"looked at.\n\n")
 
     w("## Fields\n\n")

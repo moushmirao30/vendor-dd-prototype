@@ -268,7 +268,15 @@ def test_postman_brief_warns_that_its_score_overstates_coverage(settings, field_
                                  recs, trail["steps"], field_dictionary, settings,
                                  "developer productivity tools")
 
-    assert brief.confidence_score == 10 and brief.overall_confidence == "High"
+    # DEFECT 42. Three axes, and Postman is the vendor that proves they differ:
+    # maximum evidence, zero core fields at the client's High, coverage 2 of 5.
+    assert brief.evidence_score == 10 and brief.evidence_band == "High"
+    assert brief.confidence_counts["High"] == 0, (
+        "Postman's five core fields all rest on caveated or off-home evidence; "
+        "none may reach the client's High")
+    assert brief.confidence_band != "High", (
+        "the header must not call High what every field below calls Medium — "
+        "that disagreement IS defect 42")
     assert brief.coverage_verified < brief.coverage_total, "coverage must be below the score"
     assert any("OVERSTATES COVERAGE" in f for f in brief.review_flags)
     assert any("unreadable" in f for f in brief.review_flags)
@@ -296,10 +304,13 @@ def test_brief_replays_from_disk(tmp_path):
     """Same replay contract as Agents 1 and 2 — the brief must survive a reload."""
     from src.schema import VendorBrief
     from src.agent3_review import ReviewStep
-    brief = VendorBrief(vendor_name="X", vendor_slug="x", confidence_score=7,
-                        overall_confidence="Medium", coverage_verified=3, coverage_total=5)
+    brief = VendorBrief(vendor_name="X", vendor_slug="x", evidence_score=7,
+                        evidence_band="Medium", confidence_band="Medium",
+                        confidence_counts={"High": 1, "Medium": 3, "Low": 1},
+                        coverage_verified=3, coverage_total=5)
     save_brief(brief, tmp_path, [ReviewStep("coverage", "-", "7/10 on 3 of 5")])
     back = load_brief(tmp_path, "x")
-    assert back["confidence_score"] == 7 and back["coverage_verified"] == 3
+    assert back["evidence_score"] == 7 and back["coverage_verified"] == 3
+    assert back["confidence_counts"]["High"] == 1, "all three axes must survive a reload"
     assert back["steps"][0]["action"] == "coverage"
     assert load_brief(tmp_path, "never-reviewed") is None

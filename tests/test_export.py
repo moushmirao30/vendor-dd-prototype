@@ -26,7 +26,9 @@ def _brief(**over) -> dict:
         "vendor_overview": "Postman API Platform - Build, Test & Manage",
         "product_category": "developer productivity tools",
         "key_sources": ["https://www.postman.com/"],
-        "confidence_score": 10, "overall_confidence": "High",
+        "evidence_score": 10, "evidence_band": "High",
+        "confidence_band": "Medium",
+        "confidence_counts": {"High": 0, "Medium": 5, "Low": 0},
         "coverage_verified": 2, "coverage_total": 5,
         "coverage_caveated": ["privacy_data_handling"],
         "missing_or_unclear": [], "review_flags": [],
@@ -143,16 +145,34 @@ def test_manifest_marks_a_good_page_usable(tmp_path):
 
 def test_markdown_never_prints_the_score_without_coverage():
     """
-    Defect 31, at the last possible moment. Postman scores 10/10 with core fields
-    resting on pages nobody could read. A brief showing only the number would
-    reproduce the exact failure this project exists to report.
+    Defect 31, at the last possible moment, extended for defect 42.
+
+    Postman scores 10/10 on evidence with core fields resting on pages nobody
+    could read, and ZERO core fields at the client's High. A brief showing only
+    the 10/10 reproduces the exact failure this project exists to report.
+
+    This used to assert that coverage sat on the SAME LINE as the score — the
+    mechanism, not the property. The property is that a reader cannot reach a
+    single field without passing all three axes, and asserting the mechanism made
+    the correct fix look like a regression (defect 35's lesson). So the test now
+    asserts the property: evidence, confidence and coverage all appear in the
+    header, ABOVE the first field.
     """
     md = brief_to_markdown(_brief())
-    assert "10/10" in md
-    line = next(l for l in md.splitlines() if "10/10" in l)
-    assert "Coverage: 2/5" in line, "coverage must be on the SAME line as the score"
-    assert "Read both numbers" in md
+    header = md.split("## Fields")[0]
+
+    assert "10/10" in header, "the evidence score belongs in the header"
+    assert "2/5" in header, "coverage must be unavoidable before any field is read"
+    assert "0 of 5 core fields High" in header, (
+        "the client's confidence axis must appear at vendor level — its absence "
+        "there IS defect 42")
+    assert "Read all three" in header
     assert "privacy_data_handling" in md, "name the caveated fields, do not just count them"
+
+    # And the ordering: no field may be readable before all three axes have been.
+    assert md.index("10/10") < md.index("## Fields")
+    assert md.index("0 of 5 core fields High") < md.index("## Fields")
+    assert md.index("2/5") < md.index("## Fields")
 
 
 def test_markdown_cites_only_terms_the_reader_can_see():
@@ -208,3 +228,24 @@ def test_unknown_export_format_fails_loudly(tmp_path):
     """A silent no-op would let a missing deliverable reach submission."""
     with pytest.raises(ValueError, match="unknown export format"):
         export_brief(_brief(), tmp_path, "pdf")
+
+
+def test_the_ui_download_and_the_file_on_disk_are_the_same_bytes(tmp_path):
+    """
+    The Export tab tells the reviewer, on screen, that the file they download is
+    byte-identical to the one `tools/export_all.py` writes. That sentence is a
+    claim, and an unverified claim printed in the product is the shape of every
+    defect in this project.
+
+    Verified against all seven real briefs on 18 Aug 2026 before the sentence was
+    written. This test keeps it true: the encoding (utf-8-sig, for Excel) and the
+    line terminator (\\r\\n, from csv.writer's default) both have to match, and
+    either could drift silently.
+    """
+    from src.export import brief_to_csv, export_brief_csv
+
+    brief = _brief()
+    on_disk = export_brief_csv(brief, tmp_path / "b.csv").read_bytes()
+    from_ui = brief_to_csv(brief).encode("utf-8-sig")
+    assert from_ui == on_disk, (
+        "the CSV offered by the download button diverged from the exported file")

@@ -28,12 +28,17 @@ careful reviewer would notice. Every judgement it makes comes from
 checker that gates a commit and the brief that reaches a reviewer can never
 drift apart. That shared module is the whole architectural idea here.
 
-THE ONE NUMBER TO READ TWICE
-----------------------------
-`confidence_score` counts what was FOUND. `coverage` counts what was actually
-CHECKED. Postman scores 10/10 with four core fields resting on pages that
-returned no readable text; Sentry scores 10/10 with every page read. The brief
-prints both, always together, because the score alone cannot tell them apart.
+THREE NUMBERS, THREE QUESTIONS — ALWAYS READ TOGETHER
+-----------------------------------------------------
+    evidence_score    HOW MUCH quotable material was found  (extraction axis)
+    confidence_band   HOW GOOD it is, on the CLIENT's rule   (+ per-level counts)
+    coverage_verified HOW MUCH could actually be checked     (caveat axis)
+
+Postman and Sentry both score 10/10 on evidence. Postman has ZERO core fields at
+the client's High and coverage 2/5; Sentry has two and 5/5. One number cannot
+tell them apart, which is why until 18 Aug the brief called Postman "10/10 →
+High" in a header sitting above five field cards that each said "Medium"
+(defect 42). Print all three or none.
 """
 
 from __future__ import annotations
@@ -46,7 +51,7 @@ from .review_rules import (claim_not_in_matched_sentence, conflicting_values,
                            confidence, extraction_quality, field_coverage,
                            gated_evidence, is_caveated, off_home_evidence,
                            real_evidence, terms_not_visible, unread_home_page,
-                           vendor_score)
+                           vendor_confidence, vendor_score)
 from .schema import VendorBrief, today
 
 
@@ -159,6 +164,10 @@ def review_vendor(
     # --- verb 1: verify evidence coverage ---------------------------------
     score = vendor_score(fields, core, conf["field_score"], conf["vendor_thresholds"])
     cov = score["coverage"]
+    # Defect 42. The client's confidence axis at vendor level, computed from the
+    # same predicate the field cards use, so the header and the fields under it
+    # can never again give two different answers to one question.
+    vconf = vendor_confidence(fields, core, field_dictionary, unusable)
     steps.append(ReviewStep(
         "coverage", "-",
         f"{score['score']}/10 core -> {score['band']}, but only "
@@ -292,8 +301,10 @@ def review_vendor(
         fields=reviewed,
         missing_or_unclear=missing,
         review_flags=flags,
-        overall_confidence=score["band"],
-        confidence_score=score["score"],
+        evidence_band=score["band"],
+        evidence_score=score["score"],
+        confidence_band=vconf["band"],
+        confidence_counts=vconf["counts"],
         coverage_verified=cov["verified"],
         coverage_total=cov["core_total"],
         coverage_caveated=cov["caveated"],

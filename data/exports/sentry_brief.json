@@ -1,7 +1,7 @@
 {
   "vendor_name": "Sentry",
   "vendor_slug": "sentry",
-  "generated_on": "2026-08-18",
+  "generated_on": "2026-08-19",
   "vendor_overview": "Application Performance Monitoring & Error Tracking Software | Sentry",
   "product_category": "developer productivity tools",
   "key_sources": [
@@ -378,8 +378,14 @@
     "Data residency / storage location: evidence came only from pricing, never from security/privacy. The match is real; the finding is weak.",
     "Uptime, SLA and reliability: the confidence label was earned by a sentence that does not contain the matched term (longest term-carrying sentence is 17 characters). Read the quote before relying on the label."
   ],
-  "overall_confidence": "High",
-  "confidence_score": 10,
+  "evidence_band": "High",
+  "evidence_score": 10,
+  "confidence_band": "Medium",
+  "confidence_counts": {
+    "High": 2,
+    "Medium": 3,
+    "Low": 0
+  },
   "coverage_verified": 5,
   "coverage_total": 5,
   "coverage_caveated": [],

@@ -1,7 +1,7 @@
 {
   "vendor_name": "Postman",
   "vendor_slug": "postman",
-  "generated_on": "2026-08-18",
+  "generated_on": "2026-08-19",
   "vendor_overview": "Postman API Platform - Build, Test & Manage",
   "product_category": "developer productivity tools",
   "key_sources": [
@@ -419,8 +419,14 @@
     "Support and documentation availability: the confidence label was earned by a sentence that does not contain the matched term (longest term-carrying sentence is 36 characters). Read the quote before relying on the label.",
     "Integration or API availability: evidence came only from pricing, security, never from docs/integrations/product. The match is real; the finding is weak."
   ],
-  "overall_confidence": "High",
-  "confidence_score": 10,
+  "evidence_band": "High",
+  "evidence_score": 10,
+  "confidence_band": "Medium",
+  "confidence_counts": {
+    "High": 0,
+    "Medium": 5,
+    "Low": 0
+  },
   "coverage_verified": 2,
   "coverage_total": 5,
   "coverage_caveated": [

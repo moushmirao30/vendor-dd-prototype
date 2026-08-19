@@ -105,21 +105,48 @@ class VendorBrief:
     fields: dict[str, dict] = field(default_factory=dict)   # name -> ExtractedField.to_dict()
     missing_or_unclear: list[str] = field(default_factory=list)
     review_flags: list[str] = field(default_factory=list)
-    overall_confidence: Confidence = "NOT_FOUND"
-    confidence_score: int = 0                                # 0-10, see docs/confidence_rules.md
+    # THREE NUMBERS, THREE QUESTIONS. Renamed and extended 18 Aug 2026, defect 42.
+    #
+    #   evidence_score / evidence_band  — HOW MUCH quotable evidence was found
+    #   confidence_band / _counts       — HOW GOOD it is, on the CLIENT's rule
+    #   coverage_verified / _total      — HOW MUCH we could actually check
+    #
+    # Until 18 Aug the first pair was called `confidence_score` /
+    # `overall_confidence`, and it is not a confidence measure: it sums Agent 2's
+    # extraction axis — the sentence-length measure the client asked us that same
+    # day not to base confidence on. The two-axis change landed on the field card
+    # and never reached this header, so a brief said "Confidence 10/10 -> High"
+    # above fields that each said "confidence: Medium".
+    #
+    # Renaming rather than deleting is deliberate: the number is useful and
+    # correct at what it measures. It was only ever answering a different
+    # question from the one its name asked. Two docstrings disagreeing about one
+    # rule is how a codebase stops being auditable (defect 36); a FIELD NAME
+    # disagreeing with its own contents is the same failure with a wider blast
+    # radius, because every export and UI panel repeats the wrong word.
+    evidence_band: Confidence = "NOT_FOUND"
+    evidence_score: int = 0           # 0-10 on extraction quality; docs/confidence_rules.md
+
+    # The client's confidence definition, at vendor level. Counts, not a score:
+    # compressing it into 0-10 needs thresholds we would be picking while looking
+    # at our own seven vendors, which is fitting the rule to the answer.
+    # `confidence_band` is the weakest link — a first-pass brief is only as
+    # trustworthy as the weakest core field a reviewer will act on.
+    confidence_band: Confidence = "NOT_FOUND"
+    confidence_counts: dict = field(default_factory=dict)   # {"High": n, "Medium": n, "Low": n}
 
     # COVERAGE TRAVELS WITH THE SCORE. ALWAYS. (defect 31, added 13 Aug 2026)
     #
-    # `confidence_score` counts what was FOUND. It cannot count what was never
-    # LOOKED AT. Measured on the real corpus: Postman scores 10/10 -> High with
-    # four core fields resting on pages that returned no readable text at all,
-    # and Sentry scores 10/10 -> High with every page read. Printed alone, those
-    # two vendors are indistinguishable to an operations lead — which is exactly
-    # the failure this project exists to report, reproduced by our own scoring.
+    # `evidence_score` counts what was FOUND. It cannot count what was never
+    # LOOKED AT. Measured on the real corpus: Postman scores 10/10 with four core
+    # fields resting on pages that returned no readable text at all, and Sentry
+    # scores 10/10 with every page read. Printed alone, those two vendors are
+    # indistinguishable to an operations lead — which is exactly the failure this
+    # project exists to report, reproduced by our own scoring.
     #
-    # These three fields are on the dataclass rather than computed at render
-    # time so that no exporter, template or UI panel can show the score without
-    # them being available beside it.
+    # These fields are on the dataclass rather than computed at render time so
+    # that no exporter, template or UI panel can show the score without them
+    # being available beside it.
     coverage_verified: int = 0        # core fields whose evidence carries no caveat
     coverage_total: int = 0           # core fields in total
     coverage_caveated: list[str] = field(default_factory=list)

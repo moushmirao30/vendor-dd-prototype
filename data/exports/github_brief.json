@@ -1,7 +1,7 @@
 {
   "vendor_name": "GitHub",
   "vendor_slug": "github",
-  "generated_on": "2026-08-18",
+  "generated_on": "2026-08-19",
   "vendor_overview": "GitHub Features · GitHub",
   "product_category": "developer productivity tools",
   "key_sources": [
@@ -348,8 +348,14 @@
     "Pricing or plan availability: the confidence label was earned by a sentence that does not contain the matched term (longest term-carrying sentence is 25 characters). Read the quote before relying on the label.",
     "Data residency / storage location: evidence came only from pricing, never from security/privacy. The match is real; the finding is weak."
   ],
-  "overall_confidence": "High",
-  "confidence_score": 10,
+  "evidence_band": "High",
+  "evidence_score": 10,
+  "confidence_band": "Medium",
+  "confidence_counts": {
+    "High": 2,
+    "Medium": 3,
+    "Low": 0
+  },
   "coverage_verified": 5,
   "coverage_total": 5,
   "coverage_caveated": [],
