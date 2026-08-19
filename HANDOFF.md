@@ -18,8 +18,8 @@ Read it top to bottom before touching anything.
 **Last updated: 20 August 2026 — DAY 13 of 20. 22 commits (`07228a1`), pushed.
 All three agents, the orchestrator, the export layer, the source manifest and the full Streamlit
 interface are built and committed. 152 tests. `verify_corpus.py` 0 FAIL
-across all seven vendors. NINE of ten brief deliverables complete; `docs/test_cases.md` is the
-only one outstanding. 7 days to the 27 Aug submission target.**
+across all seven vendors. **TEN of ten brief deliverables complete** — `docs/test_cases.md`
+written 20 Aug. 7 days to the 27 Aug submission target.**
 
 > ### ⚠ THE DATES IN THIS FILE HAVE BEEN WRONG THREE TIMES. READ ALL THREE.
 > * **Error 1** — everything below was first written as "13 August" because the assistant's clock
@@ -642,7 +642,10 @@ section is now the only place in the repository that states commit state.
       selecting "security" yields 3 of 8 fields with no exceptions — but Streamlit's multiselect
       dropdown could not be driven in headless Chromium, so **no browser has confirmed it visually.**
       This project's own rule is that AppTest verifies data and not rendering.
-- [ ] **`docs/test_cases.md`** — a brief deliverable. Keep it SHORT; see the warning below.
+- [x] ~~**`docs/test_cases.md`** — a brief deliverable.~~ **WRITTEN 20 Aug.** 34 cases in the
+      brief's own order, with a traceability table from every brief requirement to a case ID, and a
+      `Ships?` column saying which cases run in an archive with no HTML cache. **It found two
+      defects while being written — see §8.**
 - [ ] **A one-page executive summary at the top of `docs/evaluation.md`** — the three-axis table,
       the 16.3% unreadable-pages figure, the four failure modes. This is now the highest-value
       remaining item, above any further depth.
@@ -682,10 +685,12 @@ produced the orchestrator, defects 40–43, both UI tabs, twelve screenshots and
 real midnight and every "day 12" written in it was wrong by morning. Rule 3, committed by the
 session that wrote Rule 3.)
 
-**Nine of ten brief deliverables complete**, counted against `brief.txt` itself rather than a
+**TEN of ten brief deliverables complete**, counted against `brief.txt` itself rather than a
 summary of it: prototype, orchestration code, corpus, sample outputs, README, architecture note,
-assumptions & limitations, evaluation summary, screenshots. **Missing: sample test cases — one
-item.** Feature freeze 21 Aug; everything after it is prose.
+assumptions & limitations, **sample test cases** (`docs/test_cases.md`, written 20 Aug),
+evaluation summary, screenshots. **Nothing on the client's list is outstanding.** What remains is
+quality: the exec summary is in, defects 40–47 are not yet in `docs/evaluation.md`, and
+`code_walkthrough.md` is optional. Feature freeze 21 Aug.
 
 ### The per-vendor loop
 ```
@@ -707,8 +712,8 @@ live.
 | Date | Day | Work |
 |---|---|---|
 | **19 Aug** | 12 | ✅ orchestrator + CLI · defects 40–47 · **UI tabs 4 and 5** · 12 screenshots · **`assumptions_limitations.md` written** · the brief-PDF compliance audit (§12) · `confidence_rules.md`, `architecture.md`, `README.md` and this file rewritten. **Four commits pushed** (`6759ea6`, `68ff6ee`, `537074f`, `07228a1`). The audit pass — `app.py`, `src/export.py`, the four untracked documents — is still uncommitted. |
-| **20 Aug** | 13 | **① COMMIT AND PUSH FIRST** — four untracked files exist on one laptop only. **② The one-page executive summary at the top of `docs/evaluation.md`**, and the three stale claims inside it that the summary would otherwise contradict: §0 *"a sixth is open"*, §4.3 *"the most important open defect"*, §5 *"thirty-seven defects"*. All three were closed by defect 42 and the 19 Aug audit. **③ Start `docs/test_cases.md` — the last outstanding brief deliverable.** `architecture.md` §3/§6/§10/§11 and the README submission section are **DONE** in `07228a1`; this row used to assign them and was wrong. |
-| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. Finish `docs/test_cases.md`. Click the research-focus filter by hand in a real browser — the last unverified piece of behaviour in the project. |
+| **20 Aug** | 13 | **① COMMIT AND PUSH FIRST** — four untracked files exist on one laptop only. **② The one-page executive summary at the top of `docs/evaluation.md`**, and the three stale claims inside it that the summary would otherwise contradict: §0 *"a sixth is open"*, §4.3 *"the most important open defect"*, §5 *"thirty-seven defects"*. All three were closed by defect 42 and the 19 Aug audit. **③ `docs/test_cases.md` — WRITTEN. The tenth and last brief deliverable.** `architecture.md` §3/§6/§10/§11 and the README submission section are **DONE** in `07228a1`; this row used to assign them and was wrong. |
+| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. Click the research-focus filter by hand in a real browser — the last unverified piece of behaviour in the project. Re-run `tools/export_all.py` and confirm `data/exports/*_brief.csv` has 17 columns (§8). |
 | **22–24 Aug** | 15–17 | Add defects 40–47 to `docs/evaluation.md` and re-read the rest of it against the final code rather than rewriting it. Then `docs/code_walkthrough.md` **if the clock allows** — it is not a brief deliverable (see the outstanding list above) and it is the first thing to drop. |
 | **25 Aug** | 18 | **Fresh-clone test.** Delete the venv, follow the README exactly, confirm it runs first try — and confirm `python tools/run_workflow.py` works in a clone with no cache, because that is what a reviewer does first. Remove `_to_delete/`. Package per §1.1 item 3 — structured corpus + code + source manifest, **HTML cache EXCLUDED** — then unpack the archive somewhere clean and confirm nothing in it is a verbatim third-party page. |
 | **26 Aug** | 19 | Buffer. Use it for whatever slipped, or for the optional LLM summarisation toggle **only if everything else is finished** (§1.1 item 1 — must work with no API key, must link back to evidence). |
@@ -735,6 +740,22 @@ sentence when the reader can see the corpus is dated.
 
 Recorded honestly rather than quietly patched, because a document that describes behaviour the
 code does not have is worse than no document.
+
+- **⚠ BLOCKING, FOUND 20 Aug: `data/exports/` is stale, and it is a submitted deliverable.**
+  `src/export.py` was fixed at **18:18** on 19 Aug to carry all of the brief's Expected Output
+  items; every file in `data/exports/` was written at **14:16**, four hours earlier.
+  `BRIEF_COLUMNS` is **17 columns**; `data/exports/sentry_brief.csv` has **11** and no
+  `disclaimer` column. **The sample outputs that ship are the defect-46 output — the exact bug
+  the 19 Aug audit reports as fixed.** Run `python tools/export_all.py` and confirm 17 columns
+  before committing. *No automated test catches this: every export test writes to `tmp_path`, so
+  the suite verifies the code and never the artifacts. `docs/test_cases.md` TC-6 is that check,
+  and it is manual by necessity.* This is the documented order — replay, verify, export — not
+  followed after a `src/` change.
+- **`HANDOFF.md` §12 claimed the CSV carries all 12 Expected Output items. It carries 10.**
+  Corrected 20 Aug against `src/export.py`, not against a document. A one-row-per-field table has
+  no row shape for `vendor_overview` or `product_category`; JSON and Markdown carry both. The
+  brief says export as JSON, CSV, **or** Markdown, so this is a property to state rather than a
+  gap to close — stated in `docs/test_cases.md` §B.
 
 - ~~**`docs/architecture.md` §10 claims "JavaScript rendering is unnecessary, not merely excluded".**~~
   **CLOSED 19 Aug in `07228a1`.** Verified by reading the file, not the commit message: §10 now
@@ -872,7 +893,7 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 | Missing or unclear information flagged instead of guessed | **Met end to end.** Agent 3 raises 3–8 flags per vendor and separates "not found" from "could not be evaluated" per field | caveats + `verify_corpus` + `agent3_review`. `PARTIAL` became reachable on 18 Aug (defect 36) |
 | Confidence level: High / Medium / Low | **Met on two axes.** `docs/confidence_rules.md` rewritten 19 Aug for defects 42 and 43 and now documents both | `docs/confidence_rules.md` §Step 6 |
 | Lower-cost alternatives (Ollama, local models, rule-based, template summaries) mentioned and supported | **Rule-based is built; the alternatives are not yet written down anywhere.** The brief asks that they be *mentioned* | owed by `assumptions_limitations.md` |
-| Deliverables: prototype · orchestration code · corpus · ≥5 sample outputs · README · architecture note · assumptions & limitations · test cases · evaluation summary · screenshots | **9 of 10 complete** (recounted 20 Aug against `brief.txt` verbatim). Done: prototype, orchestration code, corpus, sample outputs (7 briefs × 3 formats), README, architecture note, assumptions & limitations, evaluation summary, screenshots. **Missing: sample test queries or test cases — one item.** `code_walkthrough.md` is NOT on the brief's list and must not be counted against the ten | see §7 |
+| Deliverables: prototype · orchestration code · corpus · ≥5 sample outputs · README · architecture note · assumptions & limitations · test cases · evaluation summary · screenshots | **10 of 10 complete** (recounted 20 Aug against `brief.txt` verbatim). Prototype, orchestration code, corpus, sample outputs (7 briefs × 3 formats), README, architecture note, assumptions & limitations, **sample test cases (`docs/test_cases.md`)**, evaluation summary, screenshots. `code_walkthrough.md` is NOT on the brief's list and must not be counted against the ten | see §7, `docs/test_cases.md` |
 | Zip or repository, all code, data, README, screenshots, sample outputs | Planned — **packaging rewritten by client instruction** | structured corpus + code + source manifest; HTML cache EXCLUDED; README explains re-collection (§1.1 item 3) |
 | Queries only via projects@firstquadrantlabs.com, consolidated | **Sent and answered 18 Aug** | §1.1 |
 
@@ -921,9 +942,9 @@ summary of the brief, not the brief. Four requirements had been quietly unmet fo
 | **Success Criteria (9)** | 8 clean before the fixes; the ninth — *"usable for a non-technical reviewer"* — was compromised by defects 44 and 45 and is now clean |
 | **Expected Input (3)** | Was 2 of 3 (defect 44). Now 3 of 3 |
 | **Corpus fields (8)** | 8 of 8 present; `tags` was thin and is answered by `evidence_tags` in `corpus.csv` |
-| **Expected Output (12)** | JSON and Markdown carried all 12 throughout. CSV carried 6 (defect 46). Now all three do |
+| **Expected Output (12)** | The **brief** carries all 12. JSON and Markdown carry all 12 throughout. CSV carried 6 (defect 46) and now carries **10** — `BRIEF_COLUMNS` is 17 columns, but a one-row-per-field table has no row shape for `vendor_overview` or `product_category`. *Corrected 20 Aug: this row read "now all three do", which is false and was never checked against `src/export.py`. The brief does not require every format to carry every item — it says export as JSON, CSV, **or** Markdown — so this is a design property to state, not a gap to close. Stated in `docs/test_cases.md` §B.* |
 | **Streamlit capabilities (7)** | Was 5 clean (defects 44, 45). Now 7 |
-| **Deliverables (10)** | **9 complete.** Missing: `test_cases.md` — one item. *Corrected 20 Aug: this row originally read "8 complete, missing `test_cases.md` and `code_walkthrough.md`". `code_walkthrough.md` appears nowhere in `brief.txt`; it is our own idea, counted against a list it was never on.* |
+| **Deliverables (10)** | **10 complete** as of 20 Aug. *Corrected 20 Aug: this row originally read "8 complete, missing `test_cases.md` and `code_walkthrough.md`". `code_walkthrough.md` appears nowhere in `brief.txt`; it is our own idea, counted against a list it was never on.* |
 | **Suggested stack** | Every decline documented in `docs/assumptions_limitations.md` §6 — SQLite, LangGraph/CrewAI, hosted LLM, Playwright/Selenium, and (added 19 Aug) sentence-transformers/FAISS/Chroma |
 
 ### The audit itself imported an error, and that is the more useful finding

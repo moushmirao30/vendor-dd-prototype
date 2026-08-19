@@ -30,9 +30,10 @@ before trusting any date in this repository, including this one.***
 
 - **All code is built.** Three agents, orchestrator, export layer, source manifest,
   all five Streamlit tabs. **152 tests. `verify_corpus.py` 0 FAIL on all 7 vendors.**
-- **9 of 10 brief deliverables complete.** Missing: **`docs/test_cases.md` — one item.**
-  Counted 20 Aug against `brief.txt` verbatim. `docs/code_walkthrough.md` is **not** on the
-  brief's list; it is our own idea, worth writing and the first thing to drop.
+- **10 of 10 brief deliverables complete.** Counted 20 Aug against `brief.txt` verbatim.
+  `docs/code_walkthrough.md` is **not** on the brief's list; it is our own idea, worth writing
+  and the first thing to drop. **Nothing the client asked for is outstanding — what remains is
+  quality, not coverage.**
 - **The corpus is FROZEN at 13 August. Do not re-collect** — every measured figure
   in every document was fact-checked against it, and vendor pages have moved since.
   `tools/run_workflow.py --mode replay` re-reads the frozen cache and is safe.
@@ -64,7 +65,9 @@ match the rules.
    durable and the repo is; four of the files carrying that lesson are not yet in the repo.
 2. **Click the research-focus filter once by hand** in the running app. Its wiring
    is proven by AppTest but no browser has confirmed it visually.
-3. **`docs/test_cases.md`** — a brief deliverable. **Keep it short.**
+3. ~~**`docs/test_cases.md`**~~ — **DONE 20 Aug.** Instead: **re-run `python tools/export_all.py`.**
+   `data/exports/` was written four hours before `src/export.py` was fixed, so the sample outputs
+   that ship are the pre-defect-46 CSVs — 11 columns, no disclaimer. See `HANDOFF.md` §8.
 4. **A one-page executive summary at the top of `docs/evaluation.md`** — the
    three-axis table, the 16.3% figure, the four failure modes. Highest-value
    remaining item.
