@@ -13,7 +13,7 @@
 | Measure | Value | What it answers |
 |---|---|---|
 | **Evidence** | 6/10 → Medium | how much quotable material was found |
-| **Confidence** | Low — 2 of 5 core fields High, 2 Medium, 1 Low | how good that evidence is, on the client's definition |
+| **Confidence** | Low — 1 of 5 core fields High, 3 Medium, 1 Low | how good that evidence is, on the client's definition |
 | **Coverage** | 3/5 core fields verified | how much we could actually check |
 
 > **Read all three.** A vendor can score 6/10 on evidence while most of its primary documents were never readable. Confidence is the WEAKEST core field, not an average — a first-pass brief is only as trustworthy as the weakest field a reviewer will act on.
@@ -24,8 +24,8 @@
 
 ### Security and trust information
 
-- **Status:** FOUND · **Confidence:** High · **Extraction quality:** Medium
-- **Why:** stated directly on the vendor's own pricing page, quoted in full, with no collection limitation
+- **Status:** FOUND · **Confidence:** Medium · **Extraction quality:** Medium
+- **Why:** the quote shown came from pricing, not from security/trust — on-home evidence exists but it is not what the reviewer reads
 
 > All Business features + Invoice/PO billing SAML and SCIM Granular admin controls Enterprise-grade security Advanced org modeling Migration & onboarding support Priority support Account management Trusted by more than 40,000 companies
 

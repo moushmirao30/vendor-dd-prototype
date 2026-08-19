@@ -314,3 +314,53 @@ def test_brief_replays_from_disk(tmp_path):
     assert back["confidence_counts"]["High"] == 1, "all three axes must survive a reload"
     assert back["steps"][0]["action"] == "coverage"
     assert load_brief(tmp_path, "never-reviewed") is None
+
+
+# ---------------------------------------------------------------------------
+# DEFECT 43, 19 Aug 2026 — High earned by evidence the reviewer never sees
+# ---------------------------------------------------------------------------
+
+def test_high_requires_the_printed_quote_to_be_on_its_home_page(field_dictionary):
+    """
+    `off_home_evidence` returns [] as soon as ANY piece of evidence sits on the
+    right page. That is correct for a review flag and wrong for confidence,
+    because the reviewer does not read "any piece" — they read the top card, and
+    the top card is the quote printed as the field's value.
+
+    On the real corpus, 19 Aug: Linear's security_trust ranked the PRICING page's
+    Enterprise tier list first, with bare `SAML` and `SCIM` headings from the
+    security page at ranks 2 and 3. One on-home piece existed, so no flag fired,
+    so the field scored High — and the reason string read "stated directly on the
+    vendor's own PRICING page" as the justification for a SECURITY field.
+
+    HANDOFF §2 locks this: "the quote printed under a label must be the evidence
+    that earned it" (defect 14). High may not rest on evidence nobody sees.
+    """
+    f = _field("security_trust",
+               evidence=[_card("pricing", heading="Enterprise",
+                               snippet="All Business features + SAML and SCIM",
+                               terms=("saml", "scim")),
+                         _card("security", heading="SAML",
+                               snippet="SAML", terms=("saml",))])
+
+    level, why = confidence(f, field_dictionary, unusable_types=[])
+
+    assert level == "Medium", "the printed quote came from the pricing page"
+    assert "pricing" in why and "security" in why, (
+        f"the reason must name both the page quoted and the page expected; got {why}")
+    assert off_home_evidence(f, field_dictionary) == [], (
+        "premise of this test: the FLAG stays silent because on-home evidence "
+        "exists — that is why confidence had to be checked separately")
+
+
+def test_on_home_top_card_is_still_high_when_other_evidence_is_off_home(field_dictionary):
+    """
+    The mirror. Narrowing a rule is only safe if the healthy case survives it:
+    supporting evidence from elsewhere must not drag down a field whose printed
+    quote is exactly where it belongs. Otherwise defect 43's fix becomes the
+    over-hedging of defect 39 in a new place.
+    """
+    f = _field("security_trust",
+               evidence=[_card("security"), _card("pricing"), _card("terms")])
+    level, _ = confidence(f, field_dictionary, unusable_types=[])
+    assert level == "High"

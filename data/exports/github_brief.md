@@ -92,8 +92,8 @@
 
 ### Uptime, SLA and reliability
 
-- **Status:** FOUND · **Confidence:** High · **Extraction quality:** High
-- **Why:** stated directly on the vendor's own pricing page, quoted in full, with no collection limitation
+- **Status:** FOUND · **Confidence:** Medium · **Extraction quality:** High
+- **Why:** the quote shown came from pricing, not from status/security — on-home evidence exists but it is not what the reviewer reads
 
 > With Premium, get a 30-minute SLA on Urgent tickets and 24/7 web and phone support via callback request.
 

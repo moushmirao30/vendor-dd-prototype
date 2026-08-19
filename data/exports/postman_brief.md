@@ -103,8 +103,8 @@
 
 ### Uptime, SLA and reliability
 
-- **Status:** FOUND · **Confidence:** High · **Extraction quality:** Medium
-- **Why:** stated directly on the vendor's own pricing page, quoted in full, with no collection limitation
+- **Status:** FOUND · **Confidence:** Medium · **Extraction quality:** Medium
+- **Why:** the quote shown came from pricing, not from status/security — on-home evidence exists but it is not what the reviewer reads
 
 > …Support and Legal Support and Legal Support Community & Email Community & Email Community & Email 24x5 support (24h SLA) Premium Support Premium Support add-on Custom terms of service Community & Email Community & Email Community & Email Community & Email Community & Email Community & Email 24x5 support (24h SLA) 24x5 support (24h SLA) Premium Support Premium Support add-on Premium Support add-on Free Solo Team Enterprise Postman AI Postman AI 50 / month 50 / month Development Development Testing Testing Playwright integration 25 credits / month 25 credits / month Production Production 1,000 r…
 

@@ -299,7 +299,7 @@
       "label": "Uptime, SLA and reliability",
       "status": "FOUND",
       "value": "With Premium, get a 30-minute SLA on Urgent tickets and 24/7 web and phone support via callback request.",
-      "confidence": "High",
+      "confidence": "Medium",
       "evidence": [
         {
           "heading": "Uh oh!",
@@ -336,7 +336,7 @@
         }
       ],
       "extraction_quality": "High",
-      "confidence_reason": "stated directly on the vendor's own pricing page, quoted in full, with no collection limitation"
+      "confidence_reason": "the quote shown came from pricing, not from status/security — on-home evidence exists but it is not what the reviewer reads"
     }
   },
   "missing_or_unclear": [

@@ -424,11 +424,33 @@ def confidence(field: dict, dictionary: dict, unusable_types: list[str]) -> tupl
         unread = unread_home_page(field, unusable_types, dictionary)
         reasons.append(f"the {', '.join(unread)} page could not be read"
                        if unread else "a collection limitation applies")
+    home = home_types(field["name"], dictionary)
     off_home = off_home_evidence(field, dictionary)
     if off_home:
-        home = home_types(field["name"], dictionary)
         reasons.append(f"evidence came from {', '.join(off_home)}, "
                        f"never from {'/'.join(home)}")
+
+    # DEFECT 43, 19 Aug 2026. `off_home_evidence` returns [] as soon as ANY piece
+    # of evidence sits on the right page — correct for a review FLAG, wrong here.
+    # The reviewer does not read "any piece". They read `ev[0]`, the top card, and
+    # that is the quote printed as the field's value.
+    #
+    # Linear's security_trust: rank 1 is the PRICING page's Enterprise tier list,
+    # ranks 2 and 3 are bare `SAML` and `SCIM` headings on the security page. One
+    # on-home piece existed, so no flag fired, so the field scored High — and the
+    # reason string then read "stated directly on the vendor's own PRICING page"
+    # as the justification for a SECURITY field. Two more: Postman's and GitHub's
+    # uptime_reliability, both quoting the pricing page, Postman's quote being
+    # repeated navigation furniture rather than a claim at all.
+    #
+    # This is a locked decision, not a preference: "the quote printed under a
+    # label must be the evidence that earned it" (HANDOFF §2, from defect 14).
+    # High may not be awarded on the strength of evidence the reviewer never sees.
+    if home and not off_home and ev[0].get("source_type") not in home:
+        reasons.append(f"the quote shown came from {ev[0].get('source_type')}, "
+                       f"not from {'/'.join(home)} — on-home evidence exists but "
+                       f"it is not what the reviewer reads")
+
     if terms_not_visible(ev[0]):
         reasons.append("the top card cites terms its quoted text does not show")
 

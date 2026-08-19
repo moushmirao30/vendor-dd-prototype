@@ -5,8 +5,10 @@ apply it by hand to any page and get the same answer the code gets. That is the
 point: a reviewer who disagrees with a rating can see exactly which clause
 produced it.
 
-**Last corrected 18 August 2026** for defects 27, 28 and 36. The corrections are
-listed in full at the end of this file rather than folded silently into the text.
+**Last corrected 19 August 2026** for defects 42 and 43; previously 18 August for
+defects 27, 28 and 36. Every correction is listed in full at the end of this file
+rather than folded silently into the text — including one this document made
+about itself.
 
 > ## ⚠ CLIENT GUIDANCE, 18 AUGUST 2026 — THIS RULE HAS SINCE BEEN BUILT
 >
@@ -43,20 +45,38 @@ listed in full at the end of this file rather than folded silently into the text
 > | **Extraction quality** | sentence · bullet list · table · bare heading · image alt-text | **everything documented below**, renamed. The logic is sound; the name was wrong |
 > | **Confidence** | the client's definition, via mechanical proxies | **High** = on the field's own preferred authoritative page, matched term present in the quoted text, **no tool-limitation caveat**. **Medium** = official but off-home, spread across pages, home page unreadable so the answer came from elsewhere, or a list/table/heading+body pair. **Low** = bare label, alt-text only, inaccessible, or conflicting |
 >
-> **This closes the worst open defect in the project as a side effect.** The new rule mechanically
-> forbids a caveated field from scoring High, so Postman's *10/10 → High on coverage 2/5* becomes
-> impossible. See "The score does not measure coverage" below.
->
 > **Status: BUILT 18 August 2026 in `src/review_rules.py`** — `extraction_quality()` and
 > `confidence()`, additive, without redesigning Agent 2, which the client said was unnecessary.
-> A caveated field can no longer score High, so defect 31 is unrepresentable rather than merely
-> reported.
 >
-> **⚠ EVERYTHING BELOW THIS BOX STILL DESCRIBES THE SINGLE-AXIS RULE AS AGENT 2 APPLIES IT.**
-> That is accurate — Agent 2 was not changed — but it is no longer the whole story, because Agent 3
-> now computes a second axis on top of it. **Rewriting the body of this file to document both axes
-> is an outstanding task (HANDOFF §7).** Until that happens this file is the last document in the
-> repo that a reader could mistake for the complete rule.
+> ### ⚠ WHAT THIS BOX CLAIMED ON 18 AUGUST, AND WHY IT WAS HALF TRUE
+>
+> It said: *"This closes the worst open defect in the project as a side effect. The new rule
+> mechanically forbids a caveated field from scoring High, so Postman's 10/10 → High on coverage
+> 2/5 becomes impossible."*
+>
+> **It did not become impossible.** The two-axis rule reached the FIELD CARD and never reached the
+> VENDOR HEADER, which went on summing the extraction axis under the word *Confidence*. On
+> 19 August, Postman and Sentry still both read **10/10 → High**, on coverage 2/5 and 5/5 — while
+> every field card under Postman's header said Medium. One brief, two answers to one question.
+>
+> **That is defect 42.** It is recorded here rather than quietly corrected, for the same reason
+> this file already ends with a section naming two rules it previously described wrongly: a
+> document that has been wrong once is more trustworthy when it says so than when it is silently
+> fixed.
+>
+> **Closed 19 August**, by separating three measures that had been sharing one name — see
+> *Step 6*.
+>
+> ### Where each axis is applied
+>
+> | Axis | Computed by | Appears as |
+> |---|---|---|
+> | **Extraction quality** | `parse.evidence_level`, exposed as `review_rules.extraction_quality` | `ExtractedField.confidence`, and the field card's *Extraction quality* line |
+> | **Confidence** | `review_rules.confidence` | the field card's *Confidence* line, and `VendorBrief.confidence_band` / `confidence_counts` |
+>
+> **Steps 1–5 below document the extraction axis**, which Agent 2 still applies unchanged — the
+> client said Agent 2 did not need redesigning, and it did not. **Step 6 documents vendor-level
+> reporting**, where all three measures meet. Neither half is the whole rule.
 
 ## Why confidence is needed at all
 
@@ -193,39 +213,86 @@ corrections section. It now occurs three times across the corpus: Linear's
 pricing and data-residency fields, and Sentry's data-residency field, each of
 which matched a section heading with no statement written under it.
 
-## Step 6 — vendor confidence
+## Step 6 — vendor-level reporting: three numbers, three questions
 
-Score the **five core fields** — security & trust, privacy & data handling,
-support & documentation, integrations & API, pricing availability:
+**Rewritten 19 August 2026 (defect 42).** Until then this section described one
+figure, called it *vendor confidence*, and computed it entirely from the
+extraction axis — the sentence measure the client had asked us not to base
+confidence on. Three different questions were sharing one name.
+
+| Measure | Question it answers | How it is computed | Field on `VendorBrief` |
+|---|---|---|---|
+| **Evidence** | How **much** quotable material was found? | sum the extraction axis over the five core fields | `evidence_score`, `evidence_band` |
+| **Confidence** | How **good** is that evidence, on the client's definition? | `review_rules.confidence` per field, reported as counts | `confidence_band`, `confidence_counts` |
+| **Coverage** | How **much could actually be checked**? | core fields whose evidence carries no tool-limitation caveat | `coverage_verified`, `coverage_total`, `coverage_caveated` |
+
+The five **core fields** are security & trust, privacy & data handling, support &
+documentation, integrations & API, and pricing availability. Supplementary fields
+(data residency, encryption, uptime) are reported but **not scored**, because they
+are absent from most vendors' pages by convention rather than by omission —
+penalising a vendor for that would make the number meaningless.
+
+### Evidence — the 0–10 figure, under its honest name
 
 ```
-High = 2    Medium = 1    Low = 0    NOT_FOUND = 0
+High = 2    Medium = 1    Low = 0    NOT_FOUND = 0        (extraction axis)
 ```
 
-Maximum 10.
-
-| Total | Vendor confidence |
+| Total | Evidence band |
 |---|---|
 | 8 – 10 | **High** |
 | 4 – 7 | **Medium** |
 | 0 – 3 | **Low** |
 
-Supplementary fields (data residency, encryption, uptime) are reported but **not
-scored**, because they are absent from most vendors' pages by convention rather
-than by omission — penalising a vendor for that would make the score meaningless.
+Unchanged in logic. It was renamed from `confidence_score` / `overall_confidence`
+because it never measured confidence. **A field name that disagrees with its own
+contents is defect 36 with a wider blast radius**, since every export and UI panel
+repeats the wrong word.
 
-### The score does not measure coverage, and must never be read alone
+### Confidence — counts, deliberately, and not a score
 
-This score counts what was found. It does not count what was never looked at.
-Postman scores **10/10 → High** with four core fields resting on pages that
-returned no readable text; Sentry scores **10/10 → High** with every page read.
-`tools/verify_corpus.py` therefore prints a coverage figure beside every score —
-*"coverage 2/5 core fields verified without a caveat"* — and raises
-`score-without-coverage` when a High rests on unread pages.
+`review_rules.vendor_confidence` returns how many core fields reached each level,
+plus a band. **It returns counts rather than a 0–10 score on purpose.**
+Compressing three levels into a score needs two thresholds, and we would be
+choosing them while looking at our own seven vendors. Any cut-off that made the
+table read well would be fitted to the answer — the same over-fitting the locked
+decisions already forbid for the field dictionary. **A count needs no threshold
+and cannot be tuned.**
 
-**Agent 3 owes a coverage-aware score, and must import that calculation rather
-than write its own.** A build-time tool and a shipped brief computing the same
-thing two different ways is how the two start disagreeing.
+The band is the **weakest core field**. That is a stated principle rather than a
+calibrated cut-off: a first-pass brief is only as trustworthy as the weakest field
+a reviewer will act on. Read the band as a floor and the counts for the shape.
+
+### Coverage — what was checked, not what was found
+
+Unchanged, and still the answer to defect 31. `tools/verify_corpus.py` prints it
+beside every score — *"coverage 2/5 core fields verified without a caveat"* — and
+raises `score-without-coverage` when an evidence High rests on unread pages.
+Agent 3 **imports** that calculation from `review_rules` rather than writing its
+own, so the build-time checker and the shipped brief cannot disagree.
+
+### What the three axes show that one number hid
+
+Measured on the frozen 13 August corpus, computed 19 August:
+
+| Vendor | Evidence | Confidence | Coverage |
+|---|---|---|---|
+| GitLab | 10/10 High | Medium — **2** of 5 core High | 5/5 |
+| Sentry | 10/10 High | Medium — **2** of 5 core High | 5/5 |
+| GitHub | 10/10 High | Medium — **2** of 5 core High | 5/5 |
+| Linear | 6/10 Medium | Low — 1 High, 3 Medium, 1 Low | 3/5 |
+| **Postman** | **10/10 High** | Medium — **0** of 5 core High | **2/5** |
+| **Atlassian** | **10/10 High** | Medium — **0** of 5 core High | **2/5** |
+| JetBrains | 5/10 Medium | Low — 1 High, 2 Medium, 2 Low | 2/5 |
+
+Five vendors are indistinguishable on evidence alone. **Postman and Atlassian are
+the only two with zero core fields at the client's High**, and they are also the
+two whose primary documents we could least often read. That separation is what the
+client's rule was for, and a single number hid it for a week.
+
+**No vendor reaches an overall High.** That is the honest result for a tool
+reading public marketing pages without a language model, and it is reported rather
+than tuned away.
 
 ## Worked examples from the current corpus (re-derived 2026-08-18)
 
@@ -235,15 +302,19 @@ The previous version of this table was written on 10 August and **three of its
 six rows had gone stale** — see the corrections section. A worked example decays
 the moment the data moves.
 
-| Vendor | `security_trust` result | Quoted value | Why |
-|---|---|---|---|
-| GitLab | **FOUND / High** | "GitLab maintains a SOC 2 Type 2 report for the Security, Confidentiality and Availability Trust Services Criteria for GitLab.com." | prose, security page, 129-character sentence |
-| Sentry | **FOUND / High** | "Sentry has obtained the following compliance certifications: SOC2 Type I SOC2 Type II HIPAA Attestation ISO 27001…" | prose, security page. Reports are "available to customers … upon request" — **gated evidence, Agent 3 must flag it** |
-| Postman | **FOUND / High** | "All compliance documents SOC 2 Type II reports, penetration test summaries, audit reports and security questionnaire responses are available via the…" | prose, security page, seven matched terms in one block |
-| GitHub | **FOUND / High** | "GitHub's API stays secure with ISO, SOC 2, and GDPR." | an `<h2>` with **no paragraph under it**. Before defect 28 this produced an EMPTY quote, scored Medium, ranked 9th of 9 and never reached the brief |
-| JetBrains | **FOUND / High** | "You can also find details on our SOC 2 Type II and GDPR compliance, access security resources, and view our controls across various security domains." | prose on the corrected trust-centre seed. Before defect 30 the value was the signpost sentence two sentences earlier |
-| Linear | **FOUND / Medium** | a pricing-tier feature list naming SAML and SCIM | **Linear's security page carries `<h2>SOC 2 compliance</h2>` with an empty body** — the detail is JavaScript-rendered. The field falls back to the pricing page |
-| Atlassian | **FOUND / High** | "Sensitive Health Information and HIPAA." | a numbered **terms-of-service section title**. The High was earned by a 322-character sentence elsewhere in the same block. **See the last limitation below** |
+**Both axes are shown, because they disagree on three of seven vendors — which is
+the entire reason there are two.** "Extraction" is Steps 1–5; "Confidence" is the
+client's definition via `review_rules.confidence`.
+
+| Vendor | Status | Extraction | Confidence | Quoted value | Why the two differ |
+|---|---|---|---|---|---|
+| GitLab | FOUND | High | **High** | "GitLab maintains a SOC 2 Type 2 report for the Security, Confidentiality and Availability Trust Services Criteria for GitLab.com." | they agree: prose, on the security page, 129 characters, no caveat |
+| Sentry | FOUND | High | **High** | "Sentry has obtained the following compliance certifications: SOC2 Type I SOC2 Type II HIPAA Attestation ISO 27001…" | they agree. Reports are "available to customers … upon request" — **gated evidence, flagged separately by Agent 3** |
+| GitHub | FOUND | High | **High** | "GitHub's API stays secure with ISO, SOC 2, and GDPR." | an `<h2>` with **no paragraph under it**. Before defect 28 it produced an EMPTY quote, scored `heading_only`, ranked 9th of 9 and never reached the brief |
+| JetBrains | FOUND | High | **High** | "You can also find details on our SOC 2 Type II and GDPR compliance, access security resources, and view our controls across various security domains." | prose on the corrected trust-centre seed. Before defect 30 the value was the signpost sentence two sentences earlier |
+| **Postman** | FOUND | High | **Medium** | "All compliance documents SOC 2 Type II reports, penetration test summaries, audit reports and security questionnaire responses are available via the…" | **the card cites terms its own quoted text does not show.** Seven terms matched in the block; the reader can verify only some of them from what is printed |
+| **Atlassian** | FOUND | High | **Medium** | "Sensitive Health Information and HIPAA." | **evidence came from privacy and terms, never from security or trust.** A numbered terms-of-service section title; the extraction High was earned by a 322-character sentence elsewhere in the same block. See the last limitation below |
+| **Linear** | FOUND | Medium | **Medium** | a pricing-tier feature list naming SAML and SCIM | **the printed quote is from the pricing page** — Linear's security page carries `<h2>SOC 2 compliance</h2>` with an empty body, and its `SAML` / `SCIM` headings rank 2nd and 3rd. Until defect 43 (19 Aug) this scored **High**, because on-home evidence existed *below the card the reviewer reads* |
 
 The Atlassian regression guard still holds and is separate from that row:
 `tests/test_parse.py::test_atlassian_shape_never_scores_high_on_alt_text_alone`
@@ -331,6 +402,40 @@ worth more to a reader than the rule alone.
 
 Items 1 and 2 were found on 2026-08-12 by reading Agent 2's first real output
 field by field against the pages it came from; neither was caught by 82 passing
-tests. Items 3 and 4 were found on 2026-08-13 while investigating why a fix had
+tests. Items 3 and 4 were found on 2026-08-18 while investigating why a fix had
 produced a false NOT_FOUND, and while re-checking this table row by row against
-the corpus. Of 101 tests now passing, **one** has ever caught a defect first.
+the corpus. Item 5 was found on 2026-08-19 because `verify_corpus.py` had been
+printing *"Agent 3 owes a coverage-aware score here"* on every run for days and
+nobody read it. Item 6 was found while re-deriving the worked-examples table for
+this file and noticing that a **security** field justified its High by naming the
+**pricing** page.
+
+Of 150 tests now passing, **one** has ever caught a defect first. Every other one
+was found by opening the artifact and reading what it actually said — which is why
+re-deriving a worked example against live data is not documentation housekeeping,
+it is a defect-finding technique.
+
+5. **The one figure at the top of every brief was not confidence** (19 Aug,
+   defect 42). This document's Step 6 was headed *"vendor confidence"* and
+   computed a 0–10 total entirely from the extraction axis — the sentence measure
+   the client had asked us, in writing, not to base confidence on. The client-box
+   above it claimed the change was already built and had made Postman's
+   *10/10 → High on coverage 2/5* impossible. It had not: the new rule reached the
+   field card and stopped there. Postman and Sentry both still read 10/10 High,
+   above five field cards that said Medium. **One brief, two answers to one
+   question — the same failure as item 3 above, one layer up and in front of the
+   client.** Three measures now carry three names.
+
+6. **A field could earn High on evidence the reviewer never sees** (19 Aug,
+   defect 43). `off_home_evidence` returns nothing as soon as *any* piece of
+   evidence sits on the field's own page — correct for a review flag, wrong for
+   confidence, because the reviewer reads the **top card** and the top card is the
+   quote printed as the value. Linear's `security_trust` ranked the pricing page's
+   Enterprise tier list first, with bare `SAML` and `SCIM` headings from the
+   security page beneath it; the field scored High and the reason line read
+   *"stated directly on the vendor's own pricing page"* as the justification for a
+   **security** field. Two more, both supplementary: Postman's and GitHub's
+   `uptime_reliability`, Postman's quote being repeated navigation furniture
+   rather than a claim at all. This breaks a locked decision — *"the quote printed
+   under a label must be the evidence that earned it"* — and the fix restates it:
+   **High requires the printed quote to be on the field's own page.**

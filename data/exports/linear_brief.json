@@ -18,7 +18,7 @@
       "label": "Security and trust information",
       "status": "FOUND",
       "value": "All Business features + Invoice/PO billing SAML and SCIM Granular admin controls Enterprise-grade security Advanced org modeling Migration & onboarding support Priority support Account management Trusted by more than 40,000 companies",
-      "confidence": "High",
+      "confidence": "Medium",
       "evidence": [
         {
           "heading": "Enterprise",
@@ -56,7 +56,7 @@
         }
       ],
       "extraction_quality": "Medium",
-      "confidence_reason": "stated directly on the vendor's own pricing page, quoted in full, with no collection limitation"
+      "confidence_reason": "the quote shown came from pricing, not from security/trust — on-home evidence exists but it is not what the reviewer reads"
     },
     "privacy_data_handling": {
       "name": "privacy_data_handling",
@@ -322,8 +322,8 @@
   "evidence_score": 6,
   "confidence_band": "Low",
   "confidence_counts": {
-    "High": 2,
-    "Medium": 2,
+    "High": 1,
+    "Medium": 3,
     "Low": 1
   },
   "coverage_verified": 3,
