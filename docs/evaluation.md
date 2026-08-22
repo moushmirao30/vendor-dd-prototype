@@ -1,8 +1,8 @@
 # Evaluation Summary
 
 **Vendor Due-Diligence Research Workflow Prototype — First Quadrant Labs**
-Moushmi Rao · corpus collected 13 August 2026, **GitLab and JetBrains re-collected 19 August** ·
-analysis and revision 18–20 August 2026
+Moushmi Rao · corpus collected 13 August 2026, **GitLab re-collected 19 August, JetBrains
+22 August** · analysis and revision 18–22 August 2026
 **Status: complete. Three agents, orchestrator, export layer and interface all built and running.
 Figures below cover the full pipeline, Agent 3 included.**
 
@@ -91,7 +91,7 @@ printed on the vendor's own brief rather than buried here.
 
 ### How the defects were found — the method, not the tooling
 
-**Forty-seven defects have been found in this project. The automated test suite caught one of
+**Fifty-three defects have been found in this project. The automated test suite caught one of
 them.** The rest came from reading the output against the source page, from re-running the
 workflow end to end, and — for the last four — from reading the client's brief line by line
 instead of a summary of it. Every one of those four was on the client-facing surface and none was
@@ -122,9 +122,11 @@ does that is more complicated than "match a phrase and print it" exists to make 
 failure visible.
 
 Five distinct mechanisms produced it on real pages, all measured against the frozen corpus —
-**collected 13 August 2026 for five vendors, 19 August for GitLab and JetBrains**, the two whose
-seed URLs were corrected. Every figure in this document was re-verified against that corpus on
-20 August by running the workflow, not by recalling it:
+**collected 13 August 2026 for five vendors, 19 August for GitLab and 22 August for JetBrains** —
+the two whose seed URLs were corrected. Every figure in this document was re-verified by running
+the workflow on 20 August, and JetBrains' 22 August re-collection reproduced every one of its
+numbers unchanged, which is itself a result: the pipeline is deterministic, and the pages that
+drift are not the ones this vendor publishes:
 
 | Mechanism | Vendor | Measurement | What a naive tool would have reported |
 |---|---|---|---|
@@ -544,9 +546,9 @@ in every brief, for exactly this reason.
 
 ## 5. What found the defects
 
-**Forty-seven defects have been found in this project. The automated test suite caught one.**
+**Fifty-three defects have been found in this project. The automated test suite caught one.**
 
-The other forty-six were found by opening the artifact and reading what it actually said — the
+The other fifty-two were found by opening the artifact and reading what it actually said — the
 screen first, then the JSON, then the raw HTML. The 152 offline tests are worth having: they hold
 fixed behaviour still while it is changed. But they test what was already understood, and every
 defect that mattered was a gap between what the code was believed to do and what the vendor pages
@@ -621,7 +623,40 @@ none in the collection or extraction layers. **The code was more honest than the
 describing it** — the exact inversion of what this project spent twelve days warning about,
 committed by the project itself.
 
-### 5.2 Checking is the job, and most candidate findings do not survive it
+### 5.2 The last six came from looking at the screen, and one from cloning the repository
+
+Defects **48–53**, found on 22 August, after the code was finished, the documents were written and
+the suite was green. **All six were on the surface a reviewer touches. None was in the engineering,
+and all 152 tests passed throughout.**
+
+| # | What a reviewer would have seen |
+|---|---|
+| **48** | Three JetBrains fields printed the heading *"Quoted from the vendor's page:"* above an **empty blockquote**, because the renderer treated a collection caveat as evidence. The table beside them read *Evidence: 1* on fields with none. **An empty quote presented as a vendor claim is the defect this whole document is about, produced by our own interface, on the vendor §4.4 calls the control case.** |
+| **49** | The status sentinel `NOT_FOUND` was printed as a **confidence level** in four different renderers. The brief names three levels; this silently offered a fourth. |
+| **50** | An internal sampling label — `Difficulty tier: hard` — sat unexplained beneath a vendor's name, where it reads as a judgement about the company. The brief's scope boundaries forbid assigning vendor risk scores. |
+| **51** | *Key sources* listed 3 readable pages under a bare heading, with 6 collected and 10 attempted, so a short list read as *the vendor publishes little* rather than *we could read little*. |
+| **52** | **Tab 3 and tab 4 disagreed about confidence on 26 field/vendor pairs, across all seven vendors** — Agent 2 saying High where Agent 3, applying defect 43's rule, had already downgraded to Medium. Every export used Agent 3's value, so the deliverable was correct and only the screen was wrong. A reviewer reading the earlier tab wrote down a rating the system had rejected. |
+| **53** | In a **fresh clone of the submitted archive** — no HTML cache, exactly as instructed on 18 August — `verify_corpus.py` printed 49 FAIL rows and **"DO NOT COMMIT: 7 vendor(s) failed."** The checker told a reviewer following our own README that the deliverable was broken while it behaved exactly as specified. |
+
+**Defect 53 is defect 40 wearing different clothes.** Both are the shape of the submitted archive
+making a tool say something false; the orchestrator had already been taught to refuse gracefully
+and explain itself, and the checker had not. **A fix applied to one of two tools that answer the
+same question is half a fix**, and nothing in this project catches that except running the
+deliverable in the shape it ships — which is what found both.
+
+**Defect 52 is the one worth keeping.** The fix does not hide the disagreement; it prints both
+numbers side by side and says the right-hand one is the reviewed value. The client asked on
+18 August that Agent 3 identify weak evidence. That request is now visible on screen as it happens,
+instead of being asserted in a document.
+
+**Why the suite could not have caught any of them.** Every UI test asserts what the app hands to
+Streamlit, and every export test writes to a temporary directory. Neither can see a heading above
+an empty quote, a sentinel printed where a rating belongs, or a checker's verdict in a directory
+that does not exist on the machine running the tests. **This is the strongest available evidence
+for §5's opening sentence**: the tests hold behaviour still, and reading the output is what finds
+defects.
+
+### 5.3 Checking is the job, and most candidate findings do not survive it
 
 The same discipline was applied to this document. Seven candidate findings were investigated while
 writing and revising it; **four were wrong** — a set of apparent orphan citations that turned out
@@ -643,7 +678,7 @@ raised during that pass and all fourteen were false** — twelve were terms sitt
 truncated display excerpt but present on the page, and two were artifacts of the checker's own text
 normalisation on a pricing table. That makes it the sixth time in this project that a plausible
 finding has failed on checking, and the ratio is the point: **the discipline that produced the
-forty-seven real defects is the same one that keeps the false ones out of the document.**
+fifty-three real defects is the same one that keeps the false ones out of the document.**
 
 ---
 

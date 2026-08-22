@@ -11,7 +11,7 @@ durable. The repo is.**
 
 | # | File | Why |
 |---|---|---|
-| 1 | **`HANDOFF.md`** | Everything a fresh session needs. ~80 KB. Its §0 is how to work with me; §5 is all 47 defects; §7 is where things stand; §11 is the live brief-compliance matrix; §12 is the compliance audit |
+| 1 | **`HANDOFF.md`** | Everything a fresh session needs. ~80 KB. Its §0 is how to work with me; §5 is all 53 defects; §7 is where things stand; §11 is the live brief-compliance matrix; §12 is the compliance audit |
 | 2 | **`docs/client_guidance.md`** | **The client's written reply of 18 August, in full. It outranks every other decision in this repo.** Read it before ANY design choice |
 | 3 | **`brief.txt`** | The project brief, extracted verbatim from `Project_Brief_1.pdf`. **Check compliance against this file, never against a summary of it** — four requirements were quietly unmet for nine days because nobody did |
 | 4 | **`docs/assumptions_limitations.md`** | What was assumed and what the system structurally cannot do |
@@ -39,10 +39,10 @@ before trusting any date in this repository, including this one.***
 - **The corpus is FROZEN. Do not re-collect** — every measured figure in every document was
   fact-checked against it, and vendor pages have moved since. `tools/run_workflow.py --mode replay`
   re-reads the frozen cache and is safe.
-  **It is not uniformly 13 August:** five vendors are dated **2026-08-13**, and **GitLab and
-  JetBrains are dated 2026-08-19** — the two whose seed URLs were corrected. Say "13 August, with
-  GitLab and JetBrains re-collected on the 19th", never "the 13 August corpus". Check it with
-  `data/exports/source_manifest.csv`, column `date_collected`.
+  **It is not uniformly 13 August:** five vendors are **2026-08-13**, **GitLab is 2026-08-19**,
+  and **JetBrains is 2026-08-22** — re-collected from the UI, with every figure unchanged. Never
+  write "the 13 August corpus". Check `data/exports/source_manifest.csv`, column `date_collected`
+  — and note it is itself stale for JetBrains until `tools/export_all.py` re-runs.
 - Repo: `https://github.com/moushmirao30/vendor-dd-prototype` (private, `master`).
 - Submit to **projects@firstquadrantlabs.com** AND upload to the LMS.
 

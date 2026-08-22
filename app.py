@@ -75,6 +75,32 @@ def table_height(n_rows: int) -> int:
     return min(ROW_PX * (n_rows + 1) + 4, 520)
 
 
+# The brief names exactly three confidence levels: High, Medium and Low. A field
+# with nothing found has no confidence to report, and `schema.FieldResult`
+# defaults the attribute to the sentinel "NOT_FOUND" so that the status is never
+# silently reported as a rating. Printing that sentinel in a column headed
+# "Confidence" turns a sentinel into a fourth confidence level in the reader's
+# eyes -- the same class of error as a dead control (defect 44): the interface
+# misrepresenting a system that is itself correct. Found 22 Aug 2026 by looking
+# at the screen.
+def conf_label(field: dict) -> str:
+    """Confidence as the brief defines it, or an em dash when there is none."""
+    c = field.get("confidence") or ""
+    return "-" if c in ("", "NOT_FOUND") else c
+
+
+def real_evidence(field: dict) -> list:
+    """Evidence a reader can quote. Caveats are not evidence and never count."""
+    return [e for e in field.get("evidence", [])
+            if e.get("match_location") != "tool_limitation"]
+
+
+def caveats_of(field: dict) -> list:
+    """Collection caveats: why a field could not be evaluated, not what it says."""
+    return [e for e in field.get("evidence", [])
+            if e.get("match_location") == "tool_limitation"]
+
+
 @st.cache_data
 def _read_yaml(name: str, mtime: float) -> dict:
     """Cached YAML read. `mtime` is part of the cache key - see load_yaml."""
@@ -266,7 +292,12 @@ with st.sidebar:
         if has_fields else "Run Agent 2 first - Agent 3 reviews what it extracted.")
 
     st.divider()
-    st.caption(f"Difficulty tier: **{vendor['difficulty']}**")
+    st.caption(
+        f"Sampling tier: **{vendor['difficulty']}** — how hard this vendor's pages "
+        f"are for a reader that runs no JavaScript. **This describes our test set, "
+        f"not the vendor.** It is not a risk score, a rating or an assessment of "
+        f"the company; the seven vendors were chosen across three tiers so the "
+        f"evaluation would include cases this tool handles badly.")
 
 # ---------------------------------------------------------------------------
 # Main area: one tab per stage, so a non-technical reviewer can follow the
@@ -617,16 +648,53 @@ with tab_evidence:
             st.info(f"Filtered to **{', '.join(focus)}** — showing {len(fields)} of "
                     f"{len(extracted['fields'])} fields. Clear the filter in the "
                     f"sidebar to see the rest.", icon=":material/filter_alt:")
-        summary = pd.DataFrame([
-            {"Field": f["label"], "Status": f["status"],
-             "Confidence": f["confidence"],
-             "Evidence": len(f["evidence"]),
-             "From": (f["evidence"][0]["source_type"] if f["evidence"] else "-")}
-            for f in fields
-        ])
+        # Evidence and caveats are counted apart. Before 22 Aug this column read
+        # len(f["evidence"]), which includes collection caveats -- so a NOT_FOUND
+        # field with one caveat and nothing quotable displayed "Evidence: 1".
+        #
+        # AND: this tab shows Agent 2's confidence, which Agent 3 then reviews and
+        # in 26 field/vendor cases DOWNGRADES from High to Medium -- because defect
+        # 43 made High require the printed quote to sit on the field's own page.
+        # Until 22 Aug the two tabs printed the two numbers with nothing saying
+        # which was which, so tab 3 showed a rating the system had already
+        # rejected. Every export uses Agent 3's. The deliverable was right and the
+        # screen was not, which is defects 44-46 again. Both are shown here, side
+        # by side, because a reviewer seeing the downgrade IS Agent 3 doing the job
+        # the client asked it to do on 18 Aug: identify weak evidence.
+        _rev = {}
+        if reviewed:
+            _rev = {n: fl.get("confidence")
+                    for n, fl in (reviewed["brief"].get("fields") or {}).items()}
+        _rows = []
+        for f in fields:
+            row = {"Field": f["label"], "Status": f["status"],
+                   "Confidence (Agent 2)": conf_label(f)}
+            if _rev:
+                after = _rev.get(f["name"], "")
+                row["After Agent 3 review"] = (
+                    "-" if after in ("", "NOT_FOUND") else after)
+            row["Evidence"] = len(real_evidence(f))
+            row["Caveats"] = len(caveats_of(f))
+            row["From"] = (real_evidence(f)[0]["source_type"]
+                           if real_evidence(f) else "-")
+            _rows.append(row)
+        summary = pd.DataFrame(_rows)
         st.dataframe(summary, width="stretch", hide_index=True,
                      height=table_height(len(summary)))
         st.caption(
+            "**Confidence (Agent 2)** is what extraction alone concluded. **After "
+            "Agent 3 review** is what the shipped brief and every export say - Agent 3 "
+            "lowers a rating when the printed quote does not sit on the field's own "
+            "page, or when the label was earned by terms the quote does not show. "
+            "A row where the two differ is not an error: it is the review step "
+            "working, and the right-hand value is the one to trust.\n\n"
+            "Confidence uses the brief's own scale - High, Medium or Low. A field "
+            "with nothing found has no confidence to report and shows a dash rather "
+            "than a fourth level. **Evidence** counts quotes a reader can check; "
+            "**Caveats** counts the reasons a field could not be evaluated - a page "
+            "collected but unreadable, or never located. A row reading 0 evidence "
+            "and 1 caveat is the tool saying *we could not look*, which is a "
+            "different statement from *the vendor is silent*.\n\n"
             "**From** is the page type the top quote came from. Compare it with the "
             "field name: evidence for integrations that came off a privacy page is "
             "technically a match and practically worth a second look. That comparison "
@@ -636,17 +704,42 @@ with tab_evidence:
         st.divider()
         for f in fields:
             icon = {"FOUND": "🟢", "PARTIAL": "🟡", "NOT_FOUND": "⚪"}[f["status"]]
-            with st.expander(f"{icon} {f['label']} — {f['status']} "
-                             f"({f['confidence']})", expanded=False):
-                if not f["evidence"]:
-                    st.write("**Nothing matched on any collected page.** "
-                             "This vendor does not publish this on the pages we are "
-                             "permitted to read. Flag for manual follow-up.")
+            _c = conf_label(f)
+            with st.expander(f"{icon} {f['label']} — {f['status']}"
+                             + (f" · confidence {_c}" if _c != "-" else ""),
+                             expanded=False):
+                # A caveat is not evidence, and this branch used to treat it as
+                # one: a field whose only entry was a collection caveat fell past
+                # the empty check, printed the heading "Quoted from the vendor's
+                # page" above an EMPTY blockquote, and then rendered the caveat as
+                # a citation with no terms and an empty link. Three JetBrains
+                # fields did this. An empty quote presented as a vendor quote is
+                # defect 27 wearing the renderer's clothes, and it appeared on the
+                # vendor the evaluation calls its control case. Found 22 Aug 2026
+                # by opening the expander. Tab 4 already split the two; this is the
+                # same split, so the two tabs cannot disagree again.
+                real = real_evidence(f)
+                notes = caveats_of(f)
+
+                if not real:
+                    if notes:
+                        st.warning(
+                            "**Could not be evaluated.** This is a limit of our "
+                            "collection, not a statement about the vendor. The "
+                            "reason is below; open the page by hand before "
+                            "recording this field as absent.", icon=":material/help:")
+                    else:
+                        st.write("**Nothing matched on any collected page.** "
+                                 "This vendor does not publish this on the pages we "
+                                 "are permitted to read. Flag for manual follow-up.")
+                    for e in notes:
+                        st.markdown(f"**{e['heading']}**  \n{e['snippet']}")
                     continue
+
                 st.markdown(f"**Quoted from the vendor's page:**  \n> {f['value']}")
                 st.caption("This text is copied from the page, not written by the "
                            "tool. There is no language model in this prototype.")
-                for i, e in enumerate(f["evidence"], 1):
+                for i, e in enumerate(real, 1):
                     st.markdown(
                         f"**{i}. {e['heading']}**  \n"
                         f"{e['snippet']}  \n"
@@ -655,6 +748,9 @@ with tab_evidence:
                         f"{e['source_type']} page · "
                         f"[{e['source_url']}]({e['source_url']})</small>",
                         unsafe_allow_html=True)
+                for e in notes:
+                    st.warning(f"**{e['heading']}**  \n{e['snippet']}",
+                               icon=":material/help:")
 
 with tab_brief:
     st.subheader(f"First-pass research brief - {vendor['name']}")
@@ -760,8 +856,11 @@ with tab_brief:
             own_missing = [x for x in missing if x.startswith(label)]
             badge = " · 🚩" if own_flags else ""
 
-            with st.expander(f"{icon} {label} — {f['status']} · confidence "
-                             f"{f.get('confidence', '-')}{badge}", expanded=False):
+            _c = conf_label(f)
+            with st.expander(f"{icon} {label} — {f['status']}"
+                             + (f" · confidence {_c}" if _c != "-"
+                                else " · no confidence to report")
+                             + badge, expanded=False):
                 real = [e for e in f.get("evidence", [])
                         if e.get("match_location") != "tool_limitation"]
                 notes = [e for e in f.get("evidence", [])
@@ -793,11 +892,18 @@ with tab_brief:
                 st.markdown(f"`{name}` → status **{f['status']}**")
 
                 st.markdown("**4 · Confidence**")
-                st.markdown(f"**{f.get('confidence','-')}** — {f.get('confidence_reason','')}")
-                st.caption(f"Extraction quality (a separate axis): "
-                           f"{f.get('extraction_quality','-')}. The client asked on "
-                           f"18 Aug that confidence not rest on sentence length, so "
-                           f"the two are measured and shown apart.")
+                _cl = conf_label(f)
+                if _cl == "-":
+                    st.markdown("**No confidence to report** — there is no quote to "
+                                f"rate. {f.get('confidence_reason','')}")
+                else:
+                    st.markdown(f"**{_cl}** — {f.get('confidence_reason','')}")
+                _q = f.get("extraction_quality") or ""
+                st.caption("Extraction quality (a separate axis): "
+                           + ("not applicable — nothing was extracted to assess. "
+                              if _q in ("", "NOT_FOUND") else f"{_q}. ")
+                           + "The client asked on 18 Aug that confidence not rest on "
+                             "sentence length, so the two are measured and shown apart.")
 
                 st.markdown("**5 · Review flag**")
                 if own_flags or own_missing:
@@ -840,7 +946,16 @@ with tab_brief:
                        "nobody fixes.")
 
         st.markdown("#### Key sources")
-        for s in brief.get("key_sources", []):
+        _ks = brief.get("key_sources", [])
+        _recs = collected.get("records", []) if isinstance(collected, dict) else []
+        st.caption(
+            f"The **{len(_ks)} readable** page(s) this brief could actually be built "
+            + (f"from, of **{len(_recs)}** collected. " if _recs else "from. ")
+            + "Pages collected but unreadable, and page types never located, are "
+            "listed in tab **1 - Sources** and in `data/exports/source_manifest.csv`. "
+            "A short list here means we could read little, not that the vendor "
+            "publishes little.")
+        for s in _ks:
             st.markdown(f"- [{s}]({s})")
 
         with st.expander("How this brief was produced — the orchestrator's trail"):

@@ -266,11 +266,13 @@ the only artifact that lets a reader distinguish *"the vendor is silent"* from
 
 **It is not uniformly 13 August, and saying so was an error this document repeated
 for three days.** `data/exports/source_manifest.csv` records `date_collected`
-**2026-08-13** for Atlassian, GitHub, Linear, Postman and Sentry, and **2026-08-19**
-for **GitLab and JetBrains** — the two vendors whose seed URLs were corrected on the
-19th. The right sentence is *"13 August, with GitLab and JetBrains re-collected on
-the 19th"*, and the manifest is where a reader should check it rather than trusting
-this paragraph.
+**2026-08-13** for Atlassian, GitHub, Linear, Postman and Sentry, **2026-08-19** for
+**GitLab**, and **2026-08-22** for **JetBrains** — the two vendors whose seed URLs
+were corrected, JetBrains re-collected once more from the interface on the 22nd with
+every figure reproducing unchanged. The right sentence is *"13 August, with GitLab
+re-collected on the 19th and JetBrains on the 22nd"*, and the manifest is where a
+reader should check it rather than trusting this paragraph — including the sentence
+you are reading, which has now been wrong twice.
 
 Collection has **not** been re-run since, deliberately: every measured figure in
 `evaluation.md`, `confidence_rules.md` and `HANDOFF.md` was fact-checked by script

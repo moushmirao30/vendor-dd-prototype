@@ -1,7 +1,8 @@
 # Test Cases and Sample Test Queries
 
 **Vendor Due-Diligence Research Workflow Prototype — First Quadrant Labs**
-Moushmi Rao · corpus frozen 13 August 2026, GitLab and JetBrains 19 August · written 20 August 2026
+Moushmi Rao · corpus frozen 13 August 2026, GitLab 19 August, JetBrains 22 August ·
+written 20 August 2026, revised 22 August
 
 This is the brief's *"sample test queries or test cases"* deliverable. It is organised in the
 brief's own order — **Expected Input → Expected Output → Streamlit interface → Scope Boundaries →
@@ -137,8 +138,11 @@ is a real vendor, not a fixture.
 | **TC-22** | Conflict detection with nothing to find | Returns **zero** conflicts on this corpus, and says so. Absence of contradiction is reported as a finding, never presented as corroboration | Yes |
 | **TC-23** | Replay with no cache | `python tools\run_workflow.py --mode replay` in a fresh clone **refuses and explains why**, naming the pages whose cache is missing and the mode that works instead. `test_replay_refuses_when_the_html_cache_is_missing` | Yes |
 | **TC-23b** | Replay **with** the cache — offline replay demonstrated | `python tools\run_workflow.py --mode replay` re-extracts every field from the frozen HTML cache with **no network access at all**. This is the case the client asked to see demonstrated; it needs the cache the client asked us not to ship, which is why the README explains re-collection. `test_replay_runs_when_the_cache_is_present` | Cache |
+| **TC-23c** | **The checker in a cacheless clone** | `python tools\verify_corpus.py` in a fresh clone raises **one `cache-absent` WARN per vendor**, not one FAIL per page, and the footer separates *what was checked* from *what was skipped, not passed*. **Before 22 August it printed 49 FAIL rows and "DO NOT COMMIT: 7 vendor(s) failed"** — the checker calling the submitted archive broken while it behaved exactly as the client instructed (defect 53). **No automated test covers this: the suite runs where the cache exists.** Run it by hand before packaging | Yes |
 | **TC-24** | Review with no cache | `python tools\run_workflow.py` — the default — produces all seven briefs. `test_review_mode_works_with_no_cache_at_all` | Yes |
 | **TC-25** | Stale data on disk | Artifacts written by older code are **reported, not hidden**. `test_a_stale_extraction_is_reported_not_hidden` | Yes |
+| **TC-25b** | **A caveat is not evidence** | JetBrains → tab 3 → expand *Support and documentation availability*. Expect **"Could not be evaluated — a limit of our collection, not a statement about the vendor"** and the reason, with **no quote block**. The table row must read `NOT_FOUND · confidence - · Evidence 0 · Caveats 1`. Until 22 August this printed *"Quoted from the vendor's page:"* above an **empty blockquote** and counted the caveat as evidence (defect 48). Repeat for `integrations_api` and `uptime_reliability` — the only other affected fields in the corpus | Yes |
+| **TC-25c** | **Agent 2's rating and Agent 3's reviewed rating are both shown** | Any vendor → tab 3. The table carries **Confidence (Agent 2)** and **After Agent 3 review**. On Atlassian, Postman, GitHub, GitLab, Sentry, JetBrains and Linear the two differ on **26 field/vendor pairs in total**, always High → Medium, because defect 43 requires the printed quote to sit on the field's own page. **The right-hand column is what every export carries.** Until 22 August only Agent 2's value was shown, so tab 3 displayed a rating the system had already rejected (defect 52) | Yes |
 | **TC-26** | An unknown mode | Rejected loudly with the valid modes listed. `test_an_unknown_mode_is_rejected_loudly` | Yes |
 
 ---
@@ -174,9 +178,15 @@ The brief lists seven prohibitions. These cases are negative by design.
 | `test_text_quality.py` | 6 | Readable-vs-unreadable, the measure everything else depends on |
 | **Total** | **123 functions → 152 tests** | |
 
-**Forty-seven defects have been found in this project. This suite caught one of them.** The rest
-came from reading the output against the source page, from re-running the workflow end to end, and
-— for the last four — from reading the brief line by line rather than a summary of it. That is the
+**Fifty-three defects have been found in this project. This suite caught one of them.** The rest
+came from reading the output against the source page, from re-running the workflow end to end,
+from reading the brief line by line rather than a summary of it — and, for the last six, from
+opening the app and reading a tab, and from cloning the repository and following the README.
+**All 152 tests passed through every one of those six.** Every UI test asserts what the app hands
+to Streamlit and every export test writes to a temporary directory, so none of them can see a
+heading above an empty quote or a checker's verdict in a directory that does not exist here.
+**TC-6, TC-23c, TC-25b and TC-25c are the checks that cover them, and all four are manual by
+necessity.** That is the
 honest reason this document leads with runnable queries and real vendors instead of with the suite:
 **a test proves the code does what it was written to do, and most of the defects here were the code
 faithfully doing the wrong thing.**
@@ -214,6 +224,7 @@ this project a day:
 | Success Criteria | structured, easy-to-review output | TC-1 – TC-5, TC-8 |
 | Success Criteria | briefs include source references | TC-11, TC-12 |
 | Success Criteria | missing information flagged, not guessed | TC-16 – TC-22 |
-| Success Criteria | usable by a non-technical reviewer | TC-12, TC-14, TC-15 |
+| Success Criteria | usable by a non-technical reviewer | TC-12, TC-14, TC-15, **TC-25b, TC-25c** |
+| Success Criteria | the archive a reviewer actually receives behaves | TC-6, **TC-23c**, TC-23, TC-24 |
 | Success Criteria | low-cost, no heavy infrastructure | TC-32 |
 | Success Criteria | assumptions and manual-review boundaries documented | TC-21, TC-33, `docs\assumptions_limitations.md` |

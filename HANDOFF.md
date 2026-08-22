@@ -25,7 +25,7 @@ across all seven vendors — **both re-run on Windows on 20 Aug, not recalled.**
 > ### ⚠ THE DATES IN THIS FILE HAVE BEEN WRONG THREE TIMES. READ ALL THREE.
 > * **Error 1** — everything below was first written as "13 August" because the assistant's clock
 >   said so. Git disagreed. The defect/Agent-3 work is 18 August. **And "the 13 August corpus" is
->   itself imprecise — five vendors are dated 2026-08-13, GitLab and JetBrains 2026-08-19. See §7.**
+>   itself imprecise — five vendors are 2026-08-13, GitLab 2026-08-19, JetBrains 2026-08-22. See §7.**
 > * **Error 2** — this file was then re-dated on 18 August to say "19 August, DAY 12", one day ahead
 >   of its own commits.
 > * **Error 3** — a session on 18 August checked the clock, found 18 August, and recorded "HANDOFF
@@ -404,7 +404,7 @@ while half its primary documents were never read. See defect 31.**
 
 ---
 
-## 5. Forty-seven defects, and the headline they add up to
+## 5. Fifty-three defects, and the headline they add up to
 
 **The automated test suite caught one of them. Every other one was found by opening the artifact
 and reading what it actually said — the screen, then the JSON, then the raw HTML.**
@@ -491,6 +491,33 @@ tag words never appear. The information the brief wants belongs to Agent 2, and 
 compute it would break the linear flow the brief mandates. Resolved at export time: `corpus.csv`
 carries **`evidence_tags`**, the topics that actually found evidence on that page, populated on
 **26 of 49 pages**. Recorded in `docs/assumptions_limitations.md` §3.7.
+
+### 48–53 — FOUND 22 Aug BY LOOKING AT THE SCREEN AND BY CLONING THE REPO. All fixed.
+
+**Every one is on the reader-facing surface. The suite passed throughout, and so did every
+export.** Five came from opening the app and reading a tab; one came from running the fresh-clone
+test for the first time. **Counted by root cause, not by symptom** — the temptation was to call
+this nine, because several produced more than one wrong thing on screen, and inflating a defect
+count by counting symptoms is the same sloppiness this section exists to criticise.
+
+| # | Defect | Fix |
+|---|---|---|
+| **48** | **A CAVEAT WAS TREATED AS EVIDENCE, AND PRODUCED AN EMPTY QUOTE.** Tab 3 tested `if not f["evidence"]`, which is false when the only entry is a collection caveat. Three JetBrains fields therefore rendered the heading **"Quoted from the vendor's page:"** above an **empty blockquote**, then cited the caveat as `matched `` in the tool limitation · - page · []()` — an empty markdown link. The table beside it read **`Evidence: 1`** on a field with no evidence, and **`From: -`**. This is defect 27 — an empty quote presented as a claim — reappearing in the renderer, on the vendor the evaluation calls its control case. | Tab 3 now splits real evidence from caveats the way tab 4 already did, through shared helpers so the two cannot diverge again. A caveat-only field renders *"Could not be evaluated — a limit of our collection, not a statement about the vendor"* and **no quote block at all**. `Evidence` counts quotes; a new `Caveats` column counts reasons we could not look. |
+| **49** | **THE `NOT_FOUND` SENTINEL WAS PRINTED AS A CONFIDENCE LEVEL, IN FOUR RENDERERS.** The brief names three levels. `schema.FieldResult` defaults `confidence` to the sentinel `"NOT_FOUND"` so a status is never mistaken for a rating — and four places printed that sentinel in a column or line headed *Confidence*, inventing a fourth level in the reader's eyes. Also printed as *Extraction quality*. | One helper, `conf_label()`, used by all four. Nothing to rate prints `-`, with a caption saying why. Step 4 of the client's chain now reads *"No confidence to report — there is no quote to rate."* |
+| **50** | **AN INTERNAL SAMPLING LABEL READ AS A VENDOR RATING.** The sidebar printed `Difficulty tier: hard` under the vendor's name, unexplained. `hard` describes how badly THIS TOOL handles the vendor's pages; beside a company name it reads as a judgement about the company — and the brief's scope boundaries forbid assigning vendor risk scores. | Relabelled *"Sampling tier … this describes our test set, not the vendor. It is not a risk score, a rating or an assessment of the company."* |
+| **51** | **"KEY SOURCES" UNDERSTATED THE WORK AND SAID NOTHING ABOUT IT.** `key_sources` is readable pages only. JetBrains showed **3** under a bare heading, with 6 collected and 10 attempted. A reviewer reads *"3 sources"* as *the vendor publishes little* — the exact confusion the client asked us to remove on 18 Aug. | A caption naming both counts and pointing at tab 1 and the source manifest: *"A short list here means we could read little, not that the vendor publishes little."* |
+| **52** | **TAB 3 AND TAB 4 DISAGREED ABOUT CONFIDENCE ON 26 FIELD/VENDOR PAIRS.** Tab 3 shows Agent 2's rating; Agent 3 then reviews it and, under defect 43's rule, downgrades High to Medium when the printed quote does not sit on the field's own page. Every vendor was affected — Atlassian 5, Postman 6, GitHub 5, GitLab 4, Sentry 3, JetBrains 2, Linear 1 — and **every export used Agent 3's value**, so the deliverable was right and only the screen was wrong. A reviewer reading tab 3 wrote down a rating the system had already rejected. | Tab 3 shows both, side by side: **Confidence (Agent 2)** and **After Agent 3 review**, with a caption saying a difference is the review step working and the right-hand value is the one to trust. **The defect becomes the demonstration**: the client asked on 18 Aug that Agent 3 highlight weak evidence, and this is where a marker can watch it happen. |
+| **53** | **THE CHECKER CALLED THE SUBMITTED ARCHIVE BROKEN.** In a fresh clone — no HTML cache, exactly as the client instructed on 18 Aug — `verify_corpus.py` printed **49 `cache-missing` FAIL rows** and **"DO NOT COMMIT: 7 vendor(s) failed. Fix the FAIL rows."** A reviewer following our own README is told the deliverable is broken while it behaves exactly as specified. **This is defect 40 in a second costume**, and `run_workflow --mode replay` had already been taught to refuse gracefully while this had not. | *Some* pages missing = this tree is inconsistent = still FAIL. *Every* page missing = the shipped shape = one `cache-absent` WARN per vendor. The footer now separates **what was checked** from **what was skipped, not passed** — the same distinction as *not found* versus *could not be evaluated*, applied to the checker itself. |
+
+**How they were found, and why that is the whole point.** Five of the six came from opening the
+app and reading a tab; the sixth came from cloning the repository and running the README. **The
+152-test suite passed through all six**, because every UI test asserts what the app hands to
+Streamlit and every export test writes to `tmp_path`. Neither can see a heading above an empty
+quote, or a checker's verdict in a directory that does not exist on this machine.
+
+**And the count itself needed checking.** These were first written up as nine. Three of the nine
+were extra *symptoms* of defects 48 and 49 rather than defects of their own. Counting symptoms
+inflates the number and hides the root cause, which is the opposite of what §5 is for.
 
 ### ONE AUDIT FINDING WAS FALSE. THE LESSON IS WORTH MORE THAN THE FOUR REAL ONES.
 
@@ -591,6 +618,13 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
   `docs/evaluation.md` §4.5. **`claim-not-in-matched-sentence` fires on six of seven vendors and
   is the one to read** — JetBrains `privacy_data_handling` scored on a longer sentence while the
   longest sentence actually containing its matched terms is **5 characters**.
+- **JetBrains was re-collected on 22 Aug** from the UI, so the corpus now carries **three** dates:
+  13 Aug for Atlassian, GitHub, Linear, Postman and Sentry · **19 Aug GitLab** · **22 Aug
+  JetBrains**. **Every figure reproduced identically** — 5/10 Medium, Low, coverage 2/5, 5 flags,
+  4 FOUND / 4 NOT_FOUND, 3 readable sources — which is a result worth one sentence in the
+  evaluation: the pipeline is deterministic and JetBrains' pages did not move in three days.
+  **`data/exports/source_manifest.csv` still says 19 Aug for JetBrains and is stale until
+  `tools/export_all.py` re-runs.**
 - **13 caveats across four vendors** (Postman 4, JetBrains 4, Atlassian 3, Linear 2; GitHub,
   GitLab and Sentry none) and **37 review flags** in total. *`docs/evaluation.md` §4.1 said
   eighteen caveats until 20 Aug — a figure that stopped being true when the seed corrections
@@ -733,7 +767,8 @@ live.
 |---|---|---|
 | **19 Aug** | 12 | ✅ orchestrator + CLI · defects 40–47 · **UI tabs 4 and 5** · 12 screenshots · **`assumptions_limitations.md` written** · the brief-PDF compliance audit (§12) · `confidence_rules.md`, `architecture.md`, `README.md` and this file rewritten. **Four commits pushed** (`6759ea6`, `68ff6ee`, `537074f`, `07228a1`). The audit pass — `app.py`, `src/export.py`, the four untracked documents — is still uncommitted. |
 | **20 Aug** | 13 | ✅ **Two commits pushed, `7e89306` and `752e60d`.** §7/§8/§11/§12 reconciled against the repo · the exec summary written · the four never-tracked documents added · **`docs/test_cases.md` — the tenth and last brief deliverable** · `export_all.py` re-run so the 23 shipped artifacts match the code · `pytest` and `verify_corpus` re-run on Windows (152 passed, 0 FAIL, 55 WARN) · the corpus-date error found: five vendors are 13 Aug, GitLab and JetBrains are 19 Aug · `evaluation.md` §4.1's caveat count corrected from 18 to 13 · **§4.5 added: the 55-warning ledger**. |
-| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. **① Click the research-focus filter by hand in a real browser** — the last unverified piece of behaviour in the project. **② Add defects 40–47 to `docs/evaluation.md`** — the largest remaining gap between what this repo knows and what it tells a reader. **③ Decide whether the two 20 Aug findings become defects 48 and 49**; if so, `evaluation.md` §5 and the exec summary both say "forty-seven" and would need one edit each. |
+| **21 Aug** | 14 | **FEATURE FREEZE — passed with nothing committed.** 20 and 21 Aug produced no commits, the second such gap in this project after 14–17 Aug. |
+| **22 Aug** | 15 | **The filter was clicked by hand at last, and the screen was read.** Defects **48–53** found and fixed — five by looking at a tab, one by cloning the repository and running the README. Defects 40–47 written into `docs/evaluation.md` §5.1. `README.md` deliverables table rebuilt to the brief's ten. `assumptions_limitations.md` §5 corpus date corrected. The **submission email** drafted. JetBrains re-collected from the UI (figures unchanged). |
 | **22–24 Aug** | 15–17 | Add defects 40–47 to `docs/evaluation.md` and re-read the rest of it against the final code rather than rewriting it. Then `docs/code_walkthrough.md` **if the clock allows** — it is not a brief deliverable (see the outstanding list above) and it is the first thing to drop. |
 | **25 Aug** | 18 | **Fresh-clone test.** Delete the venv, follow the README exactly, confirm it runs first try — and confirm `python tools/run_workflow.py` works in a clone with no cache, because that is what a reviewer does first. Remove `_to_delete/`. Package per §1.1 item 3 — structured corpus + code + source manifest, **HTML cache EXCLUDED** — then unpack the archive somewhere clean and confirm nothing in it is a verbatim third-party page. |
 | **26 Aug** | 19 | Buffer. Use it for whatever slipped, or for the optional LLM summarisation toggle **only if everything else is finished** (§1.1 item 1 — must work with no API key, must link back to evidence). |
@@ -743,10 +778,12 @@ live.
 
 **CORRECTED 20 Aug — the corpus is not uniformly 13 August.** `data/exports/source_manifest.csv`
 gives `date_collected` **2026-08-13** for Atlassian, GitHub, Linear, Postman and Sentry, and
-**2026-08-19** for **GitLab and JetBrains** — the two vendors whose seed URLs were corrected on the
-19th. Every document that said "the 13 August corpus" was wrong for two of seven vendors; the
-figures were not, and were re-verified by running the workflow on 20 August. **Say "13 August, with
-GitLab and JetBrains re-collected on the 19th."**
+**2026-08-19** for **GitLab**, and — since a re-run from the UI on 22 August — **2026-08-22** for
+**JetBrains**. Every document that said "the 13 August corpus" was wrong for two of seven vendors,
+and then for a third. The figures were never wrong: they were re-verified by running the workflow
+on 20 August, and JetBrains' 22 August re-collection reproduced every number it had before.
+**Say "13 August, with GitLab re-collected on the 19th and JetBrains on the 22nd" — and check the
+manifest rather than trusting any sentence in this repository, including this one.**
 
 The corpus is now 1–7 days old. Vendor pages demonstrably move —
 Linear's `docs` page went from 24,444 bytes to 540,090 between 12 and 13 August, and its security
@@ -768,6 +805,13 @@ sentence when the reader can see the corpus is dated.
 Recorded honestly rather than quietly patched, because a document that describes behaviour the
 code does not have is worse than no document.
 
+- **⚠ OPEN, 22 Aug: `data/exports/source_manifest.csv` says JetBrains was collected 19 Aug.**
+  It was re-collected on the 22nd. One `python tools/export_all.py` fixes it — and TC-6 exists
+  precisely because nothing automated will remind you.
+- ~~**Six display defects (48–53).**~~ **ALL FIXED 22 Aug** in `app.py` and
+  `tools/verify_corpus.py`; see §5. The empty quote, the `NOT_FOUND` confidence, the caveat
+  counted as evidence, the sampling tier read as a vendor rating, the unlabelled key sources, and
+  the checker calling the shipped archive broken.
 - ~~**⚠ BLOCKING, FOUND 20 Aug: `data/exports/` is stale, and it is a submitted deliverable.**~~
   **CLOSED 20 Aug.** `tools/export_all.py` re-run; `data\exports\sentry_brief.csv` now has
   **17 columns**, confirmed by hand. The re-export also rewrote all 7 brief JSONs, all 7

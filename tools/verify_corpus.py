@@ -86,6 +86,11 @@ class Report:
     def failed(self) -> bool:
         return any(sev == "FAIL" for sev, _, _ in self.rows)
 
+    @property
+    def cache_absent(self) -> bool:
+        """True when this vendor ran with no local HTML cache at all."""
+        return any(check == "cache-absent" for _, check, _ in self.rows)
+
     def print(self) -> None:
         order = {"FAIL": 0, "WARN": 1, "INFO": 2}
         icon = {"FAIL": "x", "WARN": "!", "INFO": "-"}
@@ -145,6 +150,34 @@ def check_collection(rep: Report, records: list[dict], trail: dict, vendor: dict
         if s["action"] == "budget-stop":
             rep.warn("budget-stop", f"{s['source_type']}: {s['outcome'][:90]}")
 
+    # --- IS THE CACHE PARTLY GONE, OR ENTIRELY ABSENT? ----------------------
+    # These are different facts and they need different severities. A few pages
+    # missing means this working tree is inconsistent -- that is our bug, and it
+    # FAILS. EVERY page missing means the HTML cache is simply not here, which is
+    # the documented shape of the submitted archive: the client asked on 18 Aug
+    # 2026 that the 22 MB of verbatim third-party HTML not be shipped.
+    #
+    # Until 22 Aug 2026 this told the second story with the first story's words.
+    # A reviewer who cloned the submission and followed the README saw 49 FAIL
+    # rows and "DO NOT COMMIT: 7 vendor(s) failed" -- the checker announcing that
+    # the deliverable was broken, when it was behaving exactly as instructed.
+    # That is defect 40 in a second costume: the archive we ship making a tool
+    # say something false. `run_workflow --mode replay` was taught to refuse
+    # gracefully and explain; this was not. Found by running the fresh-clone test.
+    _with_path = [r for r in records if r.get("raw_html_path")]
+    _resolved = [r for r in _with_path
+                 if resolve_html_path(r["raw_html_path"], ROOT) is not None]
+    cache_absent = bool(_with_path) and not _resolved
+    if cache_absent:
+        rep.warn("cache-absent",
+                 f"no cached HTML on this machine for any of the {len(_with_path)} "
+                 f"collected page(s). This is the shape of the submitted archive — "
+                 f"the cache is excluded by client instruction, not lost. The "
+                 f"structured corpus below was still checked in full; the "
+                 f"page-level text, hash and quote checks were SKIPPED, not "
+                 f"passed. Re-collect the public sources (see the README) to run "
+                 f"them.")
+
     for r in records:
         stype, url = r["source_type"], r["source_url"]
 
@@ -167,9 +200,13 @@ def check_collection(rep: Report, records: list[dict], trail: dict, vendor: dict
 
         path = resolve_html_path(raw, ROOT)
         if raw and path is None:
-            rep.fail("cache-missing",
-                     f"{stype}: cached page not found on this machine — offline replay "
-                     f"and Agent 2 will both fail for this page")
+            # One row already said the cache is absent. Repeating it once per page
+            # buries the WARN rows that are real findings about the vendor.
+            if not cache_absent:
+                rep.fail("cache-missing",
+                         f"{stype}: cached page not found on this machine — this "
+                         f"tree has SOME cached pages and not this one, so the "
+                         f"corpus and the cache disagree. Re-run Agent 1")
             continue
         if path is None:
             continue
@@ -532,9 +569,22 @@ def main(argv: list[str]) -> int:
         print(f"  DO NOT COMMIT: {len(failed)} vendor(s) failed — {', '.join(failed)}")
         print("  Fix the FAIL rows, re-run Agent 1 and Agent 2, then verify again.")
     else:
-        print(f"  {len(reports)} vendor(s) passed. Read the WARN rows before committing:")
-        print("  they are usually real findings about the vendor and belong in the")
-        print("  evaluation summary.")
+        absent = [r.slug for r in reports if r.cache_absent]
+        if absent:
+            print(f"  {len(reports)} vendor(s) passed every check that can run here, and")
+            print(f"  {len(absent)} ran with NO local HTML cache. That is expected: the")
+            print("  submitted archive excludes the 22 MB of verbatim third-party HTML at")
+            print("  the client's instruction of 18 August 2026.")
+            print("")
+            print("  WHAT WAS CHECKED: the structured corpus, the audit trail, every page")
+            print("  type accounted for, and every scoring and coverage rule.")
+            print("  WHAT WAS SKIPPED, NOT PASSED: the page-level text, hash and quote")
+            print("  checks, which need the cached HTML. To run them, re-collect the")
+            print("  public sources — see the README, 'Re-collecting the public sources'.")
+        else:
+            print(f"  {len(reports)} vendor(s) passed. Read the WARN rows before committing:")
+            print("  they are usually real findings about the vendor and belong in the")
+            print("  evaluation summary.")
     print("=" * 78)
     return 1 if failed else 0
 

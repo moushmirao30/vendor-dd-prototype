@@ -43,12 +43,12 @@ GitHub,privacy,https://docs.github.com/en/site-policy/privacy-policies/github-ge
 GitHub,docs,https://docs.github.com/,COLLECTED,200,yes,GitHub Docs,2026-08-13,13,143a00875a024e9e,
 GitHub,status,https://www.githubstatus.com/,COLLECTED,200,yes,GitHub Status,2026-08-13,21,5df96cfa05f78547,
 GitHub,terms,https://github.com/terms,COLLECTED,200,yes,GitHub Terms of Service - GitHub Docs,2026-08-13,69,c9b807cfd4d5f68b,
-JetBrains,product,https://www.jetbrains.com/idea/,COLLECTED,200,yes,The Leading IDE for Professional Java and Kotlin Development,2026-08-19,43,64c790be8ba51331,
-JetBrains,pricing,https://www.jetbrains.com/idea/buy/,COLLECTED BUT UNREADABLE,200,no,Buy IntelliJ IDEA,2026-08-19,0,cc55e8fad20e370a,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
-JetBrains,security,https://www.jetbrains.com/legal/docs/privacy/trust-center/,COLLECTED,200,yes,Trust and Security at JetBrains,2026-08-19,3,3cfe839243dfeacc,
-JetBrains,privacy,https://www.jetbrains.com/legal/docs/privacy/privacy/,COLLECTED,200,yes,Privacy Notice,2026-08-19,18,dd78bed3e27dad3a,
-JetBrains,docs,https://www.jetbrains.com/help/idea/,COLLECTED BUT UNREADABLE,200,no,Getting started | IntelliJ IDEA Documentation,2026-08-19,0,900185bc503784df,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
-JetBrains,status,https://status.jetbrains.com/,COLLECTED BUT UNREADABLE,200,no,JetBrains Services Status,2026-08-19,5,37a89009e3ae8afb,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+JetBrains,product,https://www.jetbrains.com/idea/,COLLECTED,200,yes,The Leading IDE for Professional Java and Kotlin Development,2026-08-22,43,64c790be8ba51331,
+JetBrains,pricing,https://www.jetbrains.com/idea/buy/,COLLECTED BUT UNREADABLE,200,no,Buy IntelliJ IDEA,2026-08-22,0,cc55e8fad20e370a,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+JetBrains,security,https://www.jetbrains.com/legal/docs/privacy/trust-center/,COLLECTED,200,yes,Trust and Security at JetBrains,2026-08-22,3,3cfe839243dfeacc,
+JetBrains,privacy,https://www.jetbrains.com/legal/docs/privacy/privacy/,COLLECTED,200,yes,Privacy Notice,2026-08-22,18,dd78bed3e27dad3a,
+JetBrains,docs,https://www.jetbrains.com/help/idea/,COLLECTED BUT UNREADABLE,200,no,Getting started | IntelliJ IDEA Documentation,2026-08-22,0,900185bc503784df,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
+JetBrains,status,https://status.jetbrains.com/,COLLECTED BUT UNREADABLE,200,no,JetBrains Services Status,2026-08-22,5,37a89009e3ae8afb,"JavaScript-rendered: any missing field from this page is OUR limit, not the vendor's silence"
 JetBrains,terms,https://www.jetbrains.com/terms,FAILED,404,no,,,,,HTTP 404
 JetBrains,terms,https://www.jetbrains.com/legal/terms,FAILED,404,no,,,,,HTTP 404
 JetBrains,terms,https://www.jetbrains.com/terms-of-service,FAILED,404,no,,,,,HTTP 404
