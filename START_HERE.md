@@ -29,14 +29,20 @@ that wrote Rule 3. **Check the clock against the machine at the start of every s
 before trusting any date in this repository, including this one.***
 
 - **All code is built.** Three agents, orchestrator, export layer, source manifest,
-  all five Streamlit tabs. **152 tests. `verify_corpus.py` 0 FAIL on all 7 vendors.**
+  all five Streamlit tabs. **152 tests passing and `verify_corpus.py` 0 FAIL on all 7 vendors —
+  both re-run on Windows on 20 August, not recalled.** `verify_corpus` also raises **55 WARN**;
+  those are findings about the vendors, ledgered in `docs/evaluation.md` §4.5.
 - **10 of 10 brief deliverables complete.** Counted 20 Aug against `brief.txt` verbatim.
   `docs/code_walkthrough.md` is **not** on the brief's list; it is our own idea, worth writing
   and the first thing to drop. **Nothing the client asked for is outstanding — what remains is
   quality, not coverage.**
-- **The corpus is FROZEN at 13 August. Do not re-collect** — every measured figure
-  in every document was fact-checked against it, and vendor pages have moved since.
-  `tools/run_workflow.py --mode replay` re-reads the frozen cache and is safe.
+- **The corpus is FROZEN. Do not re-collect** — every measured figure in every document was
+  fact-checked against it, and vendor pages have moved since. `tools/run_workflow.py --mode replay`
+  re-reads the frozen cache and is safe.
+  **It is not uniformly 13 August:** five vendors are dated **2026-08-13**, and **GitLab and
+  JetBrains are dated 2026-08-19** — the two whose seed URLs were corrected. Say "13 August, with
+  GitLab and JetBrains re-collected on the 19th", never "the 13 August corpus". Check it with
+  `data/exports/source_manifest.csv`, column `date_collected`.
 - Repo: `https://github.com/moushmirao30/vendor-dd-prototype` (private, `master`).
 - Submit to **projects@firstquadrantlabs.com** AND upload to the LMS.
 
@@ -59,15 +65,15 @@ match the rules.
 
 ## What to do next, in priority order
 
-1. **Commit and push. Do this before reading anything else.** Four files are untracked and
-   exist on one laptop only — `docs/client_guidance.md`, `brief.txt`,
-   `docs/assumptions_limitations.md` and this file. The repo's own lesson is that memory is not
-   durable and the repo is; four of the files carrying that lesson are not yet in the repo.
+1. ~~**Commit and push.**~~ **DONE 20 Aug** — `7e89306` then `752e60d`, both pushed.
+   `docs/client_guidance.md`, `brief.txt`, `docs/assumptions_limitations.md` and this file are
+   now tracked. **Nothing in this repository exists on one laptop only any more.**
+   Next instead: **add defects 40–47 to `docs/evaluation.md`.**
 2. **Click the research-focus filter once by hand** in the running app. Its wiring
    is proven by AppTest but no browser has confirmed it visually.
-3. ~~**`docs/test_cases.md`**~~ — **DONE 20 Aug.** Instead: **re-run `python tools/export_all.py`.**
-   `data/exports/` was written four hours before `src/export.py` was fixed, so the sample outputs
-   that ship are the pre-defect-46 CSVs — 11 columns, no disclaimer. See `HANDOFF.md` §8.
+3. ~~**`docs/test_cases.md`**~~ — **DONE 20 Aug**, and `tools/export_all.py` re-run: the brief
+   CSVs now carry **17 columns** including the disclaimer, confirmed by hand. **Re-run
+   `export_all.py` after every change under `src/` — nothing automated will remind you.**
 4. **A one-page executive summary at the top of `docs/evaluation.md`** — the
    three-axis table, the 16.3% figure, the four failure modes. Highest-value
    remaining item.

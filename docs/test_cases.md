@@ -1,7 +1,7 @@
 # Test Cases and Sample Test Queries
 
 **Vendor Due-Diligence Research Workflow Prototype — First Quadrant Labs**
-Moushmi Rao · corpus frozen 13 August 2026 · document written 20 August 2026
+Moushmi Rao · corpus frozen 13 August 2026, GitLab and JetBrains 19 August · written 20 August 2026
 
 This is the brief's *"sample test queries or test cases"* deliverable. It is organised in the
 brief's own order — **Expected Input → Expected Output → Streamlit interface → Scope Boundaries →
@@ -136,7 +136,7 @@ is a real vendor, not a fixture.
 | **TC-21** | **A high score resting on unread pages** | **Postman** — evidence **10/10**, confidence **Medium** (0 of 5 core fields High), coverage **2 of 5**, and a `SCORE OVERSTATES COVERAGE` flag naming `integrations_api`, `privacy_data_handling`, `support_documentation`. Compare **Sentry**: 10/10, Medium, coverage **5/5**, no such flag. **The two are distinguishable at a glance; until 19 August they were not** | Yes |
 | **TC-22** | Conflict detection with nothing to find | Returns **zero** conflicts on this corpus, and says so. Absence of contradiction is reported as a finding, never presented as corroboration | Yes |
 | **TC-23** | Replay with no cache | `python tools\run_workflow.py --mode replay` in a fresh clone **refuses and explains why**, naming the pages whose cache is missing and the mode that works instead. `test_replay_refuses_when_the_html_cache_is_missing` | Yes |
-| **TC-23b** | Replay **with** the cache — offline replay demonstrated | `python tools\run_workflow.py --mode replay` re-extracts every field from the frozen 13 August HTML with **no network access at all**. This is the case the client asked to see demonstrated; it needs the cache the client asked us not to ship, which is why the README explains re-collection. `test_replay_runs_when_the_cache_is_present` | Cache |
+| **TC-23b** | Replay **with** the cache — offline replay demonstrated | `python tools\run_workflow.py --mode replay` re-extracts every field from the frozen HTML cache with **no network access at all**. This is the case the client asked to see demonstrated; it needs the cache the client asked us not to ship, which is why the README explains re-collection. `test_replay_runs_when_the_cache_is_present` | Cache |
 | **TC-24** | Review with no cache | `python tools\run_workflow.py` — the default — produces all seven briefs. `test_review_mode_works_with_no_cache_at_all` | Yes |
 | **TC-25** | Stale data on disk | Artifacts written by older code are **reported, not hidden**. `test_a_stale_extraction_is_reported_not_hidden` | Yes |
 | **TC-26** | An unknown mode | Rejected loudly with the valid modes listed. `test_an_unknown_mode_is_rejected_loudly` | Yes |

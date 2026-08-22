@@ -1,7 +1,8 @@
 # Evaluation Summary
 
 **Vendor Due-Diligence Research Workflow Prototype — First Quadrant Labs**
-Moushmi Rao · corpus collected 13 August 2026 · analysis and revision 18 August 2026
+Moushmi Rao · corpus collected 13 August 2026, **GitLab and JetBrains re-collected 19 August** ·
+analysis and revision 18–20 August 2026
 **Status: complete. Three agents, orchestrator, export layer and interface all built and running.
 Figures below cover the full pipeline, Agent 3 included.**
 
@@ -77,7 +78,7 @@ printed on the vendor's own brief rather than buried here.
 
 1. **Any vendor with an unreadable primary page.** Where a field's home page could not be read and
    the answer came from elsewhere, a caveat is written into the brief a human reads, not just the
-   log. **18 such caveats across seven vendors — each one a page somebody must open by hand.**
+   log. **13 such caveats across four vendors — each one a page somebody must open by hand.**
 2. **Any field evidenced only from outside its expected home.** The match is real; the finding is
    weak. On GitLab three of five core fields draw their best evidence from the privacy policy —
    which is authoritative and also the longest, best-punctuated document any vendor publishes. The
@@ -120,7 +121,10 @@ it, is invisible — it recruits the reviewer's trust and then spends it. Everyt
 does that is more complicated than "match a phrase and print it" exists to make that second
 failure visible.
 
-Five distinct mechanisms produced it on real pages, all measured against a corpus collected on 13 August 2026:
+Five distinct mechanisms produced it on real pages, all measured against the frozen corpus —
+**collected 13 August 2026 for five vendors, 19 August for GitLab and JetBrains**, the two whose
+seed URLs were corrected. Every figure in this document was re-verified against that corpus on
+20 August by running the workflow, not by recalling it:
 
 | Mechanism | Vendor | Measurement | What a naive tool would have reported |
 |---|---|---|---|
@@ -215,7 +219,7 @@ right and is picked up in §5.
   across all seven audit trails. Found on 18 August by noticing an empty list where there should
   have been an entry. **A fix nobody exercised is a fix nobody verified.**
 - **Vendor pages change between runs.** Linear's `docs` page moved from 24,444 bytes and 15
-  readable characters to 540,090 bytes and 1,034 readable characters between 12 and 13 August (the corpus is dated 13 August and was deliberately frozen there — see the limitations). The
+  readable characters to 540,090 bytes and 1,034 readable characters between 12 and 13 August (Linear's pages are dated 13 August and were deliberately frozen there — see the limitations). The
   local cache, not the live web, is the record of what was actually collected and evaluated.
 
 ---
@@ -433,15 +437,19 @@ removes an entire class of failure. It does not remove judgement.
 ## 4. Where does manual review remain necessary?
 
 Everywhere, by design — this is a first-pass research aid and every export says so. But four
-places need it specifically and predictably.
+places need it specifically and predictably, and **§4.5 counts the resulting workload rather than
+describing it**.
 
 ### 4.1 Any vendor with an unreadable primary page
 
 Eight pages across four vendors returned a URL and no document. Where a field's own home page was
 unreadable and the answer came from somewhere else, a caveat is injected into that field's
 evidence list — into the brief itself, not just the audit trail, because a reviewer reads the
-brief. **Eighteen such caveats exist across the seven vendors. Every one is a page a human must
-open by hand.**
+brief. **Thirteen such caveats exist, across four of the seven vendors — Postman 4, JetBrains 4,
+Atlassian 3, Linear 2; GitHub, GitLab and Sentry carry none. Every one is a page a human must open
+by hand.** Counted on 20 August from `data/briefs/*.json`, not from an earlier note: an earlier
+draft of this section said eighteen, a figure that stopped being true when the seed corrections
+changed what JetBrains and GitLab could read.
 
 ### 4.2 Any field whose evidence came only from outside its expected home
 
@@ -503,14 +511,43 @@ after three attempts. It is also the single best piece of evidence this evaluati
 brief's own question, *where does manual review remain necessary?* Swapping it for a tidier reserve
 vendor would have improved every number in this document and destroyed its point.
 
+### 4.5 The warning ledger — manual review, counted
+
+`tools/verify_corpus.py` raises **0 FAIL and 55 WARN** across the seven vendors (run 20 August
+2026). A FAIL is our bug. **A WARN is usually a real finding about the vendor, and the ledger below
+is the manual-review workload this prototype hands to a human, stated as a number rather than as a
+promise.**
+
+| Warning | Count | What it means for a reviewer |
+|---|---|---|
+| `off-home-evidence` | 21 | The field was answered, but never from its own expected page. The match is real; the finding is weak |
+| `unread-home-page` | 10 | The field's home page could not be read, so the answer came from elsewhere. A caveat is already in the brief |
+| `claim-not-in-matched-sentence` | 9 | **The label was earned by a longer sentence than the one actually containing the matched term.** Worst case: JetBrains `privacy_data_handling`, where the longest sentence containing `gdpr`, `personal data` or `data subject` is **5 characters** |
+| `unusable-page` | 8 | Collected, HTTP 200, and no readable document. The 16.3% |
+| `thin-text` | 3 | The stored text is under half the readable text. Evidence is safe — Agent 2 reads raw HTML — but the corpus reads poorly for a human |
+| `score-without-coverage` | 2 | Postman and Atlassian: 10/10 evidence on 2 of 5 core fields verified |
+| `not-collected` | 1 | JetBrains `terms`, never located after six attempts |
+| `gated-evidence` | 1 | Sentry's security evidence is *"available to customers"* — the claim cannot be closed from public sources at all |
+| **Total** | **55** | Across 7 vendors: Atlassian 11, Postman 11, JetBrains 9, Sentry 8, GitLab 6, GitHub 5, Linear 5 |
+
+**`claim-not-in-matched-sentence` is the one to read first.** It fires on **six of seven vendors**
+and it is the residue of the confidence rule the client pushed back on: even after scoring moved
+from sentence length to the client's definition, a block can still match on one term and be scored
+on a different, longer sentence beside it. The checker reports it rather than silently correcting
+it, because the correct action is a human reading the quote — which is printed next to the label
+in every brief, for exactly this reason.
+
+**A warning nobody reads is a defect nobody fixes.** Defect 42 sat in this output for days as
+`score-without-coverage`, printed on every run, before anyone treated it as a finding.
+
 ---
 
 ## 5. What found the defects
 
 **Forty-seven defects have been found in this project. The automated test suite caught one.**
 
-The other thirty-six were found by opening the artifact and reading what it actually said — the
-screen first, then the JSON, then the raw HTML. The 101 offline tests are worth having: they hold
+The other forty-six were found by opening the artifact and reading what it actually said — the
+screen first, then the JSON, then the raw HTML. The 152 offline tests are worth having: they hold
 fixed behaviour still while it is changed. But they test what was already understood, and every
 defect that mattered was a gap between what the code was believed to do and what the vendor pages
 actually contained.
@@ -534,6 +571,58 @@ Four that illustrate the pattern:
   a SOC 2 sentence that appears nowhere in the current corpus. **Check the code against its
   documentation, and the documentation against the current data.**
 
+### 5.1 The last eight defects, and what each one was hiding behind
+
+Defects 40–47 were found after the code was believed finished. **None came from the test suite; 134
+tests were passing throughout defect 40.** They are grouped by what found them, because the method
+is the transferable part.
+
+**Found by running the deliverable in the shape it ships (defect 40).** With `data/cache/html/`
+deleted — the exact configuration the client asked for on 18 August — every brief reported
+*"NOT_FOUND — nothing matched on any page we could read"* under all eight fields of all seven
+vendors, about pages nobody had opened. Coverage read **5/5 verified** while zero pages were read,
+because "verified" means "not caveated" and an empty field has nothing to caveat. Agent 3 raised
+zero flags. **The archive we were about to submit made the tool lie confidently, and every test
+passed.** Fixed in three layers: `uncached` is now tracked separately from `unusable` (one is a
+fact about the vendor's site, the other about our archive), a caveat is injected where the reviewer
+reads rather than into the log, and the orchestrator refuses replay outright and names the mode
+that works.
+
+**Found by one rule living in three places (defect 41).** A single over-hedging rule had three
+implementations and two were stale, so one brief said *"its own pages read cleanly, this is a
+finding about the vendor"* **and** *"this may be our limit, not the vendor's silence"* about the
+same field. Fired on eight fields across three vendors. All three now import
+`review_rules.unread_home_page`.
+
+**Found by reading a warning the tool had printed for days (defect 42).** The vendor header said
+*Confidence* and measured sentence length. Postman and Sentry both read 10/10 High on coverage 2/5
+and 5/5 — see §4.3. `verify_corpus` had been printing *"Agent 3 owes a coverage-aware score here"*
+on every run. **A warning nobody reads is a defect nobody fixes.**
+
+**Found by re-deriving a stale document against live data (defect 43).** A field could earn High on
+evidence the reader never sees: Linear's `security_trust` ranked the *pricing* page first and its
+reason read *"stated directly on the vendor's own pricing page"* — for a security field. High now
+requires the printed quote to be on the field's own page. *Re-deriving a stale worked example is
+not housekeeping; it is a defect-finding technique.*
+
+**Found by reading the brief itself, line by line (defects 44–47).** Every compliance check before
+19 August was made against a *summary* of the brief. Reading the PDF found four unmet requirements,
+and **all four were on the client-facing surface while the engineering underneath audited clean**:
+
+| # | What a reviewer would have seen |
+|---|---|
+| **44** | The research-category filter — one of the brief's three named inputs — was rendered and its return value discarded, for nine days, under help text promising the opposite. **A dead control is worse than a missing feature: a missing feature is visible.** |
+| **45** | The agent-steps tab printed *"not built yet"* under Agent 3 while Agent 3's output was being rendered in two other tabs. Never hardcode a state you are also computing. |
+| **46** | The CSV export was the one format carrying no disclaimer, no review flags and none of the three vendor numbers — a clean table of security claims about seven real companies with every caveat stripped, in the format most likely to be pasted into an email and read alone. |
+| **47** | `config/settings.yaml` advertised an `llm` backend that no code reads. A dead config key in the file a reviewer opens to learn what the system does. |
+
+**The pattern is the finding.** Four gaps, all on the surface a non-technical reviewer touches,
+none in the collection or extraction layers. **The code was more honest than the interface
+describing it** — the exact inversion of what this project spent twelve days warning about,
+committed by the project itself.
+
+### 5.2 Checking is the job, and most candidate findings do not survive it
+
 The same discipline was applied to this document. Seven candidate findings were investigated while
 writing and revising it; **four were wrong** — a set of apparent orphan citations that turned out
 to be snippet truncation, two pages that appeared misclassified until the recomputation itself was
@@ -541,6 +630,20 @@ found to be at fault, a JetBrains extraction that appeared to have missed SOC 2 
 truncation was in the diagnostic rather than the code, and a proposed scoring tightening that would
 have demoted three well-evidenced fields. Reporting any of them would have sent a day of work at a
 defect that did not exist.
+
+**A final adversarial pass on 22 August took two briefs — JetBrains, the worst-served vendor, and
+Sentry, the best — and re-checked every printed claim against the cached page it cites.** Four
+things were tested mechanically: that a cache file exists for every cited URL, that the printed
+quote appears verbatim on the page it names, that every cited term is present on that page, and
+that the brief's `source_type` matches the source manifest.
+
+**Every check passed.** Zero missing cache files, zero quotes that could not be located on the page
+they cite, zero orphan citations, zero source-type mismatches. **Fourteen candidate findings were
+raised during that pass and all fourteen were false** — twelve were terms sitting just outside a
+truncated display excerpt but present on the page, and two were artifacts of the checker's own text
+normalisation on a pricing table. That makes it the sixth time in this project that a plausible
+finding has failed on checking, and the ratio is the point: **the discipline that produced the
+forty-seven real defects is the same one that keeps the false ones out of the document.**
 
 ---
 

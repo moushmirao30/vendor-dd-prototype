@@ -15,15 +15,17 @@ Read it top to bottom before touching anything.
 >
 > Both were added to the repo on 19 Aug after the assistant's project memory was
 > lost. **Project memory is convenient and it is not durable. The repo is.**
-**Last updated: 20 August 2026 — DAY 13 of 20. 22 commits (`07228a1`), pushed.
+**Last updated: 20 August 2026 — DAY 13 of 20. 24 commits (`752e60d`), pushed.
 All three agents, the orchestrator, the export layer, the source manifest and the full Streamlit
 interface are built and committed. 152 tests. `verify_corpus.py` 0 FAIL
-across all seven vendors. **TEN of ten brief deliverables complete** — `docs/test_cases.md`
-written 20 Aug. 7 days to the 27 Aug submission target.**
+across all seven vendors — **both re-run on Windows on 20 Aug, not recalled.**
+**TEN of ten brief deliverables complete** — `docs/test_cases.md` written and committed 20 Aug.
+7 days to the 27 Aug submission target.**
 
 > ### ⚠ THE DATES IN THIS FILE HAVE BEEN WRONG THREE TIMES. READ ALL THREE.
 > * **Error 1** — everything below was first written as "13 August" because the assistant's clock
->   said so. Git disagreed. The corpus genuinely is 13 August; the defect/Agent-3 work is 18 August.
+>   said so. Git disagreed. The defect/Agent-3 work is 18 August. **And "the 13 August corpus" is
+>   itself imprecise — five vendors are dated 2026-08-13, GitLab and JetBrains 2026-08-19. See §7.**
 > * **Error 2** — this file was then re-dated on 18 August to say "19 August, DAY 12", one day ahead
 >   of its own commits.
 > * **Error 3** — a session on 18 August checked the clock, found 18 August, and recorded "HANDOFF
@@ -312,7 +314,7 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 
 ## 3. What exists right now
 
-**22 commits, `07228a1`, pushed. Everything below is built and committed: three agents, the
+**24 commits, `752e60d`, pushed. Everything below is built and committed: three agents, the
 orchestrator, the export layer, the source manifest, and all five UI tabs.**
 **152 tests. `verify_corpus.py` 0 FAIL across all seven vendors.**
 **7 vendors · 49 pages · 55 cached files · 7 briefs · 23 export artifacts · 12 screenshots.**
@@ -577,10 +579,22 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 
 ## 7. Where things stand and what happens next
 
-### State at 19 Aug — every number below was produced by running it, not recalled
+### State at 20 Aug — every number below was produced by running it, not recalled
 
-- **152 pytest passing** (134 → +9 orchestrator, +4 UI/export, +2 defect 43).
-- `python tools/verify_corpus.py` → **0 FAIL across all seven vendors.**
+- **152 pytest passing** (134 → +9 orchestrator, +4 UI/export, +2 defect 43). **Re-run on Windows
+  on 20 Aug: `152 passed in 39.66s`.** Until then the figure had only ever been asserted in a
+  document; it is now a number somebody watched appear.
+- `python tools/verify_corpus.py` → **0 FAIL across all seven vendors**, re-run 20 Aug.
+- **55 WARN**, and they are the deliverable rather than the noise: 21 `off-home-evidence`,
+  10 `unread-home-page`, 9 `claim-not-in-matched-sentence`, 8 `unusable-page`, 3 `thin-text`,
+  2 `score-without-coverage`, 1 `not-collected`, 1 `gated-evidence`. Ledgered in
+  `docs/evaluation.md` §4.5. **`claim-not-in-matched-sentence` fires on six of seven vendors and
+  is the one to read** — JetBrains `privacy_data_handling` scored on a longer sentence while the
+  longest sentence actually containing its matched terms is **5 characters**.
+- **13 caveats across four vendors** (Postman 4, JetBrains 4, Atlassian 3, Linear 2; GitHub,
+  GitLab and Sentry none) and **37 review flags** in total. *`docs/evaluation.md` §4.1 said
+  eighteen caveats until 20 Aug — a figure that stopped being true when the seed corrections
+  changed what JetBrains and GitLab could read, and that nobody re-counted.*
 - Field totals **43 FOUND / 3 PARTIAL / 10 NOT_FOUND**. PARTIAL became reachable on 18 Aug
   (defect 36) and stayed reachable through every change since.
 - Independent checks run OUTSIDE `verify_corpus`, against the cached HTML: **0 empty quotes ·
@@ -607,7 +621,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 
 ### Commits
 
-**HEAD = `origin/master` = `07228a1`, 22 commits, pushed. Level with origin, nothing ahead.**
+**HEAD = `origin/master` = `752e60d`, 24 commits, pushed. Level with origin, nothing ahead.**
 
 | Commit | When | What |
 |---|---|---|
@@ -621,6 +635,11 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 | `68ff6ee` | 19 Aug | **UI tabs 4 and 5** + 12 screenshots |
 | `537074f` | 19 Aug | **defect 43**, `confidence_rules.md` rewritten, 9 brief/corpus artifacts re-exported |
 | `07228a1` | 19 Aug | **`docs/architecture.md` and `README.md` rewritten against the code that exists** — 312 insertions, 77 deletions |
+| `7e89306` | 20 Aug | **§7/§8/§11/§12 reconciled** · the exec summary at the top of `docs/evaluation.md` · **the four never-tracked documents added**: `client_guidance.md`, `brief.txt`, `assumptions_limitations.md`, `START_HERE.md`. 14 files, 1425 insertions |
+| `752e60d` | 20 Aug | **`docs/test_cases.md`** — the tenth and last brief deliverable · `export_all.py` re-run, so the 23 shipped artifacts finally match the code that produces them. 39 files |
+
+*Both 20 Aug commits carry the same subject line, because the second reused the first's message
+file. Harmless, and worth not repeating: `git log --oneline` now shows two identical subjects.*
 
 **This table was stale by two commits within four hours of being written.** Regenerate it from
 `git log`, never from memory. Same class of error as §8 and §11 below, and the reason this
@@ -628,7 +647,8 @@ section is now the only place in the repository that states commit state.
 
 ### STILL OUTSTANDING, in this order
 
-- [ ] **COMMIT AND PUSH. This is the only item with a single point of failure.**
+- [x] ~~**COMMIT AND PUSH.**~~ **DONE 20 Aug** — `7e89306` and `752e60d`, both pushed. Everything
+      below was true until it was done, and is kept because the reasoning is the reusable part:
       Four files are **untracked** — they exist on one laptop and nowhere else:
       `docs/client_guidance.md` (the document this repo says outranks every other decision),
       `brief.txt` (the file compliance must be checked against), `docs/assumptions_limitations.md`
@@ -646,9 +666,9 @@ section is now the only place in the repository that states commit state.
       brief's own order, with a traceability table from every brief requirement to a case ID, and a
       `Ships?` column saying which cases run in an archive with no HTML cache. **It found two
       defects while being written — see §8.**
-- [ ] **A one-page executive summary at the top of `docs/evaluation.md`** — the three-axis table,
-      the 16.3% unreadable-pages figure, the four failure modes. This is now the highest-value
-      remaining item, above any further depth.
+- [x] ~~**A one-page executive summary at the top of `docs/evaluation.md`**~~ **DONE 20 Aug**, in
+      `7e89306`: the finding, the three-axis table with what each column is for, 16.3% / 84% / 41%,
+      the four places manual review remains, and how the defects were actually found.
 - [ ] Add defects 40–47 to `docs/evaluation.md`. Re-read the rest against the final code rather
       than rewriting it; it was fact-checked by script on 18 Aug.
 - [ ] **`docs/code_walkthrough.md`** — **NOT a brief deliverable.** Checked verbatim against
@@ -712,8 +732,8 @@ live.
 | Date | Day | Work |
 |---|---|---|
 | **19 Aug** | 12 | ✅ orchestrator + CLI · defects 40–47 · **UI tabs 4 and 5** · 12 screenshots · **`assumptions_limitations.md` written** · the brief-PDF compliance audit (§12) · `confidence_rules.md`, `architecture.md`, `README.md` and this file rewritten. **Four commits pushed** (`6759ea6`, `68ff6ee`, `537074f`, `07228a1`). The audit pass — `app.py`, `src/export.py`, the four untracked documents — is still uncommitted. |
-| **20 Aug** | 13 | **① COMMIT AND PUSH FIRST** — four untracked files exist on one laptop only. **② The one-page executive summary at the top of `docs/evaluation.md`**, and the three stale claims inside it that the summary would otherwise contradict: §0 *"a sixth is open"*, §4.3 *"the most important open defect"*, §5 *"thirty-seven defects"*. All three were closed by defect 42 and the 19 Aug audit. **③ `docs/test_cases.md` — WRITTEN. The tenth and last brief deliverable.** `architecture.md` §3/§6/§10/§11 and the README submission section are **DONE** in `07228a1`; this row used to assign them and was wrong. |
-| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. Click the research-focus filter by hand in a real browser — the last unverified piece of behaviour in the project. Re-run `tools/export_all.py` and confirm `data/exports/*_brief.csv` has 17 columns (§8). |
+| **20 Aug** | 13 | ✅ **Two commits pushed, `7e89306` and `752e60d`.** §7/§8/§11/§12 reconciled against the repo · the exec summary written · the four never-tracked documents added · **`docs/test_cases.md` — the tenth and last brief deliverable** · `export_all.py` re-run so the 23 shipped artifacts match the code · `pytest` and `verify_corpus` re-run on Windows (152 passed, 0 FAIL, 55 WARN) · the corpus-date error found: five vendors are 13 Aug, GitLab and JetBrains are 19 Aug · `evaluation.md` §4.1's caveat count corrected from 18 to 13 · **§4.5 added: the 55-warning ledger**. |
+| **21 Aug** | 14 | **FEATURE FREEZE.** Nothing new after today. **① Click the research-focus filter by hand in a real browser** — the last unverified piece of behaviour in the project. **② Add defects 40–47 to `docs/evaluation.md`** — the largest remaining gap between what this repo knows and what it tells a reader. **③ Decide whether the two 20 Aug findings become defects 48 and 49**; if so, `evaluation.md` §5 and the exec summary both say "forty-seven" and would need one edit each. |
 | **22–24 Aug** | 15–17 | Add defects 40–47 to `docs/evaluation.md` and re-read the rest of it against the final code rather than rewriting it. Then `docs/code_walkthrough.md` **if the clock allows** — it is not a brief deliverable (see the outstanding list above) and it is the first thing to drop. |
 | **25 Aug** | 18 | **Fresh-clone test.** Delete the venv, follow the README exactly, confirm it runs first try — and confirm `python tools/run_workflow.py` works in a clone with no cache, because that is what a reviewer does first. Remove `_to_delete/`. Package per §1.1 item 3 — structured corpus + code + source manifest, **HTML cache EXCLUDED** — then unpack the archive somewhere clean and confirm nothing in it is a verbatim third-party page. |
 | **26 Aug** | 19 | Buffer. Use it for whatever slipped, or for the optional LLM summarisation toggle **only if everything else is finished** (§1.1 item 1 — must work with no API key, must link back to evidence). |
@@ -721,7 +741,14 @@ live.
 
 ### DECISION MADE 19 AUG: DO NOT RE-COLLECT THE CORPUS
 
-The corpus was collected on **13 August and is now 6 days old**. Vendor pages demonstrably move —
+**CORRECTED 20 Aug — the corpus is not uniformly 13 August.** `data/exports/source_manifest.csv`
+gives `date_collected` **2026-08-13** for Atlassian, GitHub, Linear, Postman and Sentry, and
+**2026-08-19** for **GitLab and JetBrains** — the two vendors whose seed URLs were corrected on the
+19th. Every document that said "the 13 August corpus" was wrong for two of seven vendors; the
+figures were not, and were re-verified by running the workflow on 20 August. **Say "13 August, with
+GitLab and JetBrains re-collected on the 19th."**
+
+The corpus is now 1–7 days old. Vendor pages demonstrably move —
 Linear's `docs` page went from 24,444 bytes to 540,090 between 12 and 13 August, and its security
 page now publishes `<h2>SOC 2 compliance</h2>` with an empty body where a full SOC 2 sentence was
 recorded on 10 August.
@@ -741,7 +768,11 @@ sentence when the reader can see the corpus is dated.
 Recorded honestly rather than quietly patched, because a document that describes behaviour the
 code does not have is worse than no document.
 
-- **⚠ BLOCKING, FOUND 20 Aug: `data/exports/` is stale, and it is a submitted deliverable.**
+- ~~**⚠ BLOCKING, FOUND 20 Aug: `data/exports/` is stale, and it is a submitted deliverable.**~~
+  **CLOSED 20 Aug.** `tools/export_all.py` re-run; `data\exports\sentry_brief.csv` now has
+  **17 columns**, confirmed by hand. The re-export also rewrote all 7 brief JSONs, all 7
+  `_fields.json` and all 23 export artifacts — a measure of how far the artifacts had drifted from
+  the code. **The finding stands as a standing check (TC-6), not as a closed one-off:**
   `src/export.py` was fixed at **18:18** on 19 Aug to carry all of the brief's Expected Output
   items; every file in `data/exports/` was written at **14:16**, four hours earlier.
   `BRIEF_COLUMNS` is **17 columns**; `data/exports/sentry_brief.csv` has **11** and no

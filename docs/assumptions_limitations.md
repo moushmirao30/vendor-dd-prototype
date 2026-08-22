@@ -262,12 +262,21 @@ the only artifact that lets a reader distinguish *"the vendor is silent"* from
 
 ---
 
-## 5. The corpus is frozen at 13 August 2026, and pages have moved since
+## 5. The corpus is frozen, and pages have moved since
 
-Collection ran on 13 August. It has **not** been re-run, deliberately: every
-measured figure in `evaluation.md`, `confidence_rules.md` and `HANDOFF.md` was
-fact-checked by script against that corpus, and re-collecting would invalidate all
-of them for no analytical gain.
+**It is not uniformly 13 August, and saying so was an error this document repeated
+for three days.** `data/exports/source_manifest.csv` records `date_collected`
+**2026-08-13** for Atlassian, GitHub, Linear, Postman and Sentry, and **2026-08-19**
+for **GitLab and JetBrains** — the two vendors whose seed URLs were corrected on the
+19th. The right sentence is *"13 August, with GitLab and JetBrains re-collected on
+the 19th"*, and the manifest is where a reader should check it rather than trusting
+this paragraph.
+
+Collection has **not** been re-run since, deliberately: every measured figure in
+`evaluation.md`, `confidence_rules.md` and `HANDOFF.md` was fact-checked by script
+against that corpus, and re-collecting would invalidate all of them for no
+analytical gain. The figures were re-verified by running the full workflow on
+20 August and every one reproduced.
 
 Drift is real and is reported as a finding:
 
