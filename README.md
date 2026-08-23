@@ -175,6 +175,7 @@ src/         agent1..3 · orchestrator · review_rules · fetch · parse · sche
 tools/       run_workflow.py · verify_corpus.py · review_all.py · export_all.py
 data/        corpus/ (canonical JSON) · briefs/ · exports/ · cache/html/ (local only)
 docs/        architecture · confidence_rules · evaluation · assumptions_limitations · client_guidance
+             test_cases · code_walkthrough
 brief.txt    the project brief, extracted verbatim from the PDF
 tests/       152 offline tests + five HTML fixtures modelled on real vendor pages
 screenshots/ the interface, tab by tab, for GitLab and JetBrains

@@ -704,8 +704,9 @@ built and verified by unpacking on 22 Aug. Never hand-assemble a submission fold
 ships exactly the tracked tree at HEAD and nothing else — no `.git`, no `.venv`, no
 `__pycache__`, no `_to_delete/`, and no HTML cache.
 
-**`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`, so the archive is
-111 − 2 = 109 files.** The reason is §0 of this file. It is addressed to an AI assistant and says,
+**`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`.** The 23 Aug archive is
+**112 files** (three new test fixtures since the 109-file count); `code_walkthrough.md` makes 113
+at the next rebuild. **Re-count after every rebuild rather than trusting this line.** The reason is §0 of this file. It is addressed to an AI assistant and says,
 in Moushmi's own words, *"I know Python basics only… never hand over unexplained code — 'an AI
 wrote it' ends an interview"*, plus how the 18 Aug fix pass was run in a container. **That is an
 internal working document and it must never reach the client.** Do not remove those two lines.
@@ -748,10 +749,16 @@ deliverable for what points at it.**
       `7e89306`: the finding, the three-axis table with what each column is for, 16.3% / 84% / 41%,
       the four places manual review remains, and how the defects were actually found.
 - [x] ~~Add defects 40–47 to `docs/evaluation.md`.~~ **DONE 22 Aug**, `docs/evaluation.md` §5.1.
-- [ ] **Re-clone and run `verify_corpus.py` there.** The only fix from 22 Aug with no confirmation.
-- [ ] Delete `_to_delete/` (5.5 MB, 27 files). `git archive` cannot reach it, so this is hygiene,
-      not a blocker.
+- [x] ~~**Re-clone and run `verify_corpus.py` there.**~~ **DONE 23 Aug** in a clone built from
+      `c75f195`: one `cache-absent` WARN per vendor, 0 FAIL, and `pytest -q` 153 passed / 1
+      skipped. Defect 53's fix is confirmed, and running it is what found defects 54 and 55.
+- [x] ~~Delete `_to_delete/`.~~ **DONE 23 Aug.**
 - [ ] Remove the repository line from the submission email — the repo still contains `HANDOFF.md`.
+- [x] ~~**`docs/code_walkthrough.md`**~~ **WRITTEN 23 Aug: 83 lines, 6.9 KB** — ten reviewer
+      questions with the file and function that answers each, three things that look like bugs
+      and are decisions, and the two commands that prove them. Kept short on purpose against
+      the volume risk. Added to `README.md`'s `docs/` line; it ships unless you `export-ignore`
+      it. **NOT a brief deliverable** — the original note below still governs how it is counted.
 - [ ] **`docs/code_walkthrough.md`** — **NOT a brief deliverable.** Checked verbatim against
       `brief.txt` on 20 Aug: the ten listed items are prototype, orchestration code, corpus,
       sample outputs, README, architecture note, assumptions & limitations, **test cases**,

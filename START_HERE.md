@@ -83,8 +83,10 @@ match the rules.
    is now the file's first section.
 5. ~~Add defects 40–47 to `docs/evaluation.md`.~~ **DONE** — §5.1 (40–47), §5.2 (48–53),
    §5.3 (54–55), the last written 23 Aug.
-6. **`docs/code_walkthrough.md`** — the one that lets me defend the code in review.
-   **Not a brief deliverable.** Optional, and the first thing to cut.
+6. ~~**`docs/code_walkthrough.md`**~~ **WRITTEN 23 Aug — 83 lines, 6.9 KB, deliberately short.**
+   Ten reviewer questions with the file and function that answers each, plus three things that
+   look like bugs and are decisions. **Not a brief deliverable**; if the volume risk below wins,
+   `git rm` it or add it to `.gitattributes` as `export-ignore`.
 7. Delete `_to_delete/` before packaging (7 stale git lock files). Gitignored, so git will
    never remind you — and `git archive` already excludes it, so this is tidiness, not risk.
 8. **`git push`.** The defect 54–55 commit exists only on this machine.
@@ -96,7 +98,7 @@ match the rules.
 
 ## ⚠ The standing risk is volume, not missing work
 
-~180 KB of prose across five documents. Every page is defensible; nobody will read
+~190 KB of prose across seven documents. Every page is defensible; nobody will read
 them all. The brief requires the **Streamlit interface** to be usable by a
 non-technical operations lead — not the documents — and the interface is good.
 **Write nothing longer. The repo needs a shorter entry point, not more depth.**

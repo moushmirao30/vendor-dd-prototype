@@ -434,6 +434,34 @@ The honest summary: **the system cannot invent a claim, but it can quote the wro
 with terms the reader cannot see, or score it on a neighbouring sentence.** Source-grounding
 removes an entire class of failure. It does not remove judgement.
 
+### 3.1 The replay reconciles — every artifact in this archive is what the frozen cache produces
+
+Grounding says where a sentence came from. Reproducibility says whether anyone can obtain the same
+sentence again. They are separate claims, checked differently, and until 23 August only the first
+had been demonstrated as a before-and-after.
+
+On 23 August, after a change under `src/`, the whole offline chain was re-run against the frozen
+cache — `run_workflow.py --mode replay`, then `verify_corpus.py`, then `export_all.py` — and the
+output compared with the artifacts already committed:
+
+- **7 of 7 vendors replayed with no network request made.** Agent 1 loaded every page from the
+  cache; the preflight confirmed each readable page was present, so Agent 2 re-read all of them.
+- **28 artifact files changed, and every changed byte was a timestamp** — `generated_on` and
+  `ran_on`. Not one field value, confidence label, evidence quote, score, coverage figure or review
+  flag moved.
+- **`verify_corpus.py`: 0 FAIL across all seven vendors**, with the same 55 WARN rows ledgered in
+  §4.5 — 11 Atlassian, 5 GitHub, 6 GitLab, 9 JetBrains, 5 Linear, 11 Postman, 8 Sentry.
+- Every headline figure in this document survived unchanged: Postman 10/10 on evidence with
+  coverage 2 of 5, JetBrains 5/10 with 4 NOT_FOUND, Atlassian 6 of 8 fields from 5 readable pages,
+  GitHub, GitLab and Sentry at 5 of 5 coverage.
+
+**A reviewer cannot repeat that comparison from this archive alone**, because the HTML cache is
+excluded at the client's instruction of 18 August. What the archive does carry is
+`data/exports/source_manifest.csv` — all 54 attempts, their outcomes, and a SHA-256 of each page's
+content — so the pages behind these quotes can be identified and re-collected. The README's
+*Re-collecting the public sources* section is the route back, and `docs/assumptions_limitations.md`
+states plainly that the vendors' live pages have moved since the corpus was frozen.
+
 ---
 
 ## 4. Where does manual review remain necessary?

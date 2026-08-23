@@ -2,7 +2,7 @@
 
 **Vendor Due-Diligence Research Workflow Prototype — First Quadrant Labs**
 Moushmi Rao · corpus frozen 13 August 2026, GitLab 19 August, JetBrains 22 August ·
-written 20 August 2026, revised 22 August
+written 20 August 2026, revised 22 and 23 August
 
 This is the brief's *"sample test queries or test cases"* deliverable. It is organised in the
 brief's own order — **Expected Input → Expected Output → Streamlit interface → Scope Boundaries →
