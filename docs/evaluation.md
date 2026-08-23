@@ -91,7 +91,7 @@ printed on the vendor's own brief rather than buried here.
 
 ### How the defects were found — the method, not the tooling
 
-**Fifty-three defects have been found in this project. The automated test suite caught one of
+**Fifty-five defects have been found in this project. The automated test suite caught one of
 them.** The rest came from reading the output against the source page, from re-running the
 workflow end to end, and — for the last four — from reading the client's brief line by line
 instead of a summary of it. Every one of those four was on the client-facing surface and none was
@@ -546,10 +546,10 @@ in every brief, for exactly this reason.
 
 ## 5. What found the defects
 
-**Fifty-three defects have been found in this project. The automated test suite caught one.**
+**Fifty-five defects have been found in this project. The automated test suite caught one, and reported one more that was a defect in itself.**
 
-The other fifty-two were found by opening the artifact and reading what it actually said — the
-screen first, then the JSON, then the raw HTML. The 152 offline tests are worth having: they hold
+The other fifty-three were found by opening the artifact and reading what it actually said — the
+screen first, then the JSON, then the raw HTML. The 154 offline tests are worth having: they hold
 fixed behaviour still while it is changed. But they test what was already understood, and every
 defect that mattered was a gap between what the code was believed to do and what the vendor pages
 actually contained.
@@ -656,7 +656,28 @@ that does not exist on the machine running the tests. **This is the strongest av
 for §5's opening sentence**: the tests hold behaviour still, and reading the output is what finds
 defects.
 
-### 5.3 Checking is the job, and most candidate findings do not survive it
+### 5.3 Two more came from running the suite on a clone, and one of them was in the suite
+
+Defects **54–55**, found on 23 August by doing what found defect 53: cloning the repository and
+running it. `pytest -q` in the clone reported **1 failed, 151 passed**.
+
+| # | What the clone showed |
+|---|---|
+| **54** | `test_gitlab_security_field_quotes_the_soc_2_sentence` failed with `assert 'NOT_FOUND' == 'High'`. Agent 2 was right and the test was wrong. It skipped itself on `data/corpus/gitlab.json.exists()` — but the corpus **index** is committed while the HTML pages it names deliberately are not, so on any clone the guard was true, the replay ran with nothing to replay, and the suite reported the archive's intended shape as a failure. **This is defect 53 in a third costume.** After `run_workflow --mode replay` and `verify_corpus.py`, the test suite was the third check we own that could not tell *excluded by instruction* from *broken*. |
+| **55** | Found while fixing 54, and worse than it. `resolve_html_path` trusted `Path(raw_html_path).is_file()` before anything else. Since paths became repo-relative (defect 16), that branch resolves against the **process's working directory** rather than the repository it was handed — so a run whose working directory holds a cache can read that cache while reporting it as a different tree's. It surfaced because a simulated cacheless clone reported its pages as *present*: the simulation was running from inside the real repository. **A silent wrong answer, with no `missing-html` step and no caveat to show it happened** — the failure this project exists to report, committed by the tool's own path resolution. |
+
+**Both fixes are pinned by tests that run without the cache.** The GitLab assertion was restated on
+three committed fixtures, where a status board and a pricing tier compete with the security page
+and lose; the path rule is pinned by a test that builds two trees, puts the same content-addressed
+filename in both caches and runs from the wrong one. `pytest -q` now reports **154 passed** where
+the cache exists and **153 passed, 1 skipped** on a clone — TC-34 and TC-35 in `docs/test_cases.md`.
+
+**Defects 53, 54 and 55 are one pattern, not three.** Every check this project owns was written on
+the machine that holds the HTML cache, and each behaved differently on the archive a reviewer
+actually receives. The remedy is not more tests. It is running the ones that exist somewhere else
+before believing them.
+
+### 5.4 Checking is the job, and most candidate findings do not survive it
 
 The same discipline was applied to this document. Seven candidate findings were investigated while
 writing and revising it; **four were wrong** — a set of apparent orphan citations that turned out
@@ -678,7 +699,7 @@ raised during that pass and all fourteen were false** — twelve were terms sitt
 truncated display excerpt but present on the page, and two were artifacts of the checker's own text
 normalisation on a pricing table. That makes it the sixth time in this project that a plausible
 finding has failed on checking, and the ratio is the point: **the discipline that produced the
-fifty-three real defects is the same one that keeps the false ones out of the document.**
+fifty-five real defects is the same one that keeps the false ones out of the document.**
 
 ---
 

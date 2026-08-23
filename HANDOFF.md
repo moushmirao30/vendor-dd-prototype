@@ -928,7 +928,7 @@ code does not have is worse than no document.
   keep adding to it — it is the single most persuasive page in the repo, because it demonstrates
   the discipline the deliverable is arguing for rather than asserting it.
 
-- **`docs/evaluation.md` carries three claims that defect 42 made false**, all verified against
+- ~~**`docs/evaluation.md` carries three claims that defect 42 made false.**~~ **ALL THREE CLOSED — re-checked against the file itself on 23 Aug:** §0 no longer contains *"A sixth is open"*; §4.3 now opens *"Until 19 August, Postman and Sentry received identical scores"*; the count sentence reads **fifty-five** in all three places it appears. The original note, kept because it records what was verified against
   `data/briefs/postman_brief.json` on 20 Aug rather than against a document:
   **§0** ends *"A sixth is open and belongs to Agent 3: a vendor can still score 10/10 High while
   half its primary documents were never read"* — closed; Postman now reads `evidence_score` 10,
@@ -937,12 +937,13 @@ code does not have is worse than no document.
   **§4.3** still says *"Postman and Sentry receive identical scores and identical confidence
   labels"* and calls this *"the most important open defect"* — they are no longer identical, and it
   is no longer open.
-  **§5** says *"Thirty-seven defects"*; the count is now **55** (this line itself read 47 until 23 Aug, having missed defects 48–53).
+  **§5** now says *"Fifty-five defects"* in all three places. *This line read "Thirty-seven ... the count is now 47" until 23 Aug, having missed defects 48–53 — a note about stale counts that was itself stale.*
   The one-page executive summary added 20 Aug states the current position. Everything else in the
   file was fact-checked by script on 18 Aug and should be re-read rather than rewritten.
-- **`docs/evaluation.md` does not yet contain defects 40–47** individually, nor the offline-replay
-  reconciliation. Lower priority than the three corrections above: a wrong sentence outranks a
-  missing one.
+- ~~**`docs/evaluation.md` does not yet contain defects 40–47**~~ — **DONE**: §5.1 carries 40–47,
+  §5.2 carries 48–53, §5.3 carries 54–55 (23 Aug). **The offline-replay reconciliation named in
+  this bullet was NOT re-checked on 23 Aug and may still be missing** — do not treat this line as
+  evidence that it is there.
 
 ---
 

@@ -11,7 +11,7 @@ durable. The repo is.**
 
 | # | File | Why |
 |---|---|---|
-| 1 | **`HANDOFF.md`** | Everything a fresh session needs. ~80 KB. Its §0 is how to work with me; §5 is all 53 defects; §7 is where things stand; §11 is the live brief-compliance matrix; §12 is the compliance audit |
+| 1 | **`HANDOFF.md`** | Everything a fresh session needs. ~80 KB. Its §0 is how to work with me; §5 is all 55 defects; §7 is where things stand; §11 is the live brief-compliance matrix; §12 is the compliance audit |
 | 2 | **`docs/client_guidance.md`** | **The client's written reply of 18 August, in full. It outranks every other decision in this repo.** Read it before ANY design choice |
 | 3 | **`brief.txt`** | The project brief, extracted verbatim from `Project_Brief_1.pdf`. **Check compliance against this file, never against a summary of it** — four requirements were quietly unmet for nine days because nobody did |
 | 4 | **`docs/assumptions_limitations.md`** | What was assumed and what the system structurally cannot do |
@@ -29,8 +29,8 @@ that wrote Rule 3. **Check the clock against the machine at the start of every s
 before trusting any date in this repository, including this one.***
 
 - **All code is built.** Three agents, orchestrator, export layer, source manifest,
-  all five Streamlit tabs. **152 tests passing and `verify_corpus.py` 0 FAIL on all 7 vendors —
-  both re-run on Windows on 20 August, not recalled.** `verify_corpus` also raises **55 WARN**;
+  all five Streamlit tabs. **154 tests passing and `verify_corpus.py` 0 FAIL on all 7 vendors —
+  both re-run on Windows on 23 August, and re-run again in a fresh clone the same day (153 passed / 1 skipped, one `cache-absent` WARN per vendor). Not recalled.** `verify_corpus` also raises **55 WARN**;
   those are findings about the vendors, ledgered in `docs/evaluation.md` §4.5.
 - **10 of 10 brief deliverables complete.** Counted 20 Aug against `brief.txt` verbatim.
   `docs/code_walkthrough.md` is **not** on the brief's list; it is our own idea, worth writing
@@ -42,10 +42,10 @@ before trusting any date in this repository, including this one.***
   **It is not uniformly 13 August:** five vendors are **2026-08-13**, **GitLab is 2026-08-19**,
   and **JetBrains is 2026-08-22** — re-collected from the UI, with every figure unchanged. Never
   write "the 13 August corpus". Check `data/exports/source_manifest.csv`, column `date_collected`
-  — and note it is itself stale for JetBrains until `tools/export_all.py` re-runs.
+  — `tools/export_all.py` was re-run on 22 Aug and the manifest now carries JetBrains **2026-08-22**; re-verified against the corpus on 23 Aug.
 - Repo: `https://github.com/moushmirao30/vendor-dd-prototype` (private, `master`).
-  **26 commits, HEAD `a99a11e`, pushed, working tree clean.**
-- **The submission archive is built and verified**: `git archive --format=zip -o
+  **27 commits, HEAD `6a48fc6` (defects 54–55). COMMITTED LOCALLY, NOT YET PUSHED as of 23 Aug.**
+- ⚠ **The submission archive on disk is STALE.** It was built 23 Aug 14:27, minutes before the defect 54–55 commit, so it still ships the failing `test_agent2.py` and none of the three new fixtures. Rebuild it and re-check the file count: `git archive --format=zip -o
   ..\vendor-dd-prototype-submission.zip HEAD` → 3 MB, 109 files.
 - ⚠ **`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`. DO NOT REMOVE THOSE
   LINES.** `HANDOFF.md` §0 is addressed to an AI assistant and must never reach the client. The
@@ -55,7 +55,7 @@ before trusting any date in this repository, including this one.***
 ```powershell
 cd "C:\Users\Moushmi Rao\GEN-AGENTIC_AI\Projects\Research Project_1\vendor-dd-prototype"
 .venv\Scripts\activate
-pytest -q                                    # expect 152
+pytest -q                                    # expect 154
 python tools/run_workflow.py --mode replay   # 1->2->3, offline, from the frozen cache
 python tools/verify_corpus.py                # expect 0 FAIL — READ THE WARN ROWS
 python tools/export_all.py                   # refresh data/exports/
@@ -71,21 +71,24 @@ match the rules.
 
 ## What to do next, in priority order
 
-1. **Re-clone and run `python tools/verify_corpus.py` there.** The last unverified thing in the
+1. ~~**Re-clone and run `python tools/verify_corpus.py` there.**~~ **DONE 23 Aug in `Desktop\clonetest2`: one `cache-absent` WARN per vendor, 0 FAIL, and `pytest -q` 153 passed / 1 skipped.** It was the last unverified thing in the
    project: defect 53 changed how the checker behaves when the HTML cache is absent, and a clone
    is the only place that shows. Expect **one `cache-absent` WARN per vendor**, not 49 FAILs.
-2. **Click the research-focus filter once by hand** in the running app. Its wiring
-   is proven by AppTest but no browser has confirmed it visually.
+2. ~~**Click the research-focus filter once by hand.**~~ **DONE 22 Aug** — that session is where
+   defects 48–53 came from.
 3. ~~**`docs/test_cases.md`**~~ — **DONE 20 Aug**, and `tools/export_all.py` re-run: the brief
    CSVs now carry **17 columns** including the disclaimer, confirmed by hand. **Re-run
    `export_all.py` after every change under `src/` — nothing automated will remind you.**
-4. **A one-page executive summary at the top of `docs/evaluation.md`** — the
-   three-axis table, the 16.3% figure, the four failure modes. Highest-value
-   remaining item.
-5. Add defects 40–47 to `docs/evaluation.md`.
+4. ~~**A one-page executive summary at the top of `docs/evaluation.md`.**~~ **DONE 20 Aug** — it
+   is now the file's first section.
+5. ~~Add defects 40–47 to `docs/evaluation.md`.~~ **DONE** — §5.1 (40–47), §5.2 (48–53),
+   §5.3 (54–55), the last written 23 Aug.
 6. **`docs/code_walkthrough.md`** — the one that lets me defend the code in review.
    **Not a brief deliverable.** Optional, and the first thing to cut.
-7. Delete `_to_delete/` before packaging. Gitignored, so git will never remind you.
+7. Delete `_to_delete/` before packaging (7 stale git lock files). Gitignored, so git will
+   never remind you — and `git archive` already excludes it, so this is tidiness, not risk.
+8. **`git push`.** The defect 54–55 commit exists only on this machine.
+9. **Rebuild the submission zip** from the new HEAD, then unzip it and run `pytest -q` inside it.
 
 **Feature freeze is 21 August. Everything after it is prose.**
 

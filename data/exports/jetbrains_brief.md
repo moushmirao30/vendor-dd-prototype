@@ -6,7 +6,7 @@
 
 **Category:** developer productivity tools _(curated, not extracted)_
 
-**Generated:** 2026-08-22
+**Generated:** 2026-08-23
 
 ## How to read this brief
 
