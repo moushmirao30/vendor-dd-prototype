@@ -44,6 +44,12 @@ before trusting any date in this repository, including this one.***
   write "the 13 August corpus". Check `data/exports/source_manifest.csv`, column `date_collected`
   — and note it is itself stale for JetBrains until `tools/export_all.py` re-runs.
 - Repo: `https://github.com/moushmirao30/vendor-dd-prototype` (private, `master`).
+  **26 commits, HEAD `a99a11e`, pushed, working tree clean.**
+- **The submission archive is built and verified**: `git archive --format=zip -o
+  ..\vendor-dd-prototype-submission.zip HEAD` → 3 MB, 109 files.
+- ⚠ **`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`. DO NOT REMOVE THOSE
+  LINES.** `HANDOFF.md` §0 is addressed to an AI assistant and must never reach the client. The
+  email therefore ships the zip only and does not offer the repository link.
 - Submit to **projects@firstquadrantlabs.com** AND upload to the LMS.
 
 ```powershell
@@ -65,10 +71,9 @@ match the rules.
 
 ## What to do next, in priority order
 
-1. ~~**Commit and push.**~~ **DONE 20 Aug** — `7e89306` then `752e60d`, both pushed.
-   `docs/client_guidance.md`, `brief.txt`, `docs/assumptions_limitations.md` and this file are
-   now tracked. **Nothing in this repository exists on one laptop only any more.**
-   Next instead: **add defects 40–47 to `docs/evaluation.md`.**
+1. **Re-clone and run `python tools/verify_corpus.py` there.** The last unverified thing in the
+   project: defect 53 changed how the checker behaves when the HTML cache is absent, and a clone
+   is the only place that shows. Expect **one `cache-absent` WARN per vendor**, not 49 FAILs.
 2. **Click the research-focus filter once by hand** in the running app. Its wiring
    is proven by AppTest but no browser has confirmed it visually.
 3. ~~**`docs/test_cases.md`**~~ — **DONE 20 Aug**, and `tools/export_all.py` re-run: the brief

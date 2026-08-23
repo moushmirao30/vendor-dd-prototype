@@ -116,7 +116,7 @@ def vendor_score(fields: list[dict], core_field_names: list[str],
         header:  Confidence 10/10 -> High        (this function)
         fields:  confidence: Medium              (the client's rule)
 
-    and HANDOFF's claim that "Postman can no longer tie Sentry" was false —
+    and the project note claiming "Postman can no longer tie Sentry" was false —
     both still read 10/10 High while Postman's coverage was 2/5 and Sentry's 5/5.
 
     The function is unchanged and correct at what it does. Only the NAME was
@@ -443,8 +443,9 @@ def confidence(field: dict, dictionary: dict, unusable_types: list[str]) -> tupl
     # uptime_reliability, both quoting the pricing page, Postman's quote being
     # repeated navigation furniture rather than a claim at all.
     #
-    # This is a locked decision, not a preference: "the quote printed under a
-    # label must be the evidence that earned it" (HANDOFF §2, from defect 14).
+    # This is a locked project decision, not a preference: "the quote printed
+    # under a label must be the evidence that earned it" — set after defect 14,
+    # and the reasoning is written up in docs/confidence_rules.md.
     # High may not be awarded on the strength of evidence the reviewer never sees.
     if home and not off_home and ev[0].get("source_type") not in home:
         reasons.append(f"the quote shown came from {ev[0].get('source_type')}, "

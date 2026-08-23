@@ -15,7 +15,7 @@ Read it top to bottom before touching anything.
 >
 > Both were added to the repo on 19 Aug after the assistant's project memory was
 > lost. **Project memory is convenient and it is not durable. The repo is.**
-**Last updated: 20 August 2026 — DAY 13 of 20. 24 commits (`752e60d`), pushed.
+**Last updated: 22 August 2026 — DAY 15 of 20. 26 commits (`a99a11e`), pushed.
 All three agents, the orchestrator, the export layer, the source manifest and the full Streamlit
 interface are built and committed. 152 tests. `verify_corpus.py` 0 FAIL
 across all seven vendors — **both re-run on Windows on 20 Aug, not recalled.**
@@ -314,7 +314,7 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 
 ## 3. What exists right now
 
-**24 commits, `752e60d`, pushed. Everything below is built and committed: three agents, the
+**26 commits, `a99a11e`, pushed. Everything below is built and committed: three agents, the
 orchestrator, the export layer, the source manifest, and all five UI tabs.**
 **152 tests. `verify_corpus.py` 0 FAIL across all seven vendors.**
 **7 vendors · 49 pages · 55 cached files · 7 briefs · 23 export artifacts · 12 screenshots.**
@@ -655,7 +655,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 
 ### Commits
 
-**HEAD = `origin/master` = `752e60d`, 24 commits, pushed. Level with origin, nothing ahead.**
+**HEAD = `origin/master` = `a99a11e`, 26 commits, pushed. Level with origin, working tree clean.**
 
 | Commit | When | What |
 |---|---|---|
@@ -671,6 +671,8 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 | `07228a1` | 19 Aug | **`docs/architecture.md` and `README.md` rewritten against the code that exists** — 312 insertions, 77 deletions |
 | `7e89306` | 20 Aug | **§7/§8/§11/§12 reconciled** · the exec summary at the top of `docs/evaluation.md` · **the four never-tracked documents added**: `client_guidance.md`, `brief.txt`, `assumptions_limitations.md`, `START_HERE.md`. 14 files, 1425 insertions |
 | `752e60d` | 20 Aug | **`docs/test_cases.md`** — the tenth and last brief deliverable · `export_all.py` re-run, so the 23 shipped artifacts finally match the code that produces them. 39 files |
+| `c3d44d6` | 22 Aug | The corpus was never uniformly 13 August, and five documents said it was. Defects 40–47 written into `docs/evaluation.md` · README deliverables table rebuilt to the brief's ten · the 55-warning ledger (§4.5) |
+| `a99a11e` | 22 Aug | **Defects 48–53** — five found by reading a tab, one by cloning the repository · `.gitattributes` export-ignore for the two internal documents |
 
 *Both 20 Aug commits carry the same subject line, because the second reused the first's message
 file. Harmless, and worth not repeating: `git log --oneline` now shows two identical subjects.*
@@ -678,6 +680,30 @@ file. Harmless, and worth not repeating: `git log --oneline` now shows two ident
 **This table was stale by two commits within four hours of being written.** Regenerate it from
 `git log`, never from memory. Same class of error as §8 and §11 below, and the reason this
 section is now the only place in the repository that states commit state.
+
+### PACKAGING — and why `HANDOFF.md` is not in the archive
+
+**`git archive --format=zip -o ..\vendor-dd-prototype-submission.zip HEAD`.** 3 MB, **109 files**,
+built and verified by unpacking on 22 Aug. Never hand-assemble a submission folder: `git archive`
+ships exactly the tracked tree at HEAD and nothing else — no `.git`, no `.venv`, no
+`__pycache__`, no `_to_delete/`, and no HTML cache.
+
+**`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`, so the archive is
+111 − 2 = 109 files.** The reason is §0 of this file. It is addressed to an AI assistant and says,
+in Moushmi's own words, *"I know Python basics only… never hand over unexplained code — 'an AI
+wrote it' ends an interview"*, plus how the 18 Aug fix pass was run in a container. **That is an
+internal working document and it must never reach the client.** Do not remove those two lines.
+
+**The repository still contains both.** The submission email therefore ships the **zip only** and
+does not offer the GitHub link — the brief accepts *"a structured zip folder or repository format"*,
+either, not both.
+
+**The consequence that was nearly missed.** Excluding two files broke every reference to them from
+files that DO ship. `README.md` opened by telling the reader to read `START_HERE.md` and
+`HANDOFF.md`; `docs/assumptions_limitations.md` cited `HANDOFF.md` as a source; and three comments
+in `src/review_rules.py` and `tests/test_agent3.py` cited "HANDOFF §2" as the decision record. All
+five are rewritten to stand alone. **Before removing anything from a deliverable, grep the
+deliverable for what points at it.**
 
 ### STILL OUTSTANDING, in this order
 
@@ -692,7 +718,9 @@ section is now the only place in the repository that states commit state.
       this file. Message prepared in `_to_delete/commit5.txt`.
       **The project's own lesson is that memory is not durable and the repo is. Four of the
       files that carry that lesson are not yet in the repo.**
-- [ ] **CLICK THE RESEARCH-FOCUS FILTER ONCE BY HAND.** Its wiring is proven by AppTest —
+- [x] ~~**CLICK THE RESEARCH-FOCUS FILTER ONCE BY HAND.**~~ **DONE 22 Aug**, on JetBrains with
+      `support` selected — the edge case most likely to break, being NOT_FOUND with only a caveat.
+      It worked, and reading the screen around it produced defects 48–52. Original note kept: Its wiring is proven by AppTest —
       selecting "security" yields 3 of 8 fields with no exceptions — but Streamlit's multiselect
       dropdown could not be driven in headless Chromium, so **no browser has confirmed it visually.**
       This project's own rule is that AppTest verifies data and not rendering.
@@ -703,8 +731,11 @@ section is now the only place in the repository that states commit state.
 - [x] ~~**A one-page executive summary at the top of `docs/evaluation.md`**~~ **DONE 20 Aug**, in
       `7e89306`: the finding, the three-axis table with what each column is for, 16.3% / 84% / 41%,
       the four places manual review remains, and how the defects were actually found.
-- [ ] Add defects 40–47 to `docs/evaluation.md`. Re-read the rest against the final code rather
-      than rewriting it; it was fact-checked by script on 18 Aug.
+- [x] ~~Add defects 40–47 to `docs/evaluation.md`.~~ **DONE 22 Aug**, `docs/evaluation.md` §5.1.
+- [ ] **Re-clone and run `verify_corpus.py` there.** The only fix from 22 Aug with no confirmation.
+- [ ] Delete `_to_delete/` (5.5 MB, 27 files). `git archive` cannot reach it, so this is hygiene,
+      not a blocker.
+- [ ] Remove the repository line from the submission email — the repo still contains `HANDOFF.md`.
 - [ ] **`docs/code_walkthrough.md`** — **NOT a brief deliverable.** Checked verbatim against
       `brief.txt` on 20 Aug: the ten listed items are prototype, orchestration code, corpus,
       sample outputs, README, architecture note, assumptions & limitations, **test cases**,
@@ -969,7 +1000,7 @@ review remains manual — `VendorBrief.disclaimer` carries this on every export.
 | Confidence level: High / Medium / Low | **Met on two axes.** `docs/confidence_rules.md` rewritten 19 Aug for defects 42 and 43 and now documents both | `docs/confidence_rules.md` §Step 6 |
 | Lower-cost alternatives (Ollama, local models, rule-based, template summaries) mentioned and supported | **Rule-based is built; the alternatives are not yet written down anywhere.** The brief asks that they be *mentioned* | owed by `assumptions_limitations.md` |
 | Deliverables: prototype · orchestration code · corpus · ≥5 sample outputs · README · architecture note · assumptions & limitations · test cases · evaluation summary · screenshots | **10 of 10 complete** (recounted 20 Aug against `brief.txt` verbatim). Prototype, orchestration code, corpus, sample outputs (7 briefs × 3 formats), README, architecture note, assumptions & limitations, **sample test cases (`docs/test_cases.md`)**, evaluation summary, screenshots. `code_walkthrough.md` is NOT on the brief's list and must not be counted against the ten | see §7, `docs/test_cases.md` |
-| Zip or repository, all code, data, README, screenshots, sample outputs | Planned — **packaging rewritten by client instruction** | structured corpus + code + source manifest; HTML cache EXCLUDED; README explains re-collection (§1.1 item 3) |
+| Zip or repository, all code, data, README, screenshots, sample outputs | **Built and verified 22 Aug** — `git archive` produces a 3 MB, 109-file zip; unpacked and checked. Structured corpus + code + source manifest; HTML cache EXCLUDED; README explains re-collection (§1.1 item 3). The two internal documents are `export-ignore`d — see §7 *Packaging* | `.gitattributes`, §7 |
 | Queries only via projects@firstquadrantlabs.com, consolidated | **Sent and answered 18 Aug** | §1.1 |
 
 ### Added by the client's written guidance, 13 Aug (§1.1). Not in the original brief.

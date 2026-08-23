@@ -333,8 +333,9 @@ def test_high_requires_the_printed_quote_to_be_on_its_home_page(field_dictionary
     so the field scored High — and the reason string read "stated directly on the
     vendor's own PRICING page" as the justification for a SECURITY field.
 
-    HANDOFF §2 locks this: "the quote printed under a label must be the evidence
-    that earned it" (defect 14). High may not rest on evidence nobody sees.
+    A locked project decision covers this: "the quote printed under a label must
+    be the evidence that earned it" — set after defect 14 and written up in
+    docs/confidence_rules.md. High may not rest on evidence nobody sees.
     """
     f = _field("security_trust",
                evidence=[_card("pricing", heading="Enterprise",

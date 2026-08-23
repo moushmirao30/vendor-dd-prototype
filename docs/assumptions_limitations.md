@@ -275,7 +275,7 @@ reader should check it rather than trusting this paragraph — including the sen
 you are reading, which has now been wrong twice.
 
 Collection has **not** been re-run since, deliberately: every measured figure in
-`evaluation.md`, `confidence_rules.md` and `HANDOFF.md` was fact-checked by script
+`evaluation.md` and `confidence_rules.md` was fact-checked by script
 against that corpus, and re-collecting would invalidate all of them for no
 analytical gain. The figures were re-verified by running the full workflow on
 20 August and every one reproduced.

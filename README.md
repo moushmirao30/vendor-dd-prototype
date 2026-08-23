@@ -9,8 +9,9 @@ from.
 > not assign vendor risk scores, grant security or compliance approval, or make
 > procurement decisions. Every field requires human review.
 
-> **Working on this project rather than reviewing it?** Read `START_HERE.md`, then
-> `HANDOFF.md`. This README is written for a reviewer.
+> **This README is the entry point**, and it is written for a reviewer: everything
+> needed to run, read and check this prototype is here or in `docs/`. Start with
+> *Start here* below, then `docs/evaluation.md` — its first page is a one-page summary.
 
 ---
 
@@ -76,24 +77,22 @@ sentence was recorded three days earlier. **The corpus in `data/corpus/`, dated
 built.** 152 offline tests; `python tools/verify_corpus.py` reports 0 FAIL across
 all seven vendors.
 
-**All ten deliverables the brief lists are complete**, checked one by one against `brief.txt`
-rather than against a summary of it.
-
-| # | Deliverable (the brief's own wording) | State |
-|---|---|---|
-| 1 | Working Streamlit prototype | **Complete** — five tabs |
-| 2 | Python orchestration code for the agent workflow | **Complete** — `src/orchestrator.py`, three modes |
-| 3 | Structured public-source vendor corpus in CSV/JSON/SQLite | **Complete** — JSON + `data/exports/corpus.csv`, 7 vendors, 49 pages. SQLite declined, with the reason in `docs/assumptions_limitations.md` §6 |
-| 4 | Sample outputs for at least 5 vendors | **Complete** — 7 vendors × JSON/CSV/Markdown |
-| 5 | README with setup and run instructions | **Complete** — this file |
-| 6 | Brief architecture note explaining the agent roles | **Complete** — `docs/architecture.md` |
-| 7 | Assumptions and limitations note | **Complete** — `docs/assumptions_limitations.md` |
-| 8 | Sample test queries or test cases | **Complete** — `docs/test_cases.md`, 34 cases plus 152 automated tests |
-| 9 | Short evaluation summary (four named questions) | **Complete** — `docs/evaluation.md`, one-page summary at the top |
-| 10 | Screenshots or short demo notes | **Complete** — 12 screenshots in `screenshots/` |
-| + | **Source manifest** — requested by the client 18 Aug, not in the original brief | **Complete** — `data/exports/source_manifest.csv`, 54 attempts: 5 never collected, 8 collected but unreadable |
+| Deliverable | State |
+|---|---|
+| Working prototype (Streamlit, 5 tabs) | **Complete** |
+| Python orchestration code | **Complete** — `src/orchestrator.py` |
+| Structured public-source corpus | **Complete** — 7 vendors, 49 pages |
+| Sample outputs for ≥5 vendors | **Complete** — 7 briefs × JSON/CSV/Markdown |
+| Source manifest (client-requested) | **Complete** — 54 attempts, 5 never collected, 8 unreadable |
+| README · architecture note · evaluation summary · screenshots | **Complete** |
+| Assumptions and limitations note | **Complete** — `docs/assumptions_limitations.md` |
+| Sample test cases (document) | In progress — 152 automated tests exist; the reviewer-facing note is being written |
 
 ## Running it
+
+Activate the environment first — `.venv\Scripts\activate` on Windows,
+`source .venv/bin/activate` elsewhere. Without it `pytest` is not on the PATH and
+PowerShell reports it as an unrecognised command.
 
 ```bash
 pytest -q                                    # 152 tests, all offline
