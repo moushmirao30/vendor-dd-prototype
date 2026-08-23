@@ -33,9 +33,9 @@ before trusting any date in this repository, including this one.***
   both re-run on Windows on 23 August, and re-run again in a fresh clone the same day (153 passed / 1 skipped, one `cache-absent` WARN per vendor). Not recalled.** `verify_corpus` also raises **55 WARN**;
   those are findings about the vendors, ledgered in `docs/evaluation.md` §4.5.
 - **10 of 10 brief deliverables complete.** Counted 20 Aug against `brief.txt` verbatim.
-  `docs/code_walkthrough.md` is **not** on the brief's list; it is our own idea, worth writing
-  and the first thing to drop. **Nothing the client asked for is outstanding — what remains is
-  quality, not coverage.**
+  `docs/code_walkthrough.md` was **not** on the brief's list; it was our own idea, drafted on
+  23 Aug and cut the same day (see item 6). **Nothing the client asked for is outstanding — what
+  remains is quality, not coverage.**
 - **The corpus is FROZEN. Do not re-collect** — every measured figure in every document was
   fact-checked against it, and vendor pages have moved since. `tools/run_workflow.py --mode replay`
   re-reads the frozen cache and is safe.
@@ -83,10 +83,10 @@ match the rules.
    is now the file's first section.
 5. ~~Add defects 40–47 to `docs/evaluation.md`.~~ **DONE** — §5.1 (40–47), §5.2 (48–53),
    §5.3 (54–55), the last written 23 Aug.
-6. ~~**`docs/code_walkthrough.md`**~~ **WRITTEN 23 Aug — 83 lines, 6.9 KB, deliberately short.**
-   Ten reviewer questions with the file and function that answers each, plus three things that
-   look like bugs and are decisions. **Not a brief deliverable**; if the volume risk below wins,
-   `git rm` it or add it to `.gitattributes` as `export-ignore`.
+6. ~~**`docs/code_walkthrough.md`**~~ **CUT 23 Aug.** Drafted, then removed before submission.
+   Not a brief deliverable; a document written to help you defend the code is one you have to be
+   able to defend; and the volume risk below decides ties. **Do not re-add it under deadline** —
+   the reasoning in `src/` comments already does this job, and each one names its defect.
 7. Delete `_to_delete/` before packaging (7 stale git lock files). Gitignored, so git will
    never remind you — and `git archive` already excludes it, so this is tidiness, not risk.
 8. **`git push`.** The defect 54–55 commit exists only on this machine.
@@ -98,7 +98,7 @@ match the rules.
 
 ## ⚠ The standing risk is volume, not missing work
 
-~190 KB of prose across seven documents. Every page is defensible; nobody will read
+~180 KB of prose across six documents. Every page is defensible; nobody will read
 them all. The brief requires the **Streamlit interface** to be usable by a
 non-technical operations lead — not the documents — and the interface is good.
 **Write nothing longer. The repo needs a shorter entry point, not more depth.**

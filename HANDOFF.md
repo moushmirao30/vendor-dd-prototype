@@ -308,7 +308,7 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 | Generic-term noise | **Agent 3 raises a flag**, dictionary left alone | avoids over-fitting the dictionary to one vendor | "review flags for manual follow-up" |
 | ~~Submission format~~ | ~~zip including `.git/`, excluding `.venv/`~~ **WITHDRAWN 18 Aug — see §1.1 item 3.** Ship the structured corpus, the code, and a NEW **source manifest**; keep the 22 MB HTML cache local; README explains re-collection | the client asked us not to redistribute verbatim third-party pages | "a structured zip folder or repository format" |
 | Repo visibility | **private** | the corpus stores ~70,000 chars of verbatim vendor text per vendor | — |
-| Code delivery | written into the repo with full explanation + `docs/code_walkthrough.md` | I must be able to defend every line | "the agent structure is simple, controlled, and understandable" |
+| Code delivery | written into the repo with full explanation; the comments in `src/` carry the reasoning and each names the defect it prevents | I must be able to defend every line | "the agent structure is simple, controlled, and understandable" |
 
 ---
 
@@ -705,8 +705,8 @@ ships exactly the tracked tree at HEAD and nothing else — no `.git`, no `.venv
 `__pycache__`, no `_to_delete/`, and no HTML cache.
 
 **`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`.** The 23 Aug archive is
-**112 files** (three new test fixtures since the 109-file count); `code_walkthrough.md` makes 113
-at the next rebuild. **Re-count after every rebuild rather than trusting this line.** The reason is §0 of this file. It is addressed to an AI assistant and says,
+**112 files** (three new test fixtures since the 109-file count), and stays 112: `code_walkthrough.md`
+was drafted and cut the same day. **Re-count after every rebuild rather than trusting this line.** The reason is §0 of this file. It is addressed to an AI assistant and says,
 in Moushmi's own words, *"I know Python basics only… never hand over unexplained code — 'an AI
 wrote it' ends an interview"*, plus how the 18 Aug fix pass was run in a container. **That is an
 internal working document and it must never reach the client.** Do not remove those two lines.
@@ -754,20 +754,17 @@ deliverable for what points at it.**
       skipped. Defect 53's fix is confirmed, and running it is what found defects 54 and 55.
 - [x] ~~Delete `_to_delete/`.~~ **DONE 23 Aug.**
 - [ ] Remove the repository line from the submission email — the repo still contains `HANDOFF.md`.
-- [x] ~~**`docs/code_walkthrough.md`**~~ **WRITTEN 23 Aug: 83 lines, 6.9 KB** — ten reviewer
-      questions with the file and function that answers each, three things that look like bugs
-      and are decisions, and the two commands that prove them. Kept short on purpose against
-      the volume risk. Added to `README.md`'s `docs/` line; it ships unless you `export-ignore`
-      it. **NOT a brief deliverable** — the original note below still governs how it is counted.
-- [ ] **`docs/code_walkthrough.md`** — **NOT a brief deliverable.** Checked verbatim against
+- [x] **`docs/code_walkthrough.md` — DRAFTED 23 Aug AND CUT THE SAME DAY.** Checked verbatim against
       `brief.txt` on 20 Aug: the ten listed items are prototype, orchestration code, corpus,
       sample outputs, README, architecture note, assumptions & limitations, **test cases**,
       evaluation summary, screenshots. `code_walkthrough.md` is our own addition. It is still the
-      document that lets you defend the code line by line in a review, so it is worth writing —
-      but it is optional, it must not be counted against the ten, and it is the first thing to
-      drop if the clock tightens.
-- [ ] Delete `_to_delete/` before packaging. It now holds two staging tarballs and five
-      commit-message files. Gitignored, so git will never remind you.
+      document that would let you defend the code line by line, so it was drafted on 23 Aug — and
+      then removed, on the document's own logic. **A file written to help you defend the code is
+      one you have to be able to defend, and that one was not written by you.** It also added a
+      seventh document to a package whose stated risk is volume, four hours before submission.
+      It reached one archive build (`d3110eb`) and was cut before the archive that gets sent.
+      Not logged as a defect: nothing was wrong with it, it was the wrong thing to ship.
+- [x] ~~Delete `_to_delete/` before packaging.~~ **DONE 23 Aug.**
 
 ### ⚠ THE STANDING RISK IS NO LONGER MISSING WORK. IT IS VOLUME.
 
