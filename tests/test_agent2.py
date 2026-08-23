@@ -213,6 +213,32 @@ def test_resolve_html_path_accepts_a_repo_relative_path(tmp_path):
     assert resolve_html_path("data/cache/html/v2_abc.html", tmp_path) is not None
 
 
+def test_resolve_html_path_ignores_a_same_named_file_in_the_working_directory(
+        tmp_path, monkeypatch):
+    """
+    DEFECT 55. A relative raw_html_path must be resolved against `root`, never
+    against the process's working directory.
+
+    The setup is the real one: two trees of this repo on one machine, the same
+    content-addressed filename in both caches, and pytest invoked from the wrong
+    one. Before the fix this returned the decoy — silently, with no missing-html
+    step — so Agent 2 would have quoted another archive's page as this vendor's
+    evidence.
+    """
+    cache = tmp_path / "repo" / "data" / "cache" / "html"
+    cache.mkdir(parents=True)
+    (cache / "v2_abc.html").write_text("<h1>the real page</h1>", encoding="utf-8")
+
+    decoy = tmp_path / "elsewhere" / "data" / "cache" / "html"
+    decoy.mkdir(parents=True)
+    (decoy / "v2_abc.html").write_text("<h1>another tree</h1>", encoding="utf-8")
+    monkeypatch.chdir(tmp_path / "elsewhere")
+
+    found = resolve_html_path("data/cache/html/v2_abc.html", tmp_path / "repo")
+    assert found is not None
+    assert found.read_text(encoding="utf-8") == "<h1>the real page</h1>"
+
+
 def test_missing_html_is_reported_not_silently_skipped(tmp_path, settings,
                                                        field_dictionary):
     records = [{"source_type": "security", "source_url": "https://x/",
@@ -364,10 +390,37 @@ def test_not_found_is_recorded_with_the_effort_behind_it(tmp_path, settings,
 
 # ---------------------------------------------------------------------------
 # Real corpus, if one is present. Skipped on a fresh clone.
+#
+# WHY THE GUARD IS NOT `gitlab.json.exists()` (fixed 23 Aug 2026).
+# The corpus INDEX is committed; the pages it indexes are NOT — .gitignore
+# excludes data/cache/html/* because the client asked on 18 Aug that the 22 MB
+# of verbatim third-party HTML not be shipped. So on a fresh clone the index is
+# present, every page it names is absent, and Agent 2 correctly returns
+# NOT_FOUND with the defect-40 uncached-page caveat. Guarding on the index
+# therefore ran a replay test with nothing to replay: a clean clone failed here
+# with `assert 'NOT_FOUND' == 'High'` while the code under test was behaving
+# exactly as designed — a test reporting our own archive policy as a bug.
+# Guard on the PAGE, not on the index.
+#
+# The assertion itself no longer depends on this corpus being present: see
+# test_security_field_prefers_the_security_page_sentence below, which pins the
+# same behaviour on committed fixtures and runs everywhere.
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not (ROOT / "data" / "corpus" / "gitlab.json").exists(),
-                    reason="no collected corpus on disk yet")
+def _gitlab_security_page_is_cached() -> bool:
+    """True only if this machine can actually replay GitLab's security page."""
+    corpus = ROOT / "data" / "corpus" / "gitlab.json"
+    if not corpus.exists():
+        return False
+    records = json.loads(corpus.read_text(encoding="utf-8"))
+    return any(resolve_html_path(r.get("raw_html_path", ""), ROOT) is not None
+               for r in records if r.get("source_type") == "security")
+
+
+@pytest.mark.skipif(not _gitlab_security_page_is_cached(),
+                    reason="GitLab's security page is not in this machine's "
+                           "HTML cache (data/cache/html is deliberately not "
+                           "committed), so there is nothing to replay")
 def test_gitlab_security_field_quotes_the_soc_2_sentence(settings, field_dictionary):
     """
     The headline regression test: on the real GitLab corpus the security field
@@ -381,6 +434,38 @@ def test_gitlab_security_field_quotes_the_soc_2_sentence(settings, field_diction
     assert security.confidence == "High"
     assert "SOC 2 Type 2" in security.value
     assert security.evidence[0]["source_type"] == "security"
+
+
+def test_security_field_prefers_the_security_page_sentence(settings, field_dictionary):
+    """
+    The headline regression, restated on committed fixtures so that it runs on a
+    fresh clone, on a marker's laptop and in CI — everywhere the HTML cache is
+    absent and the corpus test above skips.
+
+    Same shape as the real GitLab corpus: the vendor's own SOC 2 sentence sits on
+    the security page, while a status board and a pricing tier both match
+    security terms too. `pricing` and `status` are authoritative source types in
+    settings.yaml, so either rival could reach High on its own; only
+    preferred_source_types keeps the security page's sentence on top. The field
+    must quote that sentence — not "All Systems Operational", not a plan feature
+    list. The security record is listed LAST so that passing cannot come from
+    input order.
+    """
+    records = [
+        {"source_type": "status", "source_url": "https://status.example/",
+         "raw_html_path": "fixtures/gitlab_status_style.html"},
+        {"source_type": "pricing", "source_url": "https://example.com/pricing/",
+         "raw_html_path": "fixtures/gitlab_pricing_style.html"},
+        {"source_type": "security", "source_url": "https://example.com/security/",
+         "raw_html_path": "fixtures/gitlab_security_style.html"},
+    ]
+    fields, _ = extract_for_vendor(records, field_dictionary, settings,
+                                   Path(__file__).parent)
+    security = next(f for f in fields if f.name == "security_trust")
+    assert security.confidence == "High"
+    assert "SOC 2 Type 2" in security.value
+    assert security.evidence[0]["source_type"] == "security"
+    assert "Operational" not in security.value
 
 
 # ---------------------------------------------------------------------------

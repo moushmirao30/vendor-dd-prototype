@@ -29,15 +29,15 @@ cd vendor-dd-prototype
 .venv\Scripts\activate
 pip install -r requirements.txt
 
-pytest -q                                    # 152 passed
+pytest -q                                    # 154 passed
 python tools\run_workflow.py                 # review mode — the default, and the mode
                                              # that needs neither network nor cache
 python tools\verify_corpus.py                # 0 FAIL across all seven vendors
 streamlit run app.py                         # http://localhost:8501
 ```
 
-**123 test functions across 9 files; parametrisation expands six of them, so `pytest -q` reports
-152.** No API key, no account, no GPU, no paid service.
+**125 test functions across 9 files; parametrisation expands six of them, so `pytest -q` reports
+154** where the HTML cache is present, and **153 passed, 1 skipped** in a clone without it (TC-34). No API key, no account, no GPU, no paid service.
 
 ---
 
@@ -138,6 +138,8 @@ is a real vendor, not a fixture.
 | **TC-22** | Conflict detection with nothing to find | Returns **zero** conflicts on this corpus, and says so. Absence of contradiction is reported as a finding, never presented as corroboration | Yes |
 | **TC-23** | Replay with no cache | `python tools\run_workflow.py --mode replay` in a fresh clone **refuses and explains why**, naming the pages whose cache is missing and the mode that works instead. `test_replay_refuses_when_the_html_cache_is_missing` | Yes |
 | **TC-23b** | Replay **with** the cache — offline replay demonstrated | `python tools\run_workflow.py --mode replay` re-extracts every field from the frozen HTML cache with **no network access at all**. This is the case the client asked to see demonstrated; it needs the cache the client asked us not to ship, which is why the README explains re-collection. `test_replay_runs_when_the_cache_is_present` | Cache |
+| **TC-34** | **The suite itself, in a cacheless clone** | `pytest -q` in a fresh clone reports **153 passed, 1 skipped** — the GitLab corpus replay skips, and its skip reason names the missing page rather than the missing corpus. **Before 23 August it reported `1 failed` with `assert 'NOT_FOUND' == 'High'`**: the guard tested for the corpus *index*, which ships, rather than the *page*, which deliberately does not (defect 54). Skipping now costs no coverage — the same assertion runs offline on committed fixtures via `test_security_field_prefers_the_security_page_sentence`, where a status board and a pricing tier compete with the security page and lose | Yes |
+| **TC-35** | **A relative cache path resolved from the wrong directory** | Two trees of this repo on one machine, the same content-addressed filename in both caches: `resolve_html_path` returns the page under the `root` it was given, never the one under the shell's working directory. **Before 23 August it returned whichever the working directory held (defect 55)** — evidence quoted from another archive entirely, with no `missing-html` step to show it happened. `test_resolve_html_path_ignores_a_same_named_file_in_the_working_directory` | Yes |
 | **TC-23c** | **The checker in a cacheless clone** | `python tools\verify_corpus.py` in a fresh clone raises **one `cache-absent` WARN per vendor**, not one FAIL per page, and the footer separates *what was checked* from *what was skipped, not passed*. **Before 22 August it printed 49 FAIL rows and "DO NOT COMMIT: 7 vendor(s) failed"** — the checker calling the submitted archive broken while it behaved exactly as the client instructed (defect 53). **No automated test covers this: the suite runs where the cache exists.** Run it by hand before packaging | Yes |
 | **TC-24** | Review with no cache | `python tools\run_workflow.py` — the default — produces all seven briefs. `test_review_mode_works_with_no_cache_at_all` | Yes |
 | **TC-25** | Stale data on disk | Artifacts written by older code are **reported, not hidden**. `test_a_stale_extraction_is_reported_not_hidden` | Yes |
@@ -169,7 +171,7 @@ The brief lists seven prohibitions. These cases are negative by design.
 | File | Tests | What it protects |
 |---|---|---|
 | `test_agent1.py` | 15 | Seed URLs beat guessed patterns · unresolvable page types are flagged · caps and budgets hold · a run replays without refetching |
-| `test_agent2.py` | 29 | Blocks not pages · quotes are verbatim · citations contain what they cite · loader noise is not evidence · PARTIAL is reachable |
+| `test_agent2.py` | 31 | Blocks not pages · quotes are verbatim · citations contain what they cite · loader noise is not evidence · PARTIAL is reachable · a relative cache path resolves against the repo, never the shell’s working directory |
 | `test_agent3.py` | 21 | Coverage, missing categories, conflicts and flags · a field whose home page was unreadable cannot score High |
 | `test_export.py` | 15 | All twelve brief items in all three formats · CSV round-trips hostile text · the download equals the file on disk |
 | `test_app_smoke.py` | 12 | The five review stages and three exports exist · the six-link chain renders · no axis is ever shown alone |
@@ -177,9 +179,9 @@ The brief lists seven prohibitions. These cases are negative by design.
 | `test_orchestrator.py` | 9 | The three modes, and what each refuses to do |
 | `test_fetch_robots.py` | 6 | RFC 9309 semantics, including every failure path |
 | `test_text_quality.py` | 6 | Readable-vs-unreadable, the measure everything else depends on |
-| **Total** | **123 functions → 152 tests** | |
+| **Total** | **125 functions → 154 tests** | |
 
-**Fifty-three defects have been found in this project. This suite caught one of them.** The rest
+**Fifty-five defects have been found in this project. This suite caught one of them — and defect 54 was a defect IN it.** The rest
 came from reading the output against the source page, from re-running the workflow end to end,
 from reading the brief line by line rather than a summary of it — and, for the last six, from
 opening the app and reading a tab, and from cloning the repository and following the README.
@@ -226,6 +228,6 @@ this project a day:
 | Success Criteria | briefs include source references | TC-11, TC-12 |
 | Success Criteria | missing information flagged, not guessed | TC-16 – TC-22 |
 | Success Criteria | usable by a non-technical reviewer | TC-12, TC-14, TC-15, **TC-25b, TC-25c** |
-| Success Criteria | the archive a reviewer actually receives behaves | TC-6, **TC-23c**, TC-23, TC-24 |
+| Success Criteria | the archive a reviewer actually receives behaves | TC-6, **TC-23c**, TC-23, TC-24, **TC-34**, **TC-35** |
 | Success Criteria | low-cost, no heavy infrastructure | TC-32 |
 | Success Criteria | assumptions and manual-review boundaries documented | TC-21, TC-33, `docs\assumptions_limitations.md` |

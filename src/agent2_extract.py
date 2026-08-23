@@ -78,8 +78,20 @@ def resolve_html_path(raw_html_path: str, root: Path) -> Path | None:
     if not raw_html_path:
         return None
 
+    # ONLY AN ABSOLUTE PATH IS TRUSTED AS WRITTEN (defect 55, 23 Aug 2026).
+    # This branch used to read `if direct.is_file()`, unconditionally and first.
+    # Corpora now store repo-RELATIVE paths (the defect-16 fix above), and a
+    # relative path handed to Path() resolves against the PROCESS's working
+    # directory, not against `root`. Run pytest from a parent folder, or keep
+    # this repo and a clone of it open in the same shell, and Agent 2 reads the
+    # OTHER tree's cache while reporting it as this one's — no missing-html
+    # step, no caveat, evidence quoted from an archive nobody asked for. That is
+    # defect 40 with the failure hidden instead of recorded, which is the worse
+    # half. `root` is the only authority on where this repo's cache lives, so a
+    # relative path must go through it. The absolute branch stays because it is
+    # exactly what rescues a pre-fix corpus carrying `C:\Users\...`.
     direct = Path(raw_html_path)
-    if direct.is_file():
+    if direct.is_absolute() and direct.is_file():
         return direct
 
     relative = root / raw_html_path.replace("\\", "/")

@@ -22,7 +22,7 @@ python -m venv .venv
 .venv\Scripts\activate          # Windows;  source .venv/bin/activate on macOS/Linux
 pip install -r requirements.txt
 
-pytest -q                       # 152 tests, all offline
+pytest -q                       # 154 tests, all offline
 python tools/run_workflow.py    # Agent 1 -> 2 -> 3 for every vendor. No network needed.
 streamlit run app.py            # the review interface, then http://localhost:8501
 ```
@@ -86,7 +86,7 @@ all seven vendors.
 | Source manifest (client-requested) | **Complete** — 54 attempts, 5 never collected, 8 unreadable |
 | README · architecture note · evaluation summary · screenshots | **Complete** |
 | Assumptions and limitations note | **Complete** — `docs/assumptions_limitations.md` |
-| Sample test cases (document) | In progress — 152 automated tests exist; the reviewer-facing note is being written |
+| Sample test cases (document) | In progress — 154 automated tests exist; the reviewer-facing note is being written |
 
 ## Running it
 
@@ -95,7 +95,7 @@ Activate the environment first — `.venv\Scripts\activate` on Windows,
 PowerShell reports it as an unrecognised command.
 
 ```bash
-pytest -q                                    # 152 tests, all offline
+pytest -q                                    # 154 tests, all offline
 python tools/run_workflow.py                 # 1 -> 2 -> 3, review mode (default)
 python tools/run_workflow.py --mode replay   # re-extract from the cached HTML
 python tools/run_workflow.py --mode collect  # re-fetch from the vendors

@@ -1,0 +1,13 @@
+<!-- FIXTURE: the "vendor states it in prose on its own security page" shape.
+     Modelled on about.gitlab.com/security (seen 2026-08-12). This sentence is
+     the one a brief is supposed to quote for security_trust.
+     The second block deliberately matches ONE security term, so the SOC block
+     (two) stays top-ranked - ranking is by matched-term count, and a fixture
+     that ties would make the regression test pass or fail by accident.
+     EXPECTED: security_trust = High, quoted verbatim from the SOC block. -->
+<html><body>
+<h2>SOC Certification</h2>
+<p>GitLab maintains a SOC 2 Type 2 report for the Security, Confidentiality and Availability Trust Services Criteria for GitLab.com.</p>
+<h2>Reporting a problem</h2>
+<p>We publish a responsible disclosure policy so researchers can report a problem to our team.</p>
+</body></html>

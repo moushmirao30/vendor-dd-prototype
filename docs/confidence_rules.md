@@ -410,7 +410,7 @@ nobody read it. Item 6 was found while re-deriving the worked-examples table for
 this file and noticing that a **security** field justified its High by naming the
 **pricing** page.
 
-Of 152 tests now passing, **one** has ever caught a defect first. Every other one
+Of 154 tests now passing, **one** has ever caught a defect first. Every other one
 was found by opening the artifact and reading what it actually said — which is why
 re-deriving a worked example against live data is not documentation housekeeping,
 it is a defect-finding technique.

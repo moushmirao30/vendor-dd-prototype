@@ -17,7 +17,7 @@ Read it top to bottom before touching anything.
 > lost. **Project memory is convenient and it is not durable. The repo is.**
 **Last updated: 22 August 2026 — DAY 15 of 20. 26 commits (`a99a11e`), pushed.
 All three agents, the orchestrator, the export layer, the source manifest and the full Streamlit
-interface are built and committed. 152 tests. `verify_corpus.py` 0 FAIL
+interface are built and committed. 154 tests. `verify_corpus.py` 0 FAIL
 across all seven vendors — **both re-run on Windows on 20 Aug, not recalled.**
 **TEN of ten brief deliverables complete** — `docs/test_cases.md` written and committed 20 Aug.
 7 days to the 27 Aug submission target.**
@@ -316,7 +316,7 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 
 **26 commits, `a99a11e`, pushed. Everything below is built and committed: three agents, the
 orchestrator, the export layer, the source manifest, and all five UI tabs.**
-**152 tests. `verify_corpus.py` 0 FAIL across all seven vendors.**
+**154 tests. `verify_corpus.py` 0 FAIL across all seven vendors.**
 **7 vendors · 49 pages · 55 cached files · 7 briefs · 23 export artifacts · 12 screenshots.**
 
 ```
@@ -351,7 +351,7 @@ vendor-dd-prototype/
 │   ├─ confidence_rules.md    the written confidence rule + worked examples
 │   ├─ architecture.md        DRAFT — see §8
 │   └─ evaluation.md          rewritten 18 Aug, figures fact-checked by script
-└─ tests/                     152 tests, all offline
+└─ tests/                     154 tests, all offline
     ├─ test_parse.py · test_agent1.py · test_agent2.py · test_agent3.py (21) · test_export.py (15)
     ├─ test_orchestrator.py (9) — handoffs and refusals, not what happens inside an agent
     ├─ test_fetch_robots.py · test_app_smoke.py · test_text_quality.py
@@ -518,6 +518,22 @@ quote, or a checker's verdict in a directory that does not exist on this machine
 **And the count itself needed checking.** These were first written up as nine. Three of the nine
 were extra *symptoms* of defects 48 and 49 rather than defects of their own. Counting symptoms
 inflates the number and hides the root cause, which is the opposite of what §5 is for.
+
+### 54–55 — FOUND 23 Aug BY RUNNING THE CLONE'S TEST SUITE. Both fixed.
+
+`pytest -q` in the fresh clone: **1 failed, 151 passed**. The failure was ours, and it was in the
+test rather than in the code it guards.
+
+| # | Defect | Fix |
+|---|---|---|
+| **54** | **A TEST REPORTED THE SHIPPED ARCHIVE SHAPE AS A BUG — defect 53 in a third costume.** `test_gitlab_security_field_quotes_the_soc_2_sentence` guarded on `data/corpus/gitlab.json.exists()`, under its own comment reading *"Skipped on a fresh clone"*. The corpus **index** is committed; the pages it names are not (`.gitignore`, the client's 18 Aug instruction). So the guard was true in a clone, the replay ran with nothing to replay, and a clean clone failed with `assert 'NOT_FOUND' == 'High'` — while Agent 2 did precisely what defect 40 taught it to do, caveat and all. | Guard on the **page**, not the index: `_gitlab_security_page_is_cached()` resolves the security record through `resolve_html_path`. And because a test that skips protects nobody, the same assertion was restated on committed fixtures — `gitlab_security_style.html`, `gitlab_status_style.html`, `gitlab_pricing_style.html` — in `test_security_field_prefers_the_security_page_sentence`, which runs on any clone. `pricing` and `status` are authoritative source types, so both rivals can reach High on their own and only `preferred_source_types` keeps the security sentence on top: the fixture reproduces the competition, not just the answer. |
+| **55** | **`resolve_html_path` COULD READ ANOTHER TREE'S CACHE AND CALL IT OURS.** Its first branch was `Path(raw_html_path).is_file()`, unconditional and first. Since the defect-16 fix stores repo-**relative** paths, that branch resolves against the **process's working directory**, not against `root`. Any process whose working directory is a tree that HAS the cache, operating on a `root` that does not — a tool started from the wrong folder, a clone inspected from inside the real repo — makes Agent 2 quote evidence out of the other tree — with no `missing-html` step and no caveat. **Defect 40 with the failure hidden instead of recorded**, which is the worse half. Found by accident: a simulated cacheless clone reported the page as *present*, because python was running from the real repo. | Trust `direct` only when `direct.is_absolute()`. That branch exists to rescue a pre-fix corpus carrying `C:\Users\...`, and only that; a relative path now goes through `root`, the only authority on where this repo's cache lives. Pinned by `test_resolve_html_path_ignores_a_same_named_file_in_the_working_directory`, which builds two trees, puts the same content-addressed filename in both and chdirs into the wrong one. All four existing `resolve_html_path` cases still pass, and every caller (`orchestrator.replay_*`, `tools/verify_corpus.py`) already passed an explicit `ROOT`. |
+
+**Neither was reachable from the suite as it stood**, for the same reason as defect 53: the tests
+run where the cache exists and where the working directory is the repo root. `docs/test_cases.md`
+TC-23c already says this about `verify_corpus.py`. It is now true of three things, and the pattern
+deserves its name — **every check we own has behaved differently in the tree we ship than in the
+tree we work in.** The fixture-backed test above is the first of them that does not.
 
 ### ONE AUDIT FINDING WAS FALSE. THE LESSON IS WORTH MORE THAN THE FOUR REAL ONES.
 
@@ -921,7 +937,7 @@ code does not have is worse than no document.
   **§4.3** still says *"Postman and Sentry receive identical scores and identical confidence
   labels"* and calls this *"the most important open defect"* — they are no longer identical, and it
   is no longer open.
-  **§5** says *"Thirty-seven defects"*; the count is now **47**.
+  **§5** says *"Thirty-seven defects"*; the count is now **55** (this line itself read 47 until 23 Aug, having missed defects 48–53).
   The one-page executive summary added 20 Aug states the current position. Everything else in the
   file was fact-checked by script on 18 Aug and should be re-read rather than rewritten.
 - **`docs/evaluation.md` does not yet contain defects 40–47** individually, nor the offline-replay
