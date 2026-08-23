@@ -17,17 +17,38 @@ from.
 
 ## Start here — the submitted archive runs offline, with one caveat
 
-```bash
+**You need Python 3.11 or newer, and nothing else.** No API key, no account, no GPU,
+no paid service, no language model. Check with `python --version` first: if that
+prints an error, or opens the Microsoft Store, install Python from
+[python.org](https://www.python.org/downloads/) and tick **"Add python.exe to PATH"**
+during setup, then open a new terminal.
+
+Open a terminal in this folder and run these lines in order. The install takes two or
+three minutes; everything after it takes seconds.
+
+```powershell
 python -m venv .venv
-.venv\Scripts\activate          # Windows;  source .venv/bin/activate on macOS/Linux
+.venv\Scripts\activate            # Windows PowerShell.  macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 
-pytest -q                       # 154 tests, all offline
-python tools/run_workflow.py    # Agent 1 -> 2 -> 3 for every vendor. No network needed.
-streamlit run app.py            # the review interface, then http://localhost:8501
+pytest -q                         # expect: 153 passed, 1 skipped
+python tools/run_workflow.py      # Agents 1 -> 2 -> 3 for all seven vendors. No network needed.
+streamlit run app.py              # the review interface, at http://localhost:8501
 ```
 
-No API key, no account, no GPU, no paid service, no language model.
+**`1 skipped` is correct here and is not a failure.** That one test replays GitLab's
+security page out of the raw HTML cache, and the cache is not in this archive — the
+caveat below explains why. Everything it protects is also covered by tests that do run.
+Press **Ctrl+C** in the terminal to stop the interface.
+
+### If one of those lines fails
+
+| What you see | What to do |
+|---|---|
+| `activate` → *"running scripts is disabled on this system"* | PowerShell's default security setting, not a problem with this project. Either run `Set-ExecutionPolicy -Scope Process RemoteSigned` in the same window and try `activate` again, or skip activation entirely and put `.venv\Scripts\python.exe -m ` in front of each command — for example `.venv\Scripts\python.exe -m pytest -q`. |
+| `'python' is not recognized`, or the Microsoft Store opens | Python is not installed, or not on PATH. Install it as above and open a **new** terminal — an open one keeps the old PATH. |
+| `'pytest' is not recognized` / `'streamlit' is not recognized` | The environment is not active. Your prompt should begin with `(.venv)`. Re-run the `activate` line, or use the `.venv\Scripts\python.exe -m ...` form above. |
+| `--mode replay` refuses to run and names missing pages | Expected, not broken. That mode needs the HTML cache this archive excludes — see *Re-collecting the public sources* below. |
 
 **The one caveat, and it is a client instruction rather than an oversight.** First
 Quadrant Labs asked on 18 August 2026 that the 22 MB cache of verbatim third-party
@@ -67,14 +88,17 @@ A full run takes a few minutes.
 finding rather than a fault.** Vendor pages move: Linear's docs page went from
 24,444 bytes to 540,090 between 12 and 13 August 2026, and its security page now
 publishes `<h2>SOC 2 compliance</h2>` with an empty body where a complete SOC 2
-sentence was recorded three days earlier. **The corpus in `data/corpus/`, dated
-13 August 2026, is the record of what was evaluated — not the live web.**
+sentence was recorded three days earlier. **The corpus in `data/corpus/` is the record of what was evaluated — not the live web.**
+It is not one date: five vendors were collected on **13 August 2026**, GitLab on **19 August**
+and JetBrains on **22 August**. `data/exports/source_manifest.csv` carries the date of every
+page, and that file is the one to check rather than any sentence about it.
 `docs/evaluation.md` reports every figure against that frozen corpus.
 
 ## Current status
 
 **All three agents, the orchestrator, the export layer and the full interface are
-built.** 152 offline tests; `python tools/verify_corpus.py` reports 0 FAIL across
+built.** 154 offline tests — **153 pass and 1 skips in this archive**, for the reason given
+under *Start here*; `python tools/verify_corpus.py` reports 0 FAIL across
 all seven vendors.
 
 | Deliverable | State |
@@ -86,7 +110,7 @@ all seven vendors.
 | Source manifest (client-requested) | **Complete** — 54 attempts, 5 never collected, 8 unreadable |
 | README · architecture note · evaluation summary · screenshots | **Complete** |
 | Assumptions and limitations note | **Complete** — `docs/assumptions_limitations.md` |
-| Sample test cases (document) | In progress — 154 automated tests exist; the reviewer-facing note is being written |
+| Sample test cases (document) | **Complete** — `docs/test_cases.md`: 8 sample queries and 41 numbered cases, alongside 154 automated tests |
 
 ## Running it
 
@@ -95,7 +119,7 @@ Activate the environment first — `.venv\Scripts\activate` on Windows,
 PowerShell reports it as an unrecognised command.
 
 ```bash
-pytest -q                                    # 154 tests, all offline
+pytest -q                                    # 154 here; 153 + 1 skipped without the HTML cache
 python tools/run_workflow.py                 # 1 -> 2 -> 3, review mode (default)
 python tools/run_workflow.py --mode replay   # re-extract from the cached HTML
 python tools/run_workflow.py --mode collect  # re-fetch from the vendors
@@ -177,7 +201,7 @@ data/        corpus/ (canonical JSON) · briefs/ · exports/ · cache/html/ (loc
 docs/        architecture · confidence_rules · evaluation · assumptions_limitations · client_guidance
              test_cases
 brief.txt    the project brief, extracted verbatim from the PDF
-tests/       152 offline tests + five HTML fixtures modelled on real vendor pages
+tests/       154 offline tests + eight HTML fixtures modelled on real vendor pages
 screenshots/ the interface, tab by tab, for GitLab and JetBrains
 ```
 
