@@ -198,7 +198,7 @@ class PageFetcher:
 
         WHY THIS MATTERS (found 2026-08-12): this used to record the absolute
         path, so every corpus row read
-        `C:\\Users\\Moushmi Rao\\...\\data\\cache\\html\\v2_abc.html`.
+        `C:\\Users\\SomeoneElse\\...\\data\\cache\\html\\v2_abc.html`.
         The README and this repo's whole offline story promise that after one
         collection run the workflow replays from the cache — but an absolute
         path only resolves on the one machine that wrote it. On a marker's

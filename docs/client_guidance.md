@@ -1,14 +1,12 @@
 # Client guidance — First Quadrant Labs, 18 August 2026
 
 **AUTHORITATIVE. This is the client speaking in writing about their own brief.
-Where it conflicts with anything else in this repository — including the locked
-decisions in `HANDOFF.md` §2 — it wins.**
+Where it conflicts with anything else in this repository, it wins.**
 
-**Written into the repository on 19 August 2026, in full.** It had been held only
-in the assistant's project memory, which was lost. `HANDOFF.md` §1.1 carries a
-condensed version; this file is the complete record. **A client instruction that
-exists in one place, and that place is not version-controlled, is one session away
-from being gone** — and a design decision whose justification has disappeared is
+**Written into the repository on 19 August 2026, in full.** It had been held only in
+working notes kept outside version control, and those notes were lost. **A client
+instruction that exists in one place, and that place is not version-controlled, is one
+mistake away from being gone** — and a design decision whose justification has disappeared is
 indistinguishable from a decision nobody thought about.
 
 Quote it in `docs/assumptions_limitations.md` and `docs/evaluation.md`. A

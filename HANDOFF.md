@@ -705,8 +705,9 @@ ships exactly the tracked tree at HEAD and nothing else — no `.git`, no `.venv
 `__pycache__`, no `_to_delete/`, and no HTML cache.
 
 **`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`.** The 23 Aug archive is
-**112 files** (three new test fixtures since the 109-file count), and stays 112: `code_walkthrough.md`
-was drafted and cut the same day. **Re-count after every rebuild rather than trusting this line.** The reason is §0 of this file. It is addressed to an AI assistant and says,
+**111 files**: three new test fixtures since the 109-file count, `code_walkthrough.md` drafted and cut
+the same day, and `.gitattributes` now `export-ignore`s itself so the archive stops naming the two
+files it withholds. **Re-count after every rebuild rather than trusting this line.** The reason is §0 of this file. It is addressed to an AI assistant and says,
 in Moushmi's own words, *"I know Python basics only… never hand over unexplained code — 'an AI
 wrote it' ends an interview"*, plus how the 18 Aug fix pass was run in a container. **That is an
 internal working document and it must never reach the client.** Do not remove those two lines.

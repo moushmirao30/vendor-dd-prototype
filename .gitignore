@@ -18,6 +18,5 @@ desktop.ini
 # Local secrets (none are required by this project, but never commit one)
 .env
 
-# Workaround folder for files the Cowork mount cannot unlink (git locks,
-# superseded cache). MUST be deleted before submission.
+# Scratch folder for files awaiting manual deletion. Must be empty before packaging.
 _to_delete/
