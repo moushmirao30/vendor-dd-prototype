@@ -20,37 +20,51 @@ durable. The repo is.**
 
 ## The state, in one screen
 
-**20 August 2026 = day 13 of 20. 7 days to the 27 August submission target,
-9 to the 29 August deadline.** Day 1 was 8 Aug, so day N = 7 Aug + N.
+**28 August 2026. THE PROJECT IS SUBMITTED.** Sent 27 August to
+projects@firstquadrantlabs.com and uploaded to the LMS: `vendor-dd-prototype-submission.zip`,
+**111 files, 3.0 MB**, built with `git archive` from `134eb6d` and verified by unzipping it and
+running `pytest -q` inside the unzipped copy (153 passed, 1 skipped).
 
-*This line first read "19 August = day 12". The session that wrote it crossed a real
-midnight and the note was wrong before anyone read it — Rule 3, committed by the session
-that wrote Rule 3. **Check the clock against the machine at the start of every session,
-before trusting any date in this repository, including this one.***
+⚠ **A review came back on 28 August that does not describe this project.** It names this project
+in its heading and then discusses TF-IDF, chunking, retrieval, 57 documents and 103 chunks, a
+26-query evaluation set and a UI mockup — none of which exist here. **Read `HANDOFF.md` §13
+before acting on any of it**; a reply asking Projects and HR to confirm which submission it
+covers went out on 28 August. Do not implement its suggestions against this codebase.
+
+*Earlier versions of this line were wrong twice, in both directions. **Check the clock against
+the machine at the start of every session, before trusting any date in this repository,
+including this one.***
 
 - **All code is built.** Three agents, orchestrator, export layer, source manifest,
-  all five Streamlit tabs. **154 tests passing and `verify_corpus.py` 0 FAIL on all 7 vendors —
-  both re-run on Windows on 23 August, and re-run again in a fresh clone the same day (153 passed / 1 skipped, one `cache-absent` WARN per vendor). Not recalled.** `verify_corpus` also raises **55 WARN**;
-  those are findings about the vendors, ledgered in `docs/evaluation.md` §4.5.
+  all five Streamlit tabs. **154 tests passing and `verify_corpus.py` 0 FAIL on all 7 vendors,
+  re-run on Windows on 23 August and re-run again the same day in a fresh clone (153 passed,
+  1 skipped, one `cache-absent` WARN per vendor). Not recalled.** `verify_corpus` also raises
+  **55 WARN**; those are findings about the vendors, ledgered in `docs/evaluation.md` §4.5.
 - **10 of 10 brief deliverables complete.** Counted 20 Aug against `brief.txt` verbatim.
   `docs/code_walkthrough.md` was **not** on the brief's list; it was our own idea, drafted on
-  23 Aug and cut the same day (see item 6). **Nothing the client asked for is outstanding — what
-  remains is quality, not coverage.**
+  23 Aug and cut the same day (see item 6). **Nothing the client asked for is outstanding.**
 - **The corpus is FROZEN. Do not re-collect** — every measured figure in every document was
   fact-checked against it, and vendor pages have moved since. `tools/run_workflow.py --mode replay`
   re-reads the frozen cache and is safe.
   **It is not uniformly 13 August:** five vendors are **2026-08-13**, **GitLab is 2026-08-19**,
-  and **JetBrains is 2026-08-22** — re-collected from the UI, with every figure unchanged. Never
-  write "the 13 August corpus". Check `data/exports/source_manifest.csv`, column `date_collected`
-  — `tools/export_all.py` was re-run on 22 Aug and the manifest now carries JetBrains **2026-08-22**; re-verified against the corpus on 23 Aug.
+  and **JetBrains is 2026-08-22**. Never write "the 13 August corpus". Check
+  `data/exports/source_manifest.csv`, column `date_collected` — `tools/export_all.py` was re-run
+  on 27 Aug and the manifest is current.
+- **`screenshots/` holds ELEVEN PNGs**, not twelve. Earlier notes counted `.gitkeep`. No shipped
+  document states a count, so the client never saw the wrong number.
+- **SUBMITTED 27 Aug** — zip emailed and uploaded to the LMS. **Feedback resolved 30 Aug:**
+  the 28 Aug review described someone else's project, it was challenged, and First Quadrant Labs
+  apologised and sent the correct one. **Read `HANDOFF.md` §14 before doing anything.**
+- **Awaiting their answer** to the 1 Sept reply asking whether to resubmit a revised archive or
+  carry the feedback into the next project. **Change no deliverable until they answer.**
+- **One live defect, found by the client: three test counts across the documents (defect 56).**
+  `README.md` 154 · `docs/architecture.md` 152 · `docs/evaluation.md` §5.2 152. Two edits, §8.
 - Repo: `https://github.com/moushmirao30/vendor-dd-prototype` (private, `master`).
-  **27 commits, HEAD `6a48fc6` (defects 54–55). COMMITTED LOCALLY, NOT YET PUSHED as of 23 Aug.**
-- ⚠ **The submission archive on disk is STALE.** It was built 23 Aug 14:27, minutes before the defect 54–55 commit, so it still ships the failing `test_agent2.py` and none of the three new fixtures. Rebuild it and re-check the file count: `git archive --format=zip -o
-  ..\vendor-dd-prototype-submission.zip HEAD` → 3 MB, 109 files.
-- ⚠ **`.gitattributes` marks `HANDOFF.md` and `START_HERE.md` `export-ignore`. DO NOT REMOVE THOSE
-  LINES.** `HANDOFF.md` §0 is addressed to an AI assistant and must never reach the client. The
-  email therefore ships the zip only and does not offer the repository link.
-- Submit to **projects@firstquadrantlabs.com** AND upload to the LMS.
+  **30 commits, HEAD `134eb6d`, pushed.**
+- ⚠ **`.gitattributes` marks `HANDOFF.md`, `START_HERE.md` and itself `export-ignore`. DO NOT
+  REMOVE THOSE LINES.** `HANDOFF.md` §0 is an internal working document and must never reach the
+  client. The submission email therefore shipped the zip only and offered no repository link.
+- Submitted to **projects@firstquadrantlabs.com** and the LMS on 27 Aug 2026.
 
 ```powershell
 cd "C:\Users\Moushmi Rao\GEN-AGENTIC_AI\Projects\Research Project_1\vendor-dd-prototype"
@@ -70,6 +84,27 @@ match the rules.
 ---
 
 ## What to do next, in priority order
+
+**The project is submitted. Items 1–9 below are the pre-submission list and are all closed;
+they are kept for the reasoning. The live list is these three.**
+
+**A. SEND THE REPLY — today.** `_to_delete/reply_email.md` asks First Quadrant Labs whether to
+   resubmit a revised archive by email or carry their feedback into the next project, and says
+   why the question exists: the LMS does not allow resubmission once a project closes. The
+   corrected feedback arrived 30 Aug; a reply after a week reads as disengagement.
+
+**B. CHANGE NO DELIVERABLE UNTIL THEY ANSWER.** An unrequested revised archive is a different
+   act from a requested one. This includes defect 56.
+
+**C. WHEN THEY ANSWER, the work is four short items and it is in `HANDOFF.md` §7** — demo notes
+   with numbered screenshots, a "what to do when a field is weak" section, the two test-count
+   edits, and the opening of `docs/evaluation.md` §5 rewritten in your own words. **Three of the
+   four make the package shorter.** Their fifth point was that parts of it read as heavily
+   AI-assisted; the answer to that is not more writing.
+
+---
+
+### The pre-submission list — all closed, kept for the reasoning
 
 1. ~~**Re-clone and run `python tools/verify_corpus.py` there.**~~ **DONE 23 Aug in `Desktop\clonetest2`: one `cache-absent` WARN per vendor, 0 FAIL, and `pytest -q` 153 passed / 1 skipped.** It was the last unverified thing in the
    project: defect 53 changed how the checker behaves when the HTML cache is absent, and a clone

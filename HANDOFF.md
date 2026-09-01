@@ -15,12 +15,17 @@ Read it top to bottom before touching anything.
 >
 > Both were added to the repo on 19 Aug after the assistant's project memory was
 > lost. **Project memory is convenient and it is not durable. The repo is.**
-**Last updated: 22 August 2026 — DAY 15 of 20. 26 commits (`a99a11e`), pushed.
-All three agents, the orchestrator, the export layer, the source manifest and the full Streamlit
-interface are built and committed. 154 tests. `verify_corpus.py` 0 FAIL
-across all seven vendors — **both re-run on Windows on 20 Aug, not recalled.**
-**TEN of ten brief deliverables complete** — `docs/test_cases.md` written and committed 20 Aug.
-7 days to the 27 Aug submission target.**
+**Last updated: 28 August 2026. SUBMITTED. 30 commits, HEAD `134eb6d`, pushed.
+`vendor-dd-prototype-submission.zip` — 111 files, 3.0 MB — was emailed to
+projects@firstquadrantlabs.com and uploaded to the LMS on **27 August 2026**, and was verified
+before sending by unzipping the archive and running `pytest -q` inside it: **153 passed, 1
+skipped**. 154 tests where the HTML cache exists; `verify_corpus.py` 0 FAIL across all seven
+vendors. TEN of ten brief deliverables complete.
+**The 28 Aug review did not describe this project. It was challenged, and on 30 Aug First
+Quadrant Labs apologised and sent the correct feedback — §13 records the challenge, §14 the
+corrected review and what to do about it. Read §14 first.**
+**A review came back on 28 Aug that does not describe this project — see §13 before acting on
+any of it.**
 
 > ### ⚠ THE DATES IN THIS FILE HAVE BEEN WRONG THREE TIMES. READ ALL THREE.
 > * **Error 1** — everything below was first written as "13 August" because the assistant's clock
@@ -317,7 +322,7 @@ In consulting the deliverable *is* the product, so document polish counts as muc
 **26 commits, `a99a11e`, pushed. Everything below is built and committed: three agents, the
 orchestrator, the export layer, the source manifest, and all five UI tabs.**
 **154 tests. `verify_corpus.py` 0 FAIL across all seven vendors.**
-**7 vendors · 49 pages · 55 cached files · 7 briefs · 23 export artifacts · 12 screenshots.**
+**7 vendors · 49 pages · 55 cached files · 7 briefs · 23 export artifacts · 11 screenshots.**
 
 ```
 vendor-dd-prototype/
@@ -404,7 +409,7 @@ while half its primary documents were never read. See defect 31.**
 
 ---
 
-## 5. Fifty-three defects, and the headline they add up to
+## 5. Fifty-six defects, and the headline they add up to
 
 **The automated test suite caught one of them. Every other one was found by opening the artifact
 and reading what it actually said — the screen, then the JSON, then the raw HTML.**
@@ -535,10 +540,23 @@ TC-23c already says this about `verify_corpus.py`. It is now true of three thing
 deserves its name — **every check we own has behaved differently in the tree we ship than in the
 tree we work in.** The fixture-backed test above is the first of them that does not.
 
+### 56 — FOUND 30 Aug BY THE CLIENT. The first defect in this project found from outside it.
+
+| # | Defect | Fix |
+|---|---|---|
+| **56** | **THREE TEST COUNTS IN ONE SUBMISSION.** `README.md` states 154 tests, 153 passing and 1 skipped in a clone. `docs/architecture.md` §"Development & Deployment" still says **152 offline tests**. `docs/evaluation.md` §5.2 says **"all 152 tests passed throughout"** — historically accurate about defects 48–53, when the suite *was* 152, but a reader meets it as a third number with no date on it. The count moved 152 → 154 on 23 Aug when defects 54–55 added two tests, and two documents were not swept. | Two edits: correct `architecture.md` to 154, and date the `evaluation.md` sentence so it reads as history. **Not yet made — see §8.** |
+
+**Why this one matters more than its size.** Fifty-five defects were found by us. This one was
+found by the client, in the first document they opened, and it is the same class as defects 33,
+42 and 51: *a number that was true when it was written and was never re-swept when the thing it
+counted changed*. The repository has a rule for exactly this — §0.1 Rule A — and a checker that
+enforces figures against the corpus, but **nothing enforces a figure quoted in one document
+against the same figure in another.** That is the gap, not the two edits.
+
 ### ONE AUDIT FINDING WAS FALSE. THE LESSON IS WORTH MORE THAN THE FOUR REAL ONES.
 
 The same audit reported `screenshots/` as **empty — only `.gitkeep`**. It was auditing a **copy of
-the repo in a cloud container**, which had never received the screenshots. All twelve are committed
+the repo in a cloud container**, which had never received the screenshots. All eleven are committed (the file count of 12 in earlier notes counted `.gitkeep`)
 in `68ff6ee`; git's own `create mode 100644 screenshots/04_vendor_brief.png` output is the proof.
 
 **An audit of a copy is an audit of the copy.** Findings about code CONTENT transfer between a
@@ -682,7 +700,7 @@ neither FOUND nor NOT_FOUND but **PARTIAL**, which is how defect 36 was found.
 | `fe3f686` | 18 Aug | **Agent 3** + `review_rules.py` + 7 briefs |
 | `3cb4455` | 18 Aug | **export layer + source manifest** + 23 export artifacts |
 | `6759ea6` | 19 Aug | **orchestrator** + defects 40, 41, 42 |
-| `68ff6ee` | 19 Aug | **UI tabs 4 and 5** + 12 screenshots |
+| `68ff6ee` | 19 Aug | **UI tabs 4 and 5** + 11 screenshots |
 | `537074f` | 19 Aug | **defect 43**, `confidence_rules.md` rewritten, 9 brief/corpus artifacts re-exported |
 | `07228a1` | 19 Aug | **`docs/architecture.md` and `README.md` rewritten against the code that exists** — 312 insertions, 77 deletions |
 | `7e89306` | 20 Aug | **§7/§8/§11/§12 reconciled** · the exec summary at the top of `docs/evaluation.md` · **the four never-tracked documents added**: `client_guidance.md`, `brief.txt`, `assumptions_limitations.md`, `START_HERE.md`. 14 files, 1425 insertions |
@@ -754,7 +772,37 @@ deliverable for what points at it.**
       `c75f195`: one `cache-absent` WARN per vendor, 0 FAIL, and `pytest -q` 153 passed / 1
       skipped. Defect 53's fix is confirmed, and running it is what found defects 54 and 55.
 - [x] ~~Delete `_to_delete/`.~~ **DONE 23 Aug.**
-- [ ] Remove the repository line from the submission email — the repo still contains `HANDOFF.md`.
+- [x] ~~Remove the repository line from the submission email.~~ **DONE** — the 27 Aug email
+      shipped the zip only and offered no repository link.
+
+### AFTER THE CORRECTED FEEDBACK — 1 Sept onwards
+
+- [ ] **SEND THE REPLY.** `_to_delete/reply_email.md`. It asks whether to resubmit a revised
+      archive by email or carry the feedback into the next project, and says why the question
+      exists — the LMS does not allow resubmission once a project closes. **Send it the same day
+      it is read.** The feedback arrived 30 Aug; a reply after a week reads as disengagement.
+- [ ] **Wait for their answer before changing any deliverable.** An unrequested revised archive
+      is a different act from a requested one, and this project's own rule is to name the
+      instruction a change serves before making it.
+
+**If they say revise, this is the order — and it is short on purpose, because their point 5 was
+that the submission is over-written:**
+
+1. **`docs/demo_notes.md`** — one vendor, end to end, six numbered screenshots, plain English.
+   Rename the screenshots so the sequence is obvious. Closes §14 point 1.
+2. **A "what to do when a field is weak" section** — the reviewer's next action on an unreadable
+   JavaScript page, a NOT_FOUND with a caveat, a High resting on 2-of-5 coverage. Closes point 4.
+3. **The two test-count edits** (defect 56). Ten minutes.
+4. **Rewrite `docs/evaluation.md` §5's opening in Moushmi's own words** — the framing only, not
+   the whole section. The only response to point 5 that is not a paragraph defending itself.
+
+**Nothing on that list adds a document. Three of the four make the package shorter or plainer.
+That is deliberate: the criticism was that the work is over-written, and the answer to it is not
+more writing.**
+
+- [ ] **If they say carry it forward:** do 1–4 anyway, on a branch, not for them. They are the
+      four things that would make this repository defensible in a conversation, which is what
+      point 5 is actually about.
 - [x] **`docs/code_walkthrough.md` — DRAFTED 23 Aug AND CUT THE SAME DAY.** Checked verbatim against
       `brief.txt` on 20 Aug: the ten listed items are prototype, orchestration code, corpus,
       sample outputs, README, architecture note, assumptions & limitations, **test cases**,
@@ -785,7 +833,7 @@ repository is a ONE-PAGE entry point at the top of the evaluation, not more dept
 **Where the time went.** 13 Aug re-ran the agents. **14–17 Aug produced nothing — no commits.**
 18 Aug produced thirteen defects found and twelve fixed, three documents rewritten against verified
 data, a client reply that fixed the scope in writing, Agent 3, and the export layer. 18–19 Aug
-produced the orchestrator, defects 40–43, both UI tabs, twelve screenshots and two commits.
+produced the orchestrator, defects 40–43, both UI tabs, eleven screenshots and two commits.
 
 **Day 13 of 20 — it is 20 August.** (Recounted 20 Aug 00:10 IST. The 19 Aug session crossed a
 real midnight and every "day 12" written in it was wrong by morning. Rule 3, committed by the
@@ -817,7 +865,7 @@ live.
 
 | Date | Day | Work |
 |---|---|---|
-| **19 Aug** | 12 | ✅ orchestrator + CLI · defects 40–47 · **UI tabs 4 and 5** · 12 screenshots · **`assumptions_limitations.md` written** · the brief-PDF compliance audit (§12) · `confidence_rules.md`, `architecture.md`, `README.md` and this file rewritten. **Four commits pushed** (`6759ea6`, `68ff6ee`, `537074f`, `07228a1`). The audit pass — `app.py`, `src/export.py`, the four untracked documents — is still uncommitted. |
+| **19 Aug** | 12 | ✅ orchestrator + CLI · defects 40–47 · **UI tabs 4 and 5** · 11 screenshots · **`assumptions_limitations.md` written** · the brief-PDF compliance audit (§12) · `confidence_rules.md`, `architecture.md`, `README.md` and this file rewritten. **Four commits pushed** (`6759ea6`, `68ff6ee`, `537074f`, `07228a1`). The audit pass — `app.py`, `src/export.py`, the four untracked documents — is still uncommitted. |
 | **20 Aug** | 13 | ✅ **Two commits pushed, `7e89306` and `752e60d`.** §7/§8/§11/§12 reconciled against the repo · the exec summary written · the four never-tracked documents added · **`docs/test_cases.md` — the tenth and last brief deliverable** · `export_all.py` re-run so the 23 shipped artifacts match the code · `pytest` and `verify_corpus` re-run on Windows (152 passed, 0 FAIL, 55 WARN) · the corpus-date error found: five vendors are 13 Aug, GitLab and JetBrains are 19 Aug · `evaluation.md` §4.1's caveat count corrected from 18 to 13 · **§4.5 added: the 55-warning ledger**. |
 | **21 Aug** | 14 | **FEATURE FREEZE — passed with nothing committed.** 20 and 21 Aug produced no commits, the second such gap in this project after 14–17 Aug. |
 | **22 Aug** | 15 | **The filter was clicked by hand at last, and the screen was read.** Defects **48–53** found and fixed — five by looking at a tab, one by cloning the repository and running the README. Defects 40–47 written into `docs/evaluation.md` §5.1. `README.md` deliverables table rebuilt to the brief's ten. `assumptions_limitations.md` §5 corpus date corrected. The **submission email** drafted. JetBrains re-collected from the UI (figures unchanged). |
@@ -853,6 +901,20 @@ the record of what was evaluated" is already in the evaluation's limitations —
 sentence when the reader can see the corpus is dated.
 
 ## 8. Known-wrong things in the current documents — fix before submission
+
+- **⚠ OPEN, FOUND BY THE CLIENT 30 Aug: three test counts across the submitted documents.**
+  `README.md` says 154 (153 + 1 skipped in a clone) · **`docs/architecture.md` §"Development &
+  Deployment" still says "152 offline tests"** · **`docs/evaluation.md` §5.2 says "all 152 tests
+  passed throughout"**, which is true of the moment defects 48–53 were found and reads as a third
+  number today. `docs/confidence_rules.md` and `docs/test_cases.md` are correct at 154. **Two
+  edits: correct the architecture note, and date the evaluation sentence.** Defect 56, §5.
+  *Do not make these until §14's question is answered — an unrequested revised archive is a
+  different decision from a corrected one.*
+- **⚠ OPEN: the eleven screenshots have no order and no notes.** `brief.txt` line 126 asks for
+  *"screenshots or short demo notes"*. `screenshots/tab4_chain.png` contains the exact six-link
+  chain the client asked to see and the reviewer did not find it, because the filenames say
+  nothing and it sorts last. A numbered sequence plus a one-page `docs/demo_notes.md` closes
+  §14 point 1 and half of point 4.
 
 Recorded honestly rather than quietly patched, because a document that describes behaviour the
 code does not have is worse than no document.
@@ -1095,5 +1157,144 @@ committed by the project itself.
 
 ### And one finding was false
 See §5. `screenshots/` was reported empty by an audit running against a **container copy** of the
-repo. All twelve are committed. **Findings about code content transfer between a working tree and a
+repo. All eleven are committed (the file count of 12 in earlier notes counted `.gitkeep`). **Findings about code content transfer between a working tree and a
 copy; findings about a file being absent do not.**
+
+---
+
+## 13. SUBMITTED 27 AUGUST — AND THE REVIEW THAT CAME BACK DESCRIBED A DIFFERENT PROJECT
+
+> **CLOSED 30 August 2026. The challenge was upheld.** First Quadrant Labs replied
+> *"We apologize for the oversight"* and sent the correct feedback for this submission.
+> **That corrected review is §14, and it supersedes everything below.** Section 13 is kept
+> because the method is the reusable part: a confident, well-written, correctly addressed
+> document arrived describing work nobody had checked against the thing it named, and
+> checking it line by line against the artifact is what got it corrected.
+
+**Submitted 27 August 2026** to projects@firstquadrantlabs.com and the LMS.
+`vendor-dd-prototype-submission.zip`, built with `git archive` from `134eb6d`: **111 files,
+3.0 MB**, no HTML cache, no `HANDOFF.md`, no `START_HERE.md`, no `.gitattributes`. Verified
+before sending by unzipping the archive and running `pytest -q` **inside the unzipped copy**:
+153 passed, 1 skipped. The email shipped the zip only and offered no repository link — see
+§7 *PACKAGING*.
+
+**Review received 28 August 2026, 17:21 IST**, from First Quadrant Labs Projects, copied to HR,
+addressed to Moushmi Rao Padmanaban, under the heading *Project Name: Vendor Due-Diligence
+Research Workflow Prototype*.
+
+**Only the project name matches.** Every falsifiable technical detail in it belongs to a
+different submission — an internal-documentation question-answering assistant. Checked claim by
+claim against this repository on 28 August:
+
+| The review says | This repository |
+|---|---|
+| "primarily uses TF-IDF" | **No TF-IDF anywhere.** Zero occurrences of `tf-idf` or `tfidf` in `README.md`, `brief.txt`, `docs/`, `src/`, `tools/`, `tests/`, `app.py` or `config/`. Extraction is whole-word phrase matching from `config/field_dictionary.yaml`. |
+| "the proposed sentence-transformer model" | Nothing of the kind was proposed. `docs/assumptions_limitations.md` **explicitly declines** `sentence-transformers`, FAISS and Chroma and states that no retrieval layer was built, because an embedding index would put "a layer of approximation between the vendor's sentence and the reviewer's screen". The review recommends adopting the thing the document argues against. |
+| "chunking, indexing, retrieval" | **Zero occurrences of `chunk` in the repository.** No index, no retrieval, no similarity scores, no cosine anything. Pages become heading-anchored blocks and every block on every page is searched exhaustively. |
+| "57 documents and 103 chunks from three platforms" | 49 pages, 7 vendors, 54 collection attempts. `data/exports/corpus.csv`, `data/exports/source_manifest.csv`. |
+| "26 sample queries across five categories … 9 High, 15 Medium, 2 Low" | 7 vendors × 8 fields = 56 field results. `docs/test_cases.md` carries **8 sample queries and 41 numbered cases**. No 26-item evaluation set exists here, and no such distribution. |
+| "screenshots could not be captured in the development environment; the presentation uses a UI mockup" | **11 real screenshots** are committed in `screenshots/` and ship in the archive. No mockup was ever made. |
+| "the presentation", "the report", "capstone" — and the Strengths section praises the presentation's sequencing | **No presentation exists.** Confirmed by Moushmi on 28 Aug: none was submitted by email, to the LMS, or anywhere else, and none was ever made. The submitted package — verified file by file against `134eb6d` by SHA-256 — contains no `.ppt*`, `.pdf` or `.doc*` at all. The deliverable is a zip: README, six documents, code, corpus, briefs, exports, 11 screenshots. **A reviewer cannot assess the clear sequencing of a document that does not exist**, which is the single most decisive line in this table and the one a non-technical reader can check. |
+| "time support teams spend searching across fragmented documentation" | Vendor due-diligence briefs built from public vendor pages, for a procurement reviewer. |
+
+**THE COUNTER-EVIDENCE, STATED HONESTLY.** Three lines in it could be read as describing this
+work: extractive answers rather than generated ones; escalating low-confidence results instead of
+asserting them; and post-build testing that found "cross-platform" problems and a truncation bug
+involving abbreviations — which is close to defects 16 and 55 (an absolute Windows path breaking
+on another machine) and to the `SOC 2 and 3` fragment rule in `best_sentence`. Those are the
+non-falsifiable lines. Every line carrying a **number or a named technology** is wrong, and
+several are mutually exclusive with this codebase. The conclusion holds.
+
+**THE SUBMITTED PACKAGE WAS RE-VERIFIED 28 Aug**, from the unzipped copy Moushmi actually sent: 111 files, every one byte-identical to the `git archive` of `134eb6d` by SHA-256. Zero occurrences of `tf-idf` or `chunk`; `requirements.txt` lines 19–24 list what was deliberately excluded, including *"faiss / chromadb → no vector store; 7 vendors do not need retrieval"*; 49 pages, 7 vendors, 8 fields, 11 screenshots; and no tooling or internal-document references anywhere in it.
+
+**ACTION TAKEN 28 Aug: the reply was SENT** to Projects, copying HR, asking them to confirm which
+submission the review covers and to resend if it was mis-filed. It cites three mismatches — the
+TF-IDF/retrieval/sentence-transformer description against `requirements.txt` lines 19–24 and
+`docs/assumptions_limitations.md`; 57 documents / 103 chunks / three platforms against 49 pages /
+7 vendors / 8 fields; and the UI mockup against eleven real screenshots — concedes the two
+strengths that do describe this work, and commits to carrying the general points into the next
+project. **Nothing in it is a deliverable gap:** `brief.txt` line 126 asks for *"screenshots or
+short demo notes"*, never a presentation, and eleven screenshots ship in the archive. Awaiting
+their answer as of 28 Aug. **Do not act on these suggestions as though
+they were about this work.** Adding Precision@K to a system with no ranked retrieval, or "adding
+screenshots" to a submission that already contains eleven, is work done against a description of
+somebody else's project.
+
+**AND THE IRONY IS THE POINT, NOT A JOKE.** A confident, well-written, correctly addressed
+document arrived describing work that nobody had checked against the thing it named. That is
+defect 40, defect 53 and §4 of `docs/evaluation.md` arriving from the other direction — and the
+project's own sentence answers it: **the dangerous failure is not a missing answer, it is a
+confident answer about something nobody checked.** The first thing to do with a confident
+statement is check it against the artifact. That is what this section is.
+
+### What the review is still worth — keep this for the next project
+Whatever submission it describes, it shows what this reviewer looks for, and all six points
+generalise:
+
+1. **Direct evidence from the running application**, not a mockup — screenshots or a short demo.
+2. **Objective retrieval/quality metrics** (Precision@K, Recall@K, MRR, or labelled relevance),
+   not a confidence distribution alone.
+3. **A measured comparison against the alternative approach**, not an argument for it.
+4. **A bigger dataset, including ambiguous and out-of-scope inputs**, to test scalability.
+5. **Worked before-and-after examples**: input, sources retrieved, scores, output, and why it
+   was right or wrong.
+6. **A clean line between what is demonstrated and what is proposed.**
+
+This project already satisfies 1, 5 and 6, and deliberately declines 2 and 3 with a written
+argument (`docs/assumptions_limitations.md`). Point 4 is the honest gap: seven vendors is a small
+sample, and `docs/evaluation.md` §6 says so.
+
+
+---
+
+## 14. THE CORRECTED FEEDBACK — received 30 August 2026. THIS ONE IS ABOUT THIS PROJECT.
+
+**§13's challenge worked.** The reply sent on 28 August asked Projects to confirm which submission
+the review covered. On **30 August** they answered: *"We apologize for the oversight. Below is the
+accurate feedback for your submission."* **Checking a confident document against the artifact it
+named is what produced a corrected review**, and that is worth more than the correction itself.
+The 28 Aug review is superseded. Do not act on it. This section replaces it.
+
+### What they credit — quote these, they are the client's own words
+
+- The three-agent design is *"appropriately simple and well aligned with the project scope"*,
+  with *"no unnecessary orchestration complexity"*.
+- *"Source-grounding is a major strength"* — verbatim source text with the originating URL,
+  *"much easier for a reviewer to verify"*, reducing *"the risk of unsupported summaries"*.
+- *"The project handles limitations honestly."* Unreadable JavaScript pages, missing pages,
+  robots restrictions and incomplete evidence are tracked *"instead of being converted into
+  unsupported 'not found' conclusions. This is a strong practical choice for due-diligence work."*
+- The supporting material — architecture, assumptions and limitations, confidence rules, client
+  guidance, evaluation, test cases, source manifest — makes it *"easier for a non-technical
+  reviewer to understand and audit"*.
+- The interface and export layer *"appear to address the requested review workflow"*, and the test
+  cases *"show deliberate attention to previously identified interface defects"*.
+
+**Three of the five name the things this project chose deliberately and defended in writing.**
+
+### Their five suggestions, each checked against the repository on 1 September
+
+| # | Their point | Verdict |
+|---|---|---|
+| 1 | *"a clearer end-to-end demonstration showing the actual interface moving from Source → … → Final Brief. The client specifically requested this chain."* | **Half wrong, half fair — and the fair half is ours.** The chain is built, labelled literally and screenshotted: `screenshots/tab4_chain.png` shows all six links on GitLab's `security_trust`, with the URL, the verbatim SOC 2 quote, the matched terms, the confidence reason and the review flag. **They did not find it.** Eleven PNGs, no ordering, filenames like `Screenshot_GitLab_Tab-2-1.png`, and the one that matters sorts last. `brief.txt` line 126 asks for *"screenshots or short demo notes"* — we shipped screenshots and no notes. **Presentation gap, not a capability gap.** |
+| 2 | *"The README refers to 154 tests … while the architecture note mentions 152 offline tests."* | **CORRECT AND STILL TRUE.** Logged as **defect 56** — see §5 and §8. The first defect in this project found by somebody outside it. |
+| 3 | *"the confidence approach … remains largely mechanical … a small human-reviewed validation set comparing system confidence against reviewer judgement."* | **Already conceded**, in almost their words, in `docs/assumptions_limitations.md` §2.5. Their suggestion is a next-iteration idea, not a defect. Agree and move on. |
+| 4 | *"a few more practical examples showing how a reviewer should act on weak or incomplete results."* | **Genuine gap, and the sharpest of the five.** `docs/evaluation.md` §4 says *where* manual review is needed. Nothing says *what the reviewer does next* on an unreadable JavaScript page. It serves the brief's own success criterion about a non-technical reviewer. |
+| 5 | *"Parts of the submission appear heavily assisted by AI tools, particularly the long explanatory comments and defect narratives … stronger rewritten in the student's own concise wording."* | **True, and the only one with teeth.** `docs/evaluation.md` §5 is a long defect narrative in a consistent register and the code comments are unusually dense. It is framed as an invitation, not an accusation. |
+
+### The uncomfortable conclusion, and it governs what happens next
+
+**Resubmitting fixes the smallest item on their list and cannot touch the biggest one.** Point 2 is
+a two-line edit worth nothing in marks. Point 5 shapes how everything else is read, and **no
+corrected archive addresses it — a second, denser documentation pass would confirm the impression
+rather than dispel it.** What answers point 5 is being able to talk about this work in plain
+language, which is a conversation, not a document.
+
+**Do not raise point 5 in writing.** Answer it by what gets written next, in Moushmi's own words.
+
+### ACTION 1 Sept: a reply was drafted asking whether to resubmit or carry it forward
+
+Draft in `_to_delete/reply_email.md`. It names two of the five points (not all five), states that
+**the LMS does not allow resubmission once a project is closed** as the actual reason for asking,
+and puts the choice to them: revise and send the archive by email, or leave the submission and
+carry the feedback into the next project. It deliberately does not mention point 5.
